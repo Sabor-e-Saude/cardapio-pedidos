@@ -8,19 +8,16 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet">
-
-  <!-- Firebase SDK -->
   <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-database-compat.js"></script>
-
   <script>
     tailwind.config = {
       theme: {
         extend: {
           colors: {
-            forest: '#2D5A3D',
-            sage:   '#8FAE8B',
-            cream:  '#FDF8F3',
+            forest:     '#2D5A3D',
+            sage:       '#8FAE8B',
+            cream:      '#FDF8F3',
             terracotta: '#C4785A',
             charcoal:   '#2A2A2A'
           }
@@ -33,19 +30,18 @@
     .font-body    { font-family: 'DM Sans', sans-serif; }
     body          { background-color: #FDF8F3; }
     .fade-in      { animation: fadeIn 0.3s ease-out; }
-    @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-    .scroll-container::-webkit-scrollbar       { width: 6px; }
-    .scroll-container::-webkit-scrollbar-thumb { background: #8FAE8B; border-radius: 10px; }
-    .modal-bg { background: rgba(0,0,0,0.5); backdrop-filter: blur(2px); }
+    @keyframes fadeIn { from { opacity:0; } to { opacity:1; } }
+    .modal-bg     { background: rgba(0,0,0,0.5); backdrop-filter: blur(2px); }
     .loading-overlay {
-      position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+      position:fixed; top:0; left:0; right:0; bottom:0;
       background: rgba(253,248,243,0.95);
-      display: flex; align-items: center; justify-content: center;
-      z-index: 9999;
+      display:flex; align-items:center; justify-content:center;
+      z-index:9999;
     }
-    input[type="number"].qty-input { -moz-appearance: textfield; appearance: textfield; }
+    input[type="number"].qty-input { -moz-appearance:textfield; appearance:textfield; }
     input[type="number"].qty-input::-webkit-inner-spin-button,
-    input[type="number"].qty-input::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
+    input[type="number"].qty-input::-webkit-outer-spin-button { -webkit-appearance:none; margin:0; }
+    .table-row:hover { background-color: #f9f5f0; }
   </style>
 </head>
 <body class="h-full font-body text-charcoal">
@@ -81,6 +77,27 @@
               class="w-full text-gray-400 text-sm py-2">Cancelar</button>
       <p id="login-error" class="text-red-500 text-xs text-center hidden">Usuário ou senha incorretos</p>
     </form>
+  </div>
+</div>
+
+<!-- ==================== MODAL VISUALIZAR PEDIDO ==================== -->
+<div id="modal-pedido" class="hidden fixed inset-0 z-[60] flex items-center justify-center p-4 modal-bg">
+  <div class="bg-white rounded-3xl p-8 w-full max-w-lg shadow-2xl max-h-[90vh] overflow-y-auto">
+    <div class="flex justify-between items-center mb-6">
+      <h2 class="font-display text-2xl text-forest">Detalhes do Pedido</h2>
+      <button onclick="closeModalPedido()" class="text-gray-400 hover:text-gray-600 text-2xl">✕</button>
+    </div>
+    <div id="modal-pedido-content" class="space-y-4"></div>
+    <div class="flex gap-3 pt-6">
+      <button id="btn-wpp-cliente" onclick="abrirWhatsAppCliente()"
+              class="flex-1 bg-green-500 text-white py-3 rounded-xl font-bold hover:bg-green-600 transition-all">
+        📱 Abrir WhatsApp
+      </button>
+      <button onclick="closeModalPedido()"
+              class="flex-1 border border-gray-300 py-3 rounded-xl font-bold hover:bg-gray-50 transition-all">
+        Fechar
+      </button>
+    </div>
   </div>
 </div>
 
@@ -158,8 +175,6 @@
         <input id="combo-nome" type="text" required placeholder="Ex: Kit 10 Marmitas"
                class="w-full px-4 py-2 border rounded-lg focus:outline-forest">
       </div>
-
-      <!-- TIPO -->
       <div class="bg-cream p-4 rounded-xl border-2 border-sage/20">
         <label class="block text-xs font-bold uppercase text-gray-400 mb-3">Tipo de Combo *</label>
         <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
@@ -179,8 +194,6 @@
           </label>
         </div>
       </div>
-
-      <!-- CONFIG ABERTO -->
       <div id="config-aberto" class="grid grid-cols-2 gap-4">
         <div>
           <label class="block text-xs font-bold uppercase text-gray-400 mb-1">Quantidade de Itens *</label>
@@ -193,8 +206,6 @@
                  class="w-full px-4 py-2 border rounded-lg focus:outline-forest">
         </div>
       </div>
-
-      <!-- CONFIG FECHADO -->
       <div id="config-fechado" class="hidden">
         <label class="block text-xs font-bold uppercase text-gray-400 mb-3">Itens do Combo *</label>
         <div class="bg-white border-2 border-sage/20 rounded-xl p-4 max-h-72 overflow-y-auto"
@@ -205,11 +216,9 @@
                  class="w-full px-4 py-2 border rounded-lg focus:outline-forest">
         </div>
       </div>
-
       <div class="bg-sage/10 p-4 rounded-lg">
         <p class="text-xs text-gray-600">💡 <span id="preco-unitario-preview">Configure o combo acima</span></p>
       </div>
-
       <div class="bg-sage/10 p-4 rounded-lg">
         <label class="flex items-center gap-3 cursor-pointer">
           <input type="checkbox" id="combo-visivel" checked class="w-5 h-5 rounded">
@@ -219,7 +228,6 @@
           </div>
         </label>
       </div>
-
       <div class="flex gap-3 pt-2">
         <button type="submit"
                 class="flex-1 bg-forest text-white py-3 rounded-xl font-bold hover:bg-forest/90 transition-all">
@@ -257,7 +265,7 @@
   <div class="flex flex-1 overflow-hidden">
 
     <!-- SIDEBAR ADMIN -->
-    <aside id="sidebar" class="w-64 bg-white border-r hidden overflow-y-auto">
+    <aside id="sidebar" class="w-64 bg-white border-r hidden overflow-y-auto flex-shrink-0">
       <div class="p-4 bg-gray-50 border-b">
         <p class="text-xs font-bold text-gray-400 uppercase tracking-tighter">Gerenciamento</p>
       </div>
@@ -265,6 +273,11 @@
         <button onclick="showPage('dashboard')"
                 class="w-full text-left px-4 py-3 rounded-lg hover:bg-sage/10 transition-all">
           📊 Dashboard
+        </button>
+        <button onclick="showPage('pedidos')"
+                class="w-full text-left px-4 py-3 rounded-lg hover:bg-sage/10 transition-all">
+          📋 Pedidos
+          <span id="badge-pedidos" class="ml-2 bg-terracotta text-white text-xs px-2 py-0.5 rounded-full hidden"></span>
         </button>
         <button onclick="showPage('combos')"
                 class="w-full text-left px-4 py-3 rounded-lg hover:bg-sage/10 transition-all">
@@ -292,13 +305,11 @@
           <p class="text-sage">Escolha um combo abaixo para começar sua seleção.</p>
         </div>
 
-        <!-- GRID DE COMBOS -->
         <div id="combos-container" class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-10"></div>
 
-        <!-- SEÇÃO DE MARMITAS (aparece após selecionar combo) -->
         <div id="marmitas-section" class="hidden fade-in border-t border-sage/20 pt-8">
 
-          <!-- BARRA DE PROGRESSO DO KIT -->
+          <!-- BARRA DE PROGRESSO -->
           <div class="bg-forest text-white p-6 rounded-2xl mb-8 shadow-xl flex justify-between items-center">
             <div>
               <p class="text-xs opacity-70 uppercase font-bold">Progresso do Kit</p>
@@ -312,25 +323,23 @@
             </div>
           </div>
 
-          <!-- ITENS DO COMBO FECHADO -->
+          <!-- COMBO FECHADO: ITENS INCLUSOS -->
           <div id="combo-fechado-itens" class="hidden mb-8 bg-white rounded-2xl p-6 shadow-sm border border-sage/20">
             <h3 class="text-xl font-bold text-forest mb-4">📦 Itens inclusos neste combo:</h3>
             <div id="lista-itens-fechado" class="space-y-2"></div>
           </div>
 
-          <!-- SELEÇÃO DE MARMITAS (só combo aberto) -->
+          <!-- COMBO ABERTO: SELEÇÃO -->
           <div id="selecao-marmitas-container">
             <h3 class="text-xl font-bold text-forest mb-4">Selecione suas refeições:</h3>
             <div id="marmitas-container" class="grid grid-cols-1 gap-3 mb-8"></div>
           </div>
 
-          <!-- PREFERÊNCIAS DO PEDIDO -->
+          <!-- PREFERÊNCIAS -->
           <div class="bg-white rounded-3xl p-6 shadow-sm border border-sage/20 mb-8">
             <h3 class="font-display text-2xl text-forest mb-6">Preferências do Pedido</h3>
             <div class="mb-6">
-              <label class="block text-xs font-bold uppercase text-gray-400 mb-2 ml-1">
-                Preferência de Tempero
-              </label>
+              <label class="block text-xs font-bold uppercase text-gray-400 mb-2 ml-1">Preferência de Tempero</label>
               <div class="flex gap-2">
                 <button type="button" onclick="setSpiceLevel(1)"
                         class="spice-btn flex-1 py-3 border border-sage/20 rounded-xl bg-white hover:border-forest transition-all">
@@ -347,9 +356,7 @@
               </div>
             </div>
             <div>
-              <label class="block text-xs font-bold uppercase text-gray-400 mb-1 ml-1">
-                Observações Adicionais
-              </label>
+              <label class="block text-xs font-bold uppercase text-gray-400 mb-1 ml-1">Observações Adicionais</label>
               <textarea id="observations"
                         placeholder="Ex: Sem cebola, restrições alimentares, preferências especiais..."
                         class="w-full px-4 py-3 bg-cream/50 border border-sage/20 rounded-xl focus:outline-forest h-24"></textarea>
@@ -360,21 +367,19 @@
           <div class="bg-white rounded-3xl p-6 shadow-sm border border-sage/20 mb-8">
             <h3 class="font-display text-2xl text-forest mb-6">Dados para Entrega</h3>
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div class="mb-4">
+              <div>
                 <label class="block text-xs font-bold uppercase text-gray-400 mb-1 ml-1">Seu Nome *</label>
                 <input id="cliente-nome" type="text" placeholder="Ex: João Silva"
                        class="w-full px-4 py-3 bg-cream/50 border border-sage/20 rounded-xl focus:outline-forest">
               </div>
-              <div class="mb-4">
+              <div>
                 <label class="block text-xs font-bold uppercase text-gray-400 mb-1 ml-1">WhatsApp *</label>
                 <input id="cliente-tel" type="tel" placeholder="(00) 00000-0000"
                        class="w-full px-4 py-3 bg-cream/50 border border-sage/20 rounded-xl focus:outline-forest">
               </div>
             </div>
-            <div>
-              <label class="block text-xs font-bold uppercase text-gray-400 mb-1 ml-1">
-                Endereço de Entrega *
-              </label>
+            <div class="mt-4">
+              <label class="block text-xs font-bold uppercase text-gray-400 mb-1 ml-1">Endereço de Entrega *</label>
               <textarea id="cliente-endereco"
                         placeholder="Rua, número, bairro e ponto de referência"
                         class="w-full px-4 py-3 bg-cream/50 border border-sage/20 rounded-xl focus:outline-forest h-24"></textarea>
@@ -392,14 +397,13 @@
               📱 Enviar para WhatsApp
             </button>
           </div>
-
         </div>
       </section>
 
-      <!-- ===== PÁGINA DASHBOARD ADMIN ===== -->
+      <!-- ===== DASHBOARD ADMIN ===== -->
       <section id="page-dashboard" class="hidden">
         <h2 class="text-2xl font-bold mb-6 font-display text-forest">Painel Administrativo</h2>
-        <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
           <div class="bg-white p-6 rounded-2xl shadow-sm border border-sage/20">
             <p class="text-gray-400 text-sm mb-1">Total de Combos</p>
             <p class="text-3xl font-bold text-forest" id="stat-combos">0</p>
@@ -411,30 +415,144 @@
             <p class="text-xs text-sage mt-1" id="stat-marmitas-visiveis"></p>
           </div>
           <div class="bg-white p-6 rounded-2xl shadow-sm border border-sage/20">
-            <p class="text-gray-400 text-sm mb-1">Preço Médio</p>
-            <p class="text-3xl font-bold text-terracotta" id="stat-preco-medio">R$ 0</p>
+            <p class="text-gray-400 text-sm mb-1">Total de Pedidos</p>
+            <p class="text-3xl font-bold text-terracotta" id="stat-total-pedidos">0</p>
+            <p class="text-xs text-sage mt-1">histórico completo</p>
           </div>
           <div class="bg-white p-6 rounded-2xl shadow-sm border border-sage/20">
-            <p class="text-gray-400 text-sm mb-1">Combos Fechados</p>
-            <p class="text-3xl font-bold text-forest" id="stat-combos-fechados">0</p>
+            <p class="text-gray-400 text-sm mb-1">Faturamento Total</p>
+            <p class="text-3xl font-bold text-forest" id="stat-faturamento">R$ 0</p>
+            <p class="text-xs text-sage mt-1">todos os pedidos</p>
           </div>
         </div>
         <div class="bg-white p-6 rounded-2xl shadow-sm border border-sage/20">
           <h3 class="font-bold text-lg mb-4">Ações Rápidas</h3>
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+          <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
+            <button onclick="showPage('pedidos')"
+                    class="border-2 border-terracotta text-terracotta px-4 py-3 rounded-xl font-bold hover:bg-terracotta hover:text-white transition-all text-sm">
+              📋 Ver Pedidos
+            </button>
+            <button onclick="exportarBancoDados()"
+                    class="border-2 border-forest text-forest px-4 py-3 rounded-xl font-bold hover:bg-forest hover:text-white transition-all text-sm">
+              ⬇️ Exportar Dados
+            </button>
             <button onclick="showPage('combos')"
-                    class="border-2 border-forest text-forest px-6 py-3 rounded-xl font-bold hover:bg-forest hover:text-white transition-all">
-              Gerenciar Combos
+                    class="border-2 border-forest text-forest px-4 py-3 rounded-xl font-bold hover:bg-forest hover:text-white transition-all text-sm">
+              📦 Combos
             </button>
             <button onclick="showPage('marmitas')"
-                    class="border-2 border-forest text-forest px-6 py-3 rounded-xl font-bold hover:bg-forest hover:text-white transition-all">
-              Gerenciar Cardápio
+                    class="border-2 border-forest text-forest px-4 py-3 rounded-xl font-bold hover:bg-forest hover:text-white transition-all text-sm">
+              🍱 Cardápio
             </button>
           </div>
         </div>
       </section>
 
-      <!-- ===== PÁGINA GERENCIAR COMBOS ===== -->
+      <!-- ===== PÁGINA PEDIDOS (NOVA) ===== -->
+      <section id="page-pedidos" class="hidden">
+        <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4">
+          <h2 class="text-2xl font-bold font-display text-forest">📋 Pedidos Recebidos</h2>
+          <button onclick="exportarBancoDados()"
+                  class="bg-forest text-white px-5 py-3 rounded-xl font-bold hover:scale-105 transition-all text-sm flex items-center gap-2">
+            ⬇️ Exportar Banco de Dados
+          </button>
+        </div>
+
+        <!-- FILTRO POR DATA -->
+        <div class="bg-white p-5 rounded-2xl shadow-sm border border-sage/20 mb-6">
+          <p class="text-xs font-bold uppercase text-gray-400 mb-3">Filtrar por Período</p>
+          <div class="flex flex-col md:flex-row gap-3 items-end">
+            <div class="flex-1">
+              <label class="block text-xs text-gray-500 mb-1">Data inicial</label>
+              <input type="date" id="filtro-data-inicio"
+                     class="w-full px-4 py-2 border border-sage/30 rounded-xl focus:outline-forest">
+            </div>
+            <div class="flex-1">
+              <label class="block text-xs text-gray-500 mb-1">Data final</label>
+              <input type="date" id="filtro-data-fim"
+                     class="w-full px-4 py-2 border border-sage/30 rounded-xl focus:outline-forest">
+            </div>
+            <button onclick="aplicarFiltroData()"
+                    class="bg-forest text-white px-6 py-2 rounded-xl font-bold hover:bg-forest/90 transition-all whitespace-nowrap">
+              Filtrar
+            </button>
+            <button onclick="limparFiltro()"
+                    class="border border-gray-300 text-gray-500 px-6 py-2 rounded-xl font-bold hover:bg-gray-50 transition-all whitespace-nowrap">
+              Ver Todos
+            </button>
+          </div>
+        </div>
+
+        <!-- CARDS FATURAMENTO DO PERÍODO -->
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+          <div class="bg-white p-5 rounded-2xl shadow-sm border border-sage/20">
+            <p class="text-gray-400 text-xs mb-1">Pedidos no Período</p>
+            <p class="text-3xl font-bold text-forest" id="periodo-qtd-pedidos">0</p>
+          </div>
+          <div class="bg-white p-5 rounded-2xl shadow-sm border border-sage/20">
+            <p class="text-gray-400 text-xs mb-1">Faturamento no Período</p>
+            <p class="text-2xl font-bold text-terracotta" id="periodo-faturamento">R$ 0,00</p>
+          </div>
+          <div class="bg-white p-5 rounded-2xl shadow-sm border border-sage/20">
+            <p class="text-gray-400 text-xs mb-1">Ticket Médio</p>
+            <p class="text-2xl font-bold text-forest" id="periodo-ticket-medio">R$ 0,00</p>
+          </div>
+          <div class="bg-white p-5 rounded-2xl shadow-sm border border-sage/20">
+            <p class="text-gray-400 text-xs mb-1">Total de Itens</p>
+            <p class="text-3xl font-bold text-forest" id="periodo-total-itens">0</p>
+          </div>
+        </div>
+
+        <!-- LISTA DE PEDIDOS -->
+        <div class="bg-white rounded-2xl shadow-sm border border-sage/20 mb-6 overflow-hidden">
+          <div class="p-5 border-b border-sage/10 flex justify-between items-center">
+            <p class="font-bold text-forest">Lista de Pedidos</p>
+            <p class="text-xs text-gray-400" id="pedidos-periodo-label">Todos os pedidos</p>
+          </div>
+          <div class="overflow-x-auto">
+            <table class="w-full text-sm">
+              <thead class="bg-gray-50 text-gray-400 uppercase text-xs">
+                <tr>
+                  <th class="px-4 py-3 text-left">Data/Hora</th>
+                  <th class="px-4 py-3 text-left">Cliente</th>
+                  <th class="px-4 py-3 text-left">WhatsApp</th>
+                  <th class="px-4 py-3 text-left">Combo</th>
+                  <th class="px-4 py-3 text-right">Total</th>
+                  <th class="px-4 py-3 text-center">Ações</th>
+                </tr>
+              </thead>
+              <tbody id="tabela-pedidos" class="divide-y divide-gray-50"></tbody>
+            </table>
+          </div>
+          <div id="pedidos-vazio" class="hidden p-12 text-center text-gray-400">
+            <p class="text-4xl mb-3">📭</p>
+            <p class="font-bold">Nenhum pedido encontrado</p>
+            <p class="text-xs mt-1">Ajuste o período ou aguarde novos pedidos</p>
+          </div>
+        </div>
+
+        <!-- FATURAMENTO POR COMBO -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+          <div class="bg-white rounded-2xl shadow-sm border border-sage/20 overflow-hidden">
+            <div class="p-5 border-b border-sage/10">
+              <p class="font-bold text-forest">📦 Faturamento por Combo</p>
+              <p class="text-xs text-gray-400 mt-1">Combos mais vendidos no período</p>
+            </div>
+            <div id="ranking-combos" class="p-4 space-y-3"></div>
+          </div>
+
+          <!-- FATURAMENTO POR ITEM -->
+          <div class="bg-white rounded-2xl shadow-sm border border-sage/20 overflow-hidden">
+            <div class="p-5 border-b border-sage/10">
+              <p class="font-bold text-forest">🍱 Faturamento por Item</p>
+              <p class="text-xs text-gray-400 mt-1">Itens mais pedidos no período</p>
+            </div>
+            <div id="ranking-itens" class="p-4 space-y-3"></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ===== GERENCIAR COMBOS ===== -->
       <section id="page-combos" class="hidden">
         <div class="flex justify-between items-center mb-6">
           <h2 class="text-2xl font-bold font-display text-forest">Gerenciar Combos</h2>
@@ -446,7 +564,7 @@
         <div id="combos-admin-list" class="space-y-3"></div>
       </section>
 
-      <!-- ===== PÁGINA GERENCIAR CARDÁPIO ===== -->
+      <!-- ===== GERENCIAR CARDÁPIO ===== -->
       <section id="page-marmitas" class="hidden">
         <div class="flex justify-between items-center mb-6">
           <h2 class="text-2xl font-bold font-display text-forest">Gerenciar Cardápio</h2>
@@ -464,22 +582,21 @@
 
 <!-- ==================== TOAST ==================== -->
 <div id="toast"
-     class="hidden fixed bottom-24 left-1/2 -translate-x-1/2 bg-charcoal text-white px-8 py-4 rounded-2xl shadow-2xl z-[70] font-bold">
+     class="hidden fixed bottom-24 left-1/2 -translate-x-1/2 bg-charcoal text-white px-8 py-4 rounded-2xl shadow-2xl z-[70] font-bold text-center max-w-sm">
 </div>
 <script>
   // ============================================================
   // FIREBASE CONFIG — substitua pelos seus dados
   // ============================================================
-const firebaseConfig = {
-  apiKey: "AIzaSyBL0z6PwA6Ik_U671G7HJZLsHT9udCT7YI",
-  authDomain: "sabor-e-saude-a233e.firebaseapp.com",
-  databaseURL: "https://sabor-e-saude-a233e-default-rtdb.firebaseio.com",
-  projectId: "sabor-e-saude-a233e",
-  storageBucket: "sabor-e-saude-a233e.firebasestorage.app",
-  messagingSenderId: "283293618461",
-  appId: "1:283293618461:web:1db0ad8b6db9f145d791f4",
-  measurementId: "G-R6LW9FKEQF"
-};
+  const firebaseConfig = {
+    apiKey: "SUA_API_KEY",
+    authDomain: "SEU_PROJETO.firebaseapp.com",
+    databaseURL: "https://SEU_PROJETO-default-rtdb.firebaseio.com",
+    projectId: "SEU_PROJETO",
+    storageBucket: "SEU_PROJETO.appspot.com",
+    messagingSenderId: "SEU_SENDER_ID",
+    appId: "SEU_APP_ID"
+  };
 
   // ============================================================
   // INICIALIZAÇÃO FIREBASE
@@ -493,66 +610,66 @@ const firebaseConfig = {
     firebase.initializeApp(firebaseConfig);
     database = firebase.database();
     firebaseInitialized = true;
-  } catch (e) {
+  } catch(e) {
     console.warn("Firebase não configurado. Usando localStorage.");
   }
 
   // ============================================================
   // ESTADO GLOBAL
   // ============================================================
-  let isAdmin       = false;
-  let currentCombo  = null;
-  let quantities    = {};
-  let spiceLevel    = 2;
-  let maxMarmitas   = 0;
-  let marmitasCache = [];
-  let combosCache   = [];
+  let isAdmin        = false;
+  let currentCombo   = null;
+  let quantities     = {};
+  let spiceLevel     = 2;
+  let maxMarmitas    = 0;
+  let marmitasCache  = [];
+  let combosCache    = [];
+  let pedidosCache   = [];
+  let pedidoAtualModal = null;
 
   const CAT_ICONS = {
-    marmita:   '🍱 Marmitas',
-    sopa:      '🍲 Sopas',
-    suco:      '🥤 Sucos',
-    sobremesa: '🍰 Sobremesas',
-    proteico:  '💪 Proteicos',
-    'low-carb':'🥗 Low Carb',
-    vegano:    '🌱 Veganos'
+    marmita:    '🍱 Marmitas',
+    sopa:       '🍲 Sopas',
+    suco:       '🥤 Sucos',
+    sobremesa:  '🍰 Sobremesas',
+    proteico:   '💪 Proteicos',
+    'low-carb': '🥗 Low Carb',
+    vegano:     '🌱 Veganos'
+  };
+
+  const CAT_EMOJI = {
+    marmita: '🍱', sopa: '🍲', suco: '🥤',
+    sobremesa: '🍰', proteico: '💪', 'low-carb': '🥗', vegano: '🌱'
   };
 
   // ============================================================
-  // FIREBASE: CRUD
+  // FIREBASE: HELPERS
   // ============================================================
   async function fbGet(path) {
     if (!firebaseInitialized) return null;
     const snap = await database.ref(path).once('value');
     return snap.val();
   }
-
   async function fbSet(path, value) {
     if (!firebaseInitialized) return;
     await database.ref(path).set(value);
   }
-
   async function fbRemove(path) {
     if (!firebaseInitialized) return;
     await database.ref(path).remove();
   }
 
-  // localStorage fallback
-  function lsGet(key)       { return JSON.parse(localStorage.getItem(key) || '[]'); }
-  function lsSet(key, data) { localStorage.setItem(key, JSON.stringify(data)); }
+  function lsGet(key)        { return JSON.parse(localStorage.getItem(key) || '[]'); }
+  function lsSet(key, data)  { localStorage.setItem(key, JSON.stringify(data)); }
 
+  // ============================================================
+  // CRUD: MARMITAS
+  // ============================================================
   async function getMarmitas() {
     if (!firebaseInitialized) return lsGet('marmitas_fit_data');
     const d = await fbGet('marmitas');
     return d ? Object.values(d) : [];
   }
-
-  async function getCombos() {
-    if (!firebaseInitialized) return lsGet('combos_fit_data');
-    const d = await fbGet('combos');
-    return d ? Object.values(d) : [];
-  }
-
   async function saveMarmita(m) {
     if (!firebaseInitialized) {
       let list = lsGet('marmitas_fit_data');
@@ -563,7 +680,22 @@ const firebaseConfig = {
       await fbSet(`marmitas/${m.id}`, m);
     }
   }
+  async function deleteMarmita(id) {
+    if (!firebaseInitialized) {
+      lsSet('marmitas_fit_data', lsGet('marmitas_fit_data').filter(m => m.id !== id));
+    } else {
+      await fbRemove(`marmitas/${id}`);
+    }
+  }
 
+  // ============================================================
+  // CRUD: COMBOS
+  // ============================================================
+  async function getCombos() {
+    if (!firebaseInitialized) return lsGet('combos_fit_data');
+    const d = await fbGet('combos');
+    return d ? Object.values(d) : [];
+  }
   async function saveCombo(c) {
     if (!firebaseInitialized) {
       let list = lsGet('combos_fit_data');
@@ -574,21 +706,45 @@ const firebaseConfig = {
       await fbSet(`combos/${c.id}`, c);
     }
   }
-
-  async function deleteMarmita(id) {
-    if (!firebaseInitialized) {
-      lsSet('marmitas_fit_data', lsGet('marmitas_fit_data').filter(m => m.id !== id));
-    } else {
-      await fbRemove(`marmitas/${id}`);
-    }
-  }
-
   async function deleteCombo(id) {
     if (!firebaseInitialized) {
       lsSet('combos_fit_data', lsGet('combos_fit_data').filter(c => c.id !== id));
     } else {
       await fbRemove(`combos/${id}`);
     }
+  }
+
+  // ============================================================
+  // CRUD: PEDIDOS
+  // ============================================================
+  async function getPedidos() {
+    if (!firebaseInitialized) return lsGet('pedidos_fit_data');
+    const d = await fbGet('pedidos');
+    return d ? Object.values(d) : [];
+  }
+
+  async function savePedido(pedido) {
+    if (!firebaseInitialized) {
+      let list = lsGet('pedidos_fit_data');
+      list.push(pedido);
+      lsSet('pedidos_fit_data', list);
+    } else {
+      await fbSet(`pedidos/${pedido.id}`, pedido);
+    }
+    pedidosCache = await getPedidos();
+  }
+
+  async function excluirPedido(id) {
+    if (!confirm('Excluir este pedido do banco de dados?')) return;
+    if (!firebaseInitialized) {
+      lsSet('pedidos_fit_data', lsGet('pedidos_fit_data').filter(p => p.id !== id));
+    } else {
+      await fbRemove(`pedidos/${id}`);
+    }
+    pedidosCache = await getPedidos();
+    showToast('✅ Pedido excluído!');
+    aplicarFiltroData();
+    atualizarDashboard();
   }
 
   // ============================================================
@@ -599,15 +755,17 @@ const firebaseConfig = {
 
     marmitasCache = await getMarmitas();
     combosCache   = await getCombos();
+    pedidosCache  = await getPedidos();
 
+    // Dados iniciais se banco vazio
     if (marmitasCache.length === 0) {
       const iniciais = [
-        { id:1, nome:'Frango com Batata Doce',     preco:22.00, kcal:350, desc:'Frango grelhado e purê de batata doce',    cat:'marmita',  visivel:true },
-        { id:2, nome:'Patinho com Arroz Integral',  preco:25.00, kcal:400, desc:'Carne moída magra com legumes salteados',  cat:'marmita',  visivel:true },
-        { id:3, nome:'Tilápia com Ervas',           preco:28.00, kcal:300, desc:'Peixe assado com ervas e vagem',           cat:'marmita',  visivel:true },
-        { id:4, nome:'Strogonoff de Frango Fit',    preco:24.00, kcal:380, desc:'Com arroz integral e batata palha assada', cat:'marmita',  visivel:true },
-        { id:5, nome:'Sopa de Legumes',             preco:15.00, kcal:180, desc:'Sopa cremosa com legumes frescos',         cat:'sopa',     visivel:true },
-        { id:6, nome:'Suco Detox Verde',            preco:8.00,  kcal:80,  desc:'Couve, limão e gengibre',                  cat:'suco',     visivel:true }
+        { id:1, nome:'Frango com Batata Doce',    preco:22.00, kcal:350, desc:'Frango grelhado e purê de batata doce',    cat:'marmita', visivel:true },
+        { id:2, nome:'Patinho com Arroz Integral', preco:25.00, kcal:400, desc:'Carne moída magra com legumes salteados', cat:'marmita', visivel:true },
+        { id:3, nome:'Tilápia com Ervas',          preco:28.00, kcal:300, desc:'Peixe assado com ervas e vagem',          cat:'marmita', visivel:true },
+        { id:4, nome:'Strogonoff de Frango Fit',   preco:24.00, kcal:380, desc:'Com arroz integral e batata palha',       cat:'marmita', visivel:true },
+        { id:5, nome:'Sopa de Legumes',            preco:15.00, kcal:180, desc:'Sopa cremosa com legumes frescos',        cat:'sopa',    visivel:true },
+        { id:6, nome:'Suco Detox Verde',           preco:8.00,  kcal:80,  desc:'Couve, limão e gengibre',                 cat:'suco',    visivel:true }
       ];
       for (const m of iniciais) await saveMarmita(m);
       marmitasCache = iniciais;
@@ -622,7 +780,7 @@ const firebaseConfig = {
       combosCache = iniciais;
     }
 
-    // Listeners em tempo real (Firebase)
+    // Listeners tempo real Firebase
     if (firebaseInitialized) {
       database.ref('marmitas').on('value', snap => {
         const d = snap.val();
@@ -636,7 +794,19 @@ const firebaseConfig = {
         renderCardapio();
         if (isAdmin) { renderCombosAdmin(); atualizarDashboard(); }
       });
+      database.ref('pedidos').on('value', snap => {
+        const d = snap.val();
+        pedidosCache = d ? Object.values(d) : [];
+        atualizarBadgePedidos();
+        if (isAdmin) { atualizarDashboard(); }
+      });
     }
+
+    // Datas padrão do filtro (mês atual)
+    const hoje = new Date();
+    const primeiroDia = new Date(hoje.getFullYear(), hoje.getMonth(), 1);
+    document.getElementById('filtro-data-inicio').value = primeiroDia.toISOString().split('T')[0];
+    document.getElementById('filtro-data-fim').value    = hoje.toISOString().split('T')[0];
 
     renderCardapio();
     document.getElementById('loading').classList.add('hidden');
@@ -654,6 +824,7 @@ const firebaseConfig = {
     if (pageId === 'dashboard') atualizarDashboard();
     if (pageId === 'combos')    renderCombosAdmin();
     if (pageId === 'marmitas')  renderMarmitasAdmin();
+    if (pageId === 'pedidos')   { aplicarFiltroData(); }
   }
 
   function openAdminModal()  { document.getElementById('admin-modal').classList.remove('hidden'); }
@@ -674,6 +845,7 @@ const firebaseConfig = {
       document.getElementById('header-user-info').classList.replace('text-sage','text-terracotta');
       document.getElementById('btn-admin-view').classList.add('hidden');
       showPage('dashboard');
+      atualizarBadgePedidos();
       showToast('✅ Login realizado com sucesso!');
     } else {
       document.getElementById('login-error').classList.remove('hidden');
@@ -689,23 +861,371 @@ const firebaseConfig = {
     showPage('cardapio');
   }
 
+  function atualizarBadgePedidos() {
+    const badge = document.getElementById('badge-pedidos');
+    if (pedidosCache.length > 0) {
+      badge.textContent = pedidosCache.length;
+      badge.classList.remove('hidden');
+    } else {
+      badge.classList.add('hidden');
+    }
+  }
+
   // ============================================================
   // DASHBOARD
   // ============================================================
   function atualizarDashboard() {
-    const mv = marmitasCache.filter(m => m.visivel).length;
-    const cv = combosCache.filter(c => c.visivel !== false).length;
-    const cf = combosCache.filter(c => c.tipo === 'fechado').length;
-    const pm = marmitasCache.length
-      ? (marmitasCache.reduce((a,m) => a + m.preco, 0) / marmitasCache.length).toFixed(2)
-      : '0.00';
+    const mv  = marmitasCache.filter(m => m.visivel).length;
+    const cv  = combosCache.filter(c => c.visivel !== false).length;
+    const fat = pedidosCache.reduce((a, p) => a + (p.total || 0), 0);
 
-    document.getElementById('stat-combos').textContent          = combosCache.length;
-    document.getElementById('stat-combos-visiveis').textContent = `${cv} visíveis`;
-    document.getElementById('stat-marmitas').textContent        = marmitasCache.length;
-    document.getElementById('stat-marmitas-visiveis').textContent = `${mv} visíveis`;
-    document.getElementById('stat-combos-fechados').textContent = cf;
-    document.getElementById('stat-preco-medio').textContent     = `R$ ${pm}`;
+    document.getElementById('stat-combos').textContent           = combosCache.length;
+    document.getElementById('stat-combos-visiveis').textContent  = `${cv} visíveis`;
+    document.getElementById('stat-marmitas').textContent         = marmitasCache.length;
+    document.getElementById('stat-marmitas-visiveis').textContent= `${mv} visíveis`;
+    document.getElementById('stat-total-pedidos').textContent    = pedidosCache.length;
+    document.getElementById('stat-faturamento').textContent      = `R$ ${fat.toFixed(2)}`;
+  }
+
+  // ============================================================
+  // PEDIDOS: FILTRO E RENDERIZAÇÃO
+  // ============================================================
+  function aplicarFiltroData() {
+    const inicio = document.getElementById('filtro-data-inicio').value;
+    const fim    = document.getElementById('filtro-data-fim').value;
+
+    let filtrados = [...pedidosCache];
+
+    if (inicio && fim) {
+      const dtInicio = new Date(inicio + 'T00:00:00');
+      const dtFim    = new Date(fim    + 'T23:59:59');
+      filtrados = filtrados.filter(p => {
+        const dt = new Date(p.timestamp);
+        return dt >= dtInicio && dt <= dtFim;
+      });
+      document.getElementById('pedidos-periodo-label').textContent =
+        `${formatarData(inicio)} até ${formatarData(fim)}`;
+    } else {
+      document.getElementById('pedidos-periodo-label').textContent = 'Todos os pedidos';
+    }
+
+    renderPedidos(filtrados);
+    renderFaturamentoPorCombo(filtrados);
+    renderFaturamentoPorItem(filtrados);
+    atualizarCardsFaturamento(filtrados);
+  }
+
+  function limparFiltro() {
+    document.getElementById('filtro-data-inicio').value = '';
+    document.getElementById('filtro-data-fim').value    = '';
+    aplicarFiltroData();
+  }
+
+  function atualizarCardsFaturamento(lista) {
+    const total     = lista.reduce((a, p) => a + (p.total || 0), 0);
+    const totalItens= lista.reduce((a, p) => a + (p.qtd_itens || 0), 0);
+    const ticket    = lista.length ? total / lista.length : 0;
+
+    document.getElementById('periodo-qtd-pedidos').textContent  = lista.length;
+    document.getElementById('periodo-faturamento').textContent  = `R$ ${total.toFixed(2)}`;
+    document.getElementById('periodo-ticket-medio').textContent = `R$ ${ticket.toFixed(2)}`;
+    document.getElementById('periodo-total-itens').textContent  = totalItens;
+  }
+
+  function renderPedidos(lista) {
+    const tbody  = document.getElementById('tabela-pedidos');
+    const vazio  = document.getElementById('pedidos-vazio');
+
+    // Ordenar do mais recente ao mais antigo
+    const ordenados = [...lista].sort((a,b) => new Date(b.timestamp) - new Date(a.timestamp));
+
+    if (!ordenados.length) {
+      tbody.innerHTML = '';
+      vazio.classList.remove('hidden');
+      return;
+    }
+    vazio.classList.add('hidden');
+
+    tbody.innerHTML = ordenados.map(p => {
+      const dt  = new Date(p.timestamp);
+      const tel = p.cliente_tel ? p.cliente_tel.replace(/\D/g,'') : '';
+      const btnWpp = tel
+        ? `<button onclick="abrirWhatsAppCliente('${tel}','${p.cliente_nome}')"
+                   class="text-green-600 hover:text-green-800 font-bold" title="Abrir WhatsApp">
+             📱
+           </button>`
+        : `<span class="text-gray-300" title="Sem telefone">📵</span>`;
+
+      return `
+        <tr class="table-row cursor-pointer border-b border-gray-50">
+          <td class="px-4 py-3 text-xs text-gray-500 whitespace-nowrap">
+            ${dt.toLocaleDateString('pt-BR')}<br>
+            <span class="text-gray-400">${dt.toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'})}</span>
+          </td>
+          <td class="px-4 py-3 font-medium">${p.cliente_nome}</td>
+          <td class="px-4 py-3 text-xs text-gray-500">${p.cliente_tel || '—'}</td>
+          <td class="px-4 py-3 text-xs">
+            <span class="bg-sage/10 text-forest px-2 py-1 rounded-full font-bold">${p.combo_nome}</span>
+          </td>
+          <td class="px-4 py-3 text-right font-bold text-terracotta whitespace-nowrap">
+            R$ ${(p.total||0).toFixed(2)}
+          </td>
+          <td class="px-4 py-3 text-center">
+            <div class="flex items-center justify-center gap-2">
+              ${btnWpp}
+              <button onclick="verPedido('${p.id}')"
+                      class="text-blue-500 hover:text-blue-700 font-bold" title="Ver detalhes">
+                🔍
+              </button>
+              <button onclick="excluirPedido('${p.id}')"
+                      class="text-red-400 hover:text-red-600 font-bold" title="Excluir">
+                🗑️
+              </button>
+            </div>
+          </td>
+        </tr>`;
+    }).join('');
+  }
+
+  function renderFaturamentoPorCombo(lista) {
+    const el   = document.getElementById('ranking-combos');
+    const mapa = {};
+    lista.forEach(p => {
+      const k = p.combo_nome || 'Desconhecido';
+      if (!mapa[k]) mapa[k] = { qtd: 0, total: 0 };
+      mapa[k].qtd++;
+      mapa[k].total += p.total || 0;
+    });
+
+    const ranking = Object.entries(mapa)
+      .sort((a,b) => b[1].total - a[1].total);
+
+    if (!ranking.length) {
+      el.innerHTML = '<p class="text-gray-400 text-sm text-center py-4">Sem dados no período</p>';
+      return;
+    }
+
+    const maxVal = ranking[0][1].total || 1;
+    el.innerHTML = ranking.map(([nome, dados]) => {
+      const pct = Math.round((dados.total / maxVal) * 100);
+      return `
+        <div>
+          <div class="flex justify-between items-center mb-1">
+            <span class="text-sm font-bold text-forest truncate max-w-[60%]">${nome}</span>
+            <div class="text-right">
+              <span class="text-sm font-bold text-terracotta">R$ ${dados.total.toFixed(2)}</span>
+              <span class="text-xs text-gray-400 ml-2">${dados.qtd} pedido${dados.qtd > 1 ? 's':''}</span>
+            </div>
+          </div>
+          <div class="w-full bg-gray-100 rounded-full h-2">
+            <div class="bg-terracotta h-2 rounded-full transition-all" style="width:${pct}%"></div>
+          </div>
+        </div>`;
+    }).join('');
+  }
+
+  function renderFaturamentoPorItem(lista) {
+    const el   = document.getElementById('ranking-itens');
+    const mapa = {};
+
+    lista.forEach(p => {
+      const itens = p.itens_detalhes || {};
+      Object.entries(itens).forEach(([nome, qtd]) => {
+        if (!mapa[nome]) mapa[nome] = 0;
+        mapa[nome] += qtd;
+      });
+    });
+
+    const ranking = Object.entries(mapa)
+      .sort((a,b) => b[1] - a[1])
+      .slice(0, 10);
+
+    if (!ranking.length) {
+      el.innerHTML = '<p class="text-gray-400 text-sm text-center py-4">Sem dados no período</p>';
+      return;
+    }
+
+    const maxQtd = ranking[0][1] || 1;
+    el.innerHTML = ranking.map(([nome, qtd]) => {
+      const pct = Math.round((qtd / maxQtd) * 100);
+      return `
+        <div>
+          <div class="flex justify-between items-center mb-1">
+            <span class="text-sm font-bold text-forest truncate max-w-[70%]">${nome}</span>
+            <span class="text-sm font-bold text-sage">${qtd}x</span>
+          </div>
+          <div class="w-full bg-gray-100 rounded-full h-2">
+            <div class="bg-sage h-2 rounded-full transition-all" style="width:${pct}%"></div>
+          </div>
+        </div>`;
+    }).join('');
+  }
+
+  // ============================================================
+  // MODAL VISUALIZAR PEDIDO
+  // ============================================================
+  function verPedido(id) {
+    pedidoAtualModal = pedidosCache.find(p => p.id === id);
+    if (!pedidoAtualModal) return;
+    const p  = pedidoAtualModal;
+    const dt = new Date(p.timestamp);
+    const tel = p.cliente_tel ? p.cliente_tel.replace(/\D/g,'') : '';
+
+    document.getElementById('btn-wpp-cliente').style.display = tel ? '' : 'none';
+
+    const itensHtml = Object.entries(p.itens_detalhes || {}).map(([nome, qtd]) =>
+      `<li class="flex justify-between text-sm py-1 border-b border-gray-50">
+         <span>${nome}</span>
+         <span class="font-bold text-forest">${qtd}x</span>
+       </li>`
+    ).join('');
+
+    document.getElementById('modal-pedido-content').innerHTML = `
+      <div class="bg-cream rounded-xl p-4 space-y-2">
+        <div class="flex justify-between">
+          <span class="text-xs text-gray-400 uppercase font-bold">Data/Hora</span>
+          <span class="text-sm font-bold">${dt.toLocaleDateString('pt-BR')} ${dt.toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'})}</span>
+        </div>
+        <div class="flex justify-between">
+          <span class="text-xs text-gray-400 uppercase font-bold">Cliente</span>
+          <span class="text-sm font-bold">${p.cliente_nome}</span>
+        </div>
+        <div class="flex justify-between">
+          <span class="text-xs text-gray-400 uppercase font-bold">WhatsApp</span>
+          <span class="text-sm">${p.cliente_tel || '—'}</span>
+        </div>
+        <div class="flex justify-between">
+          <span class="text-xs text-gray-400 uppercase font-bold">Endereço</span>
+          <span class="text-sm text-right max-w-[60%]">${p.cliente_endereco || '—'}</span>
+        </div>
+      </div>
+
+      <div class="bg-cream rounded-xl p-4 space-y-2">
+        <div class="flex justify-between">
+          <span class="text-xs text-gray-400 uppercase font-bold">Combo</span>
+          <span class="text-sm font-bold text-forest">${p.combo_nome}</span>
+        </div>
+        <div class="flex justify-between">
+          <span class="text-xs text-gray-400 uppercase font-bold">Tipo</span>
+          <span class="text-sm">${p.combo_tipo === 'fechado' ? '📦 Fechado' : '🛒 Aberto'}</span>
+        </div>
+        <div class="flex justify-between">
+          <span class="text-xs text-gray-400 uppercase font-bold">Tempero</span>
+          <span class="text-sm">${p.tempero || '—'}</span>
+        </div>
+        ${p.observacoes ? `
+        <div class="flex justify-between">
+          <span class="text-xs text-gray-400 uppercase font-bold">Obs</span>
+          <span class="text-sm text-right max-w-[60%]">${p.observacoes}</span>
+        </div>` : ''}
+      </div>
+
+      <div class="bg-white border border-sage/20 rounded-xl p-4">
+        <p class="text-xs text-gray-400 uppercase font-bold mb-3">Itens do Pedido</p>
+        <ul class="space-y-1">${itensHtml || '<li class="text-sm text-gray-400">Combo fechado</li>'}</ul>
+      </div>
+
+      <div class="flex justify-between items-center bg-forest text-white rounded-xl p-4">
+        <span class="font-bold uppercase text-sm">Total do Pedido</span>
+        <span class="text-2xl font-display font-bold">R$ ${(p.total||0).toFixed(2)}</span>
+      </div>`;
+
+    document.getElementById('modal-pedido').classList.remove('hidden');
+  }
+
+  function closeModalPedido() {
+    document.getElementById('modal-pedido').classList.add('hidden');
+    pedidoAtualModal = null;
+  }
+
+  function abrirWhatsAppCliente(tel, nome) {
+    let numero = tel;
+    let nomeCliente = nome;
+
+    // Chamado do modal (sem argumentos)
+    if (!tel && pedidoAtualModal) {
+      numero     = pedidoAtualModal.cliente_tel.replace(/\D/g,'');
+      nomeCliente= pedidoAtualModal.cliente_nome;
+    }
+
+    if (!numero) { showToast('❌ Cliente sem número cadastrado'); return; }
+
+    // Garantir DDI 55
+    if (!numero.startsWith('55')) numero = '55' + numero;
+
+    const msg = encodeURIComponent(
+      `Olá ${nomeCliente}! 😊 Aqui é do *Sabor e Saúde*. Tudo bem?`
+    );
+    window.open(`https://wa.me/${numero}?text=${msg}`, '_blank');
+  }
+
+  // ============================================================
+  // EXPORTAR BANCO DE DADOS
+  // ============================================================
+  async function exportarBancoDados() {
+    showToast('⏳ Preparando exportação...');
+
+    const marmitas = await getMarmitas();
+    const combos   = await getCombos();
+    const pedidos  = await getPedidos();
+
+    // ---- JSON completo ----
+    const jsonCompleto = {
+      exportado_em: new Date().toLocaleString('pt-BR'),
+      marmitas,
+      combos,
+      pedidos
+    };
+    const blobJson = new Blob([JSON.stringify(jsonCompleto, null, 2)], { type: 'application/json' });
+    const linkJson = document.createElement('a');
+    linkJson.href  = URL.createObjectURL(blobJson);
+    linkJson.download = `saboresaude_backup_${dataHoje()}.json`;
+    linkJson.click();
+
+    // ---- CSV de pedidos ----
+    if (pedidos.length) {
+      const cabecalho = ['ID','Data','Hora','Cliente','WhatsApp','Endereço','Combo','Tipo Combo','Tempero','Total (R$)','Qtd Itens','Itens','Observações'];
+      const linhas = pedidos
+        .sort((a,b) => new Date(b.timestamp) - new Date(a.timestamp))
+        .map(p => {
+          const dt    = new Date(p.timestamp);
+          const itens = Object.entries(p.itens_detalhes || {}).map(([n,q]) => `${q}x ${n}`).join(' | ');
+          return [
+            p.id,
+            dt.toLocaleDateString('pt-BR'),
+            dt.toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'}),
+            p.cliente_nome,
+            p.cliente_tel || '',
+            (p.cliente_endereco || '').replace(/\n/g,' '),
+            p.combo_nome,
+            p.combo_tipo === 'fechado' ? 'Fechado' : 'Aberto',
+            p.tempero || '',
+            (p.total || 0).toFixed(2),
+            p.qtd_itens || 0,
+            itens,
+            (p.observacoes || '').replace(/\n/g,' ')
+          ].map(v => `"${v}"`).join(',');
+        });
+
+      const csvContent  = '\uFEFF' + [cabecalho.join(','), ...linhas].join('\n');
+      const blobCsv     = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+      const linkCsv     = document.createElement('a');
+      linkCsv.href      = URL.createObjectURL(blobCsv);
+      linkCsv.download  = `saboresaude_pedidos_${dataHoje()}.csv`;
+      setTimeout(() => linkCsv.click(), 500);
+    }
+
+    setTimeout(() => showToast('✅ Arquivos exportados com sucesso!'), 800);
+  }
+
+  function dataHoje() {
+    return new Date().toISOString().split('T')[0];
+  }
+
+  function formatarData(str) {
+    if (!str) return '';
+    const [y,m,d] = str.split('-');
+    return `${d}/${m}/${y}`;
   }
 
   // ============================================================
@@ -732,7 +1252,7 @@ const firebaseConfig = {
             <p class="text-forest font-bold text-xl">${c.nome}</p>
             ${badge}
           </div>
-          <div class="mt-4 flex items-baseline gap-2">
+          <div class="mt-4">
             <span class="text-3xl font-display font-bold text-terracotta">R$ ${c.preco_base.toFixed(2)}</span>
           </div>
           ${info}
@@ -772,7 +1292,6 @@ const firebaseConfig = {
   function mostrarComboFechado() {
     const el = document.getElementById('lista-itens-fechado');
     document.getElementById('combo-fechado-itens').classList.remove('hidden');
-
     const porCat = {};
     Object.entries(currentCombo.itens || {}).forEach(([itemId, qtd]) => {
       const m = marmitasCache.find(x => x.id === parseInt(itemId));
@@ -781,14 +1300,13 @@ const firebaseConfig = {
         porCat[m.cat].push({...m, quantidade: qtd});
       }
     });
-
     el.innerHTML = Object.keys(porCat).map(cat => `
       <div class="mb-4">
         <p class="font-bold text-sm text-forest mb-2">${CAT_ICONS[cat] || '📦 Outros'}</p>
         <ul class="space-y-1 ml-4">
           ${porCat[cat].map(item => `
             <li class="text-sm text-gray-700 flex items-center gap-2">
-              <span class="font-bold text-terracotta text-base">${item.quantidade}x</span>
+              <span class="font-bold text-terracotta">${item.quantidade}x</span>
               <span>${item.nome}</span>
               <span class="text-xs text-gray-400">(${item.kcal} kcal)</span>
             </li>`).join('')}
@@ -803,11 +1321,10 @@ const firebaseConfig = {
       el.innerHTML = '<p class="text-gray-400 text-center py-8">Nenhum item disponível.</p>';
       return;
     }
-    const icones = { marmita:'🍱', sopa:'🍲', suco:'🥤', sobremesa:'🍰', proteico:'💪', 'low-carb':'🥗', vegano:'🌱' };
     el.innerHTML = visiveis.map(m => `
       <div class="bg-white p-4 rounded-2xl flex justify-between items-center shadow-sm border border-gray-100 hover:border-sage/50 transition-all">
         <div class="flex-1 pr-4">
-          <p class="font-bold text-forest">${icones[m.cat] || '🍴'} ${m.nome}</p>
+          <p class="font-bold text-forest">${CAT_EMOJI[m.cat]||'🍴'} ${m.nome}</p>
           <p class="text-xs text-gray-400 leading-tight mt-1">${m.desc} • ${m.kcal} kcal</p>
         </div>
         <div class="flex items-center gap-3 bg-cream p-1 rounded-xl">
@@ -850,7 +1367,7 @@ const firebaseConfig = {
   }
 
   // ============================================================
-  // FINALIZAR PEDIDO / WHATSAPP
+  // FINALIZAR PEDIDO + SALVAR NO FIREBASE
   // ============================================================
   function finalizarPedido() {
     const nome     = document.getElementById('cliente-nome').value.trim();
@@ -861,46 +1378,78 @@ const firebaseConfig = {
     if (!nome || !tel || !endereco) { showToast('❌ Preencha nome, telefone e endereço'); return; }
 
     if (currentCombo.tipo === 'fechado') {
-      enviarWhatsApp(nome, tel, endereco, obs, true);
+      registrarEEnviar(nome, tel, endereco, obs, true);
     } else {
       const total = Object.values(quantities).reduce((a,b) => a+b, 0);
       if (total === 0) { showToast('⚠️ Selecione pelo menos um item!'); return; }
       if (total < maxMarmitas && !confirm(`Faltam ${maxMarmitas - total} itens. Continuar assim mesmo?`)) return;
-      enviarWhatsApp(nome, tel, endereco, obs, false);
+      registrarEEnviar(nome, tel, endereco, obs, false);
     }
   }
 
-  function enviarWhatsApp(nome, tel, endereco, obs, isFechado) {
-    let lista = '';
+  async function registrarEEnviar(nome, tel, endereco, obs, isFechado) {
+    const temperos = ['🌿 Suave','🌶️ Médio','🔥 Picante'];
+
+    // Montar itens_detalhes para salvar e para WhatsApp
+    const itens_detalhes = {};
+    let   listaWpp       = '';
+    let   totalItens     = 0;
 
     if (isFechado) {
       const porCat = {};
       Object.entries(currentCombo.itens || {}).forEach(([itemId, qtd]) => {
         const m = marmitasCache.find(x => x.id === parseInt(itemId));
         if (m && qtd > 0) {
+          itens_detalhes[m.nome] = (itens_detalhes[m.nome] || 0) + qtd;
+          totalItens += qtd;
           if (!porCat[m.cat]) porCat[m.cat] = [];
           porCat[m.cat].push({...m, quantidade: qtd});
         }
       });
       Object.keys(porCat).forEach(cat => {
-        lista += `\n*${CAT_ICONS[cat] || 'Outros'}:*\n`;
-        porCat[cat].forEach(item => { lista += `• ${item.quantidade}x ${item.nome}\n`; });
+        listaWpp += `\n*${CAT_ICONS[cat]||'Outros'}:*\n`;
+        porCat[cat].forEach(item => { listaWpp += `• ${item.quantidade}x ${item.nome}\n`; });
       });
     } else {
-      Object.entries(quantities).forEach(([id, qty]) => {
-        if (qty > 0) {
+      Object.entries(quantities).forEach(([id, qtd]) => {
+        if (qtd > 0) {
           const m = marmitasCache.find(x => x.id == id);
-          if (m) lista += `• *${qty}x* ${m.nome}\n`;
+          if (m) {
+            itens_detalhes[m.nome] = (itens_detalhes[m.nome] || 0) + qtd;
+            listaWpp += `• *${qtd}x* ${m.nome}\n`;
+            totalItens += qtd;
+          }
         }
       });
     }
 
-    if (!lista) { showToast('❌ Nenhum item no pedido'); return; }
+    // Gerar ID único
+    const pedidoId = 'pedido_' + Date.now();
 
-    const tipo = currentCombo.tipo === 'fechado' ? '📦 COMBO FECHADO' : '🛒 PERSONALIZADO';
-    const temperos = ['🌿 Suave','🌶️ Médio','🔥 Picante'];
+    // Objeto do pedido
+    const pedido = {
+      id:              pedidoId,
+      timestamp:       new Date().toISOString(),
+      cliente_nome:    nome,
+      cliente_tel:     tel,
+      cliente_endereco:endereco,
+      observacoes:     obs,
+      combo_id:        currentCombo.id,
+      combo_nome:      currentCombo.nome,
+      combo_tipo:      currentCombo.tipo,
+      tempero:         temperos[spiceLevel - 1],
+      itens_detalhes,
+      qtd_itens:       totalItens,
+      total:           currentCombo.preco_base
+    };
 
-    const msg = encodeURIComponent(
+    // Salvar no Firebase
+    await savePedido(pedido);
+    atualizarBadgePedidos();
+
+    // Enviar WhatsApp
+    const tipo = isFechado ? '📦 COMBO FECHADO' : '🛒 PERSONALIZADO';
+    const msg  = encodeURIComponent(
       `*🍱 NOVO PEDIDO – SABOR E SAÚDE*\n` +
       `━━━━━━━━━━━━━━━━━━━━\n` +
       `*CLIENTE:* ${nome}\n` +
@@ -908,7 +1457,7 @@ const firebaseConfig = {
       `*KIT:* ${currentCombo.nome} (${tipo})\n` +
       `*TEMPERO:* ${temperos[spiceLevel-1]}\n` +
       `━━━━━━━━━━━━━━━━━━━━\n` +
-      `*ITENS DO PEDIDO:*\n${lista}\n` +
+      `*ITENS DO PEDIDO:*\n${listaWpp}\n` +
       `━━━━━━━━━━━━━━━━━━━━\n` +
       `*ENDEREÇO:* ${endereco}\n` +
       `*OBS:* ${obs || 'Nenhuma'}\n` +
@@ -916,7 +1465,7 @@ const firebaseConfig = {
       `*💰 TOTAL:* R$ ${currentCombo.preco_base.toFixed(2)}`
     );
 
-    showToast('🚀 Abrindo WhatsApp...');
+    showToast('✅ Pedido salvo! Abrindo WhatsApp...');
     setTimeout(() => window.open(`https://wa.me/${WHATSAPP_RESTAURANTE}?text=${msg}`, '_blank'), 800);
   }
 
@@ -942,18 +1491,18 @@ const firebaseConfig = {
       return;
     }
     el.innerHTML = marmitasCache.map(m => {
-      const vBadge = m.visivel
+      const vBadge   = m.visivel
         ? '<span class="text-xs bg-green-100 text-green-700 px-2 py-1 rounded-full">👁️ Visível</span>'
         : '<span class="text-xs bg-gray-100 text-gray-500 px-2 py-1 rounded-full">👻 Oculto</span>';
       const btnToggle = m.visivel
-        ? `<button onclick="toggleMarmita(${m.id},false)" title="Ocultar"
+        ? `<button onclick="toggleMarmita(${m.id},false)"
                    class="text-xs bg-yellow-50 text-yellow-700 px-3 py-2 rounded-lg font-bold hover:bg-yellow-100 transition-all">
              👻 Ocultar</button>`
-        : `<button onclick="toggleMarmita(${m.id},true)" title="Exibir"
+        : `<button onclick="toggleMarmita(${m.id},true)"
                    class="text-xs bg-green-50 text-green-700 px-3 py-2 rounded-lg font-bold hover:bg-green-100 transition-all">
              👁️ Exibir</button>`;
       return `
-        <div class="bg-white p-5 rounded-2xl shadow-sm border border-sage/20 hover:shadow-md transition-all ${!m.visivel?'opacity-60':''}">
+        <div class="bg-white p-5 rounded-2xl shadow-sm border border-sage/20 ${!m.visivel?'opacity-60':''}">
           <div class="flex justify-between items-start mb-3">
             <div class="flex-1">
               <h3 class="font-bold text-lg text-forest">${m.nome}</h3>
@@ -967,12 +1516,12 @@ const firebaseConfig = {
           <p class="text-sm text-gray-600 mb-3">${m.desc}</p>
           <div class="flex items-center justify-between">
             <span class="text-xs bg-sage/10 px-3 py-1 rounded-full font-bold text-sage">${m.kcal} kcal</span>
-            <div class="flex gap-2">
+            <div class="flex gap-2 flex-wrap justify-end">
               ${btnToggle}
               <button onclick="editarMarmita(${m.id})"
                       class="text-xs bg-blue-50 text-blue-600 px-3 py-2 rounded-lg font-bold hover:bg-blue-100 transition-all">
                 ✏️ Editar</button>
-              <button onclick="excluirMarmita(${m.id})"
+              <button onclick="excluirMarmitaAdmin(${m.id})"
                       class="text-xs bg-red-50 text-red-600 px-3 py-2 rounded-lg font-bold hover:bg-red-100 transition-all">
                 🗑️ Excluir</button>
             </div>
@@ -987,7 +1536,7 @@ const firebaseConfig = {
     m.visivel = estado;
     await saveMarmita(m);
     showToast(`✅ Item ${estado ? 'visível' : 'oculto'}!`);
-    if (!firebaseInitialized) { renderMarmitasAdmin(); renderCardapio(); atualizarDashboard(); }
+    if (!firebaseInitialized) { renderMarmitasAdmin(); renderCardapio(); }
   }
 
   function abrirModalMarmita(id = null) {
@@ -996,16 +1545,16 @@ const firebaseConfig = {
     if (id) {
       const m = marmitasCache.find(x => x.id === id);
       if (m) {
-        document.getElementById('marmita-nome').value    = m.nome;
-        document.getElementById('marmita-preco').value   = m.preco;
-        document.getElementById('marmita-kcal').value    = m.kcal;
-        document.getElementById('marmita-desc').value    = m.desc;
-        document.getElementById('marmita-cat').value     = m.cat;
+        document.getElementById('marmita-nome').value      = m.nome;
+        document.getElementById('marmita-preco').value     = m.preco;
+        document.getElementById('marmita-kcal').value      = m.kcal;
+        document.getElementById('marmita-desc').value      = m.desc;
+        document.getElementById('marmita-cat').value       = m.cat;
         document.getElementById('marmita-visivel').checked = m.visivel !== false;
       }
     } else {
-      ['marmita-nome','marmita-preco','marmita-kcal','marmita-desc'].forEach(id => {
-        document.getElementById(id).value = '';
+      ['marmita-nome','marmita-preco','marmita-kcal','marmita-desc'].forEach(f => {
+        document.getElementById(f).value = '';
       });
       document.getElementById('marmita-cat').value       = 'marmita';
       document.getElementById('marmita-visivel').checked = true;
@@ -1034,8 +1583,8 @@ const firebaseConfig = {
     if (!firebaseInitialized) { renderMarmitasAdmin(); renderCardapio(); }
   }
 
-  async function excluirMarmita(id) {
-    if (!confirm('Excluir este item?')) return;
+  async function excluirMarmitaAdmin(id) {
+    if (!confirm('Excluir este item do cardápio?')) return;
     await deleteMarmita(id);
     showToast('✅ Item excluído!');
     if (!firebaseInitialized) { renderMarmitasAdmin(); renderCardapio(); }
@@ -1051,16 +1600,16 @@ const firebaseConfig = {
       return;
     }
     el.innerHTML = combosCache.map(c => {
-      const tipoBadge = c.tipo === 'fechado'
+      const tipoBadge  = c.tipo === 'fechado'
         ? '<span class="text-xs bg-terracotta/20 text-terracotta px-3 py-1 rounded-full font-bold">📦 Fechado</span>'
         : '<span class="text-xs bg-sage/20 text-sage px-3 py-1 rounded-full font-bold">🛒 Aberto</span>';
-      const vBadge = c.visivel !== false
+      const vBadge     = c.visivel !== false
         ? '<span class="text-xs bg-green-100 text-green-700 px-2 py-1 rounded-full">👁️ Visível</span>'
         : '<span class="text-xs bg-gray-100 text-gray-500 px-2 py-1 rounded-full">👻 Oculto</span>';
       const info = c.tipo === 'fechado'
         ? `${Object.keys(c.itens||{}).length} tipos de itens`
         : `${c.qtd} itens • R$ ${(c.preco_base/c.qtd).toFixed(2)} cada`;
-      const btnToggle = c.visivel !== false
+      const btnToggle  = c.visivel !== false
         ? `<button onclick="toggleCombo(${c.id},false)"
                    class="text-xs bg-yellow-50 text-yellow-700 px-3 py-2 rounded-lg font-bold hover:bg-yellow-100 transition-all">
              👻 Ocultar</button>`
@@ -1068,7 +1617,7 @@ const firebaseConfig = {
                    class="text-xs bg-green-50 text-green-700 px-3 py-2 rounded-lg font-bold hover:bg-green-100 transition-all">
              👁️ Exibir</button>`;
       return `
-        <div class="bg-white p-6 rounded-2xl shadow-sm border border-sage/20 hover:shadow-md transition-all ${c.visivel===false?'opacity-60':''}">
+        <div class="bg-white p-6 rounded-2xl shadow-sm border border-sage/20 ${c.visivel===false?'opacity-60':''}">
           <div class="flex justify-between items-start mb-3">
             <div class="flex-1">
               <div class="flex items-center gap-2 mb-2 flex-wrap">
@@ -1084,7 +1633,7 @@ const firebaseConfig = {
             <button onclick="editarCombo(${c.id})"
                     class="text-xs bg-blue-50 text-blue-600 px-3 py-2 rounded-lg font-bold hover:bg-blue-100 transition-all">
               ✏️ Editar</button>
-            <button onclick="excluirCombo(${c.id})"
+            <button onclick="excluirComboAdmin(${c.id})"
                     class="text-xs bg-red-50 text-red-600 px-3 py-2 rounded-lg font-bold hover:bg-red-100 transition-all">
               🗑️ Excluir</button>
           </div>
@@ -1098,7 +1647,7 @@ const firebaseConfig = {
     c.visivel = estado;
     await saveCombo(c);
     showToast(`✅ Combo ${estado ? 'visível' : 'oculto'}!`);
-    if (!firebaseInitialized) { renderCombosAdmin(); renderCardapio(); atualizarDashboard(); }
+    if (!firebaseInitialized) { renderCombosAdmin(); renderCardapio(); }
   }
 
   function toggleTipoCombo() {
@@ -1127,7 +1676,7 @@ const firebaseConfig = {
     });
     el.innerHTML = Object.keys(porCat).map(cat => `
       <div class="mb-4">
-        <p class="font-bold text-sm text-forest mb-2">${CAT_ICONS[cat] || '📦 Outros'}</p>
+        <p class="font-bold text-sm text-forest mb-2">${CAT_ICONS[cat]||'📦 Outros'}</p>
         ${porCat[cat].map(item => `
           <div class="flex items-center gap-3 py-2 px-3 hover:bg-sage/5 rounded-lg">
             <div class="flex-1">
@@ -1148,7 +1697,7 @@ const firebaseConfig = {
     const tipo = document.querySelector('input[name="tipo-combo"]:checked').value;
     const el   = document.getElementById('preco-unitario-preview');
     if (tipo === 'aberto') {
-      const qtd   = parseInt(document.getElementById('combo-qtd').value) || 0;
+      const qtd   = parseInt(document.getElementById('combo-qtd').value)   || 0;
       const preco = parseFloat(document.getElementById('combo-preco').value) || 0;
       el.textContent = (qtd > 0 && preco > 0)
         ? `Cada item sairá por R$ ${(preco/qtd).toFixed(2)}`
@@ -1158,7 +1707,7 @@ const firebaseConfig = {
       document.querySelectorAll('input[name^="item-combo-"]').forEach(i => { total += parseInt(i.value)||0; });
       const preco = parseFloat(document.getElementById('combo-preco-fechado').value) || 0;
       el.textContent = total > 0
-        ? `${total} itens selecionados${preco > 0 ? ` • R$ ${(preco/total).toFixed(2)} por item` : ' • Defina o preço'}`
+        ? `${total} itens${preco > 0 ? ` • R$ ${(preco/total).toFixed(2)} por item` : ' • Defina o preço'}`
         : 'Selecione os itens e defina o preço';
     }
   }
@@ -1166,7 +1715,6 @@ const firebaseConfig = {
   function abrirModalCombo(id = null) {
     document.getElementById('modal-combo-title').textContent = id ? 'Editar Combo' : 'Novo Combo';
     document.getElementById('edit-combo-id').value = id || '';
-
     if (id) {
       const c = combosCache.find(x => x.id === id);
       if (c) {
@@ -1192,17 +1740,16 @@ const firebaseConfig = {
         }
       }
     } else {
-      document.getElementById('combo-nome').value       = '';
-      document.getElementById('combo-qtd').value        = '';
-      document.getElementById('combo-preco').value      = '';
+      document.getElementById('combo-nome').value          = '';
+      document.getElementById('combo-qtd').value           = '';
+      document.getElementById('combo-preco').value         = '';
       document.getElementById('combo-preco-fechado').value = '';
-      document.getElementById('combo-visivel').checked  = true;
+      document.getElementById('combo-visivel').checked     = true;
       document.querySelector('input[name="tipo-combo"][value="aberto"]').checked = true;
       toggleTipoCombo();
     }
-
     document.getElementById('modal-combo').classList.remove('hidden');
-    document.getElementById('combo-qtd').addEventListener('input', atualizarPreviewCombo);
+    document.getElementById('combo-qtd').addEventListener('input',   atualizarPreviewCombo);
     document.getElementById('combo-preco').addEventListener('input', atualizarPreviewCombo);
   }
 
@@ -1211,10 +1758,10 @@ const firebaseConfig = {
 
   async function salvarCombo(e) {
     e.preventDefault();
-    const id     = document.getElementById('edit-combo-id').value;
-    const nome   = document.getElementById('combo-nome').value.trim();
-    const visivel= document.getElementById('combo-visivel').checked;
-    const tipo   = document.querySelector('input[name="tipo-combo"]:checked').value;
+    const id      = document.getElementById('edit-combo-id').value;
+    const nome    = document.getElementById('combo-nome').value.trim();
+    const visivel = document.getElementById('combo-visivel').checked;
+    const tipo    = document.querySelector('input[name="tipo-combo"]:checked').value;
     let qtd, preco_base, itens = {};
 
     if (tipo === 'fechado') {
@@ -1236,14 +1783,13 @@ const firebaseConfig = {
       id:      id ? parseInt(id) : (combosCache.length ? Math.max(...combosCache.map(c=>c.id))+1 : 1),
       nome, qtd, preco_base, visivel, tipo, itens
     };
-
     await saveCombo(combo);
     showToast(id ? '✅ Combo atualizado!' : '✅ Combo criado!');
     closeModalCombo();
     if (!firebaseInitialized) { renderCombosAdmin(); renderCardapio(); }
   }
 
-  async function excluirCombo(id) {
+  async function excluirComboAdmin(id) {
     if (!confirm('Excluir este combo?')) return;
     await deleteCombo(id);
     showToast('✅ Combo excluído!');
