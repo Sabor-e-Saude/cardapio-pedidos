@@ -716,16 +716,15 @@
   // ============================================================
   // FIREBASE CONFIG — substitua pelos seus dados
   // ============================================================
-const firebaseConfig = {
-  apiKey: "AIzaSyBL0z6PwA6Ik_U671G7HJZLsHT9udCT7YI",
-  authDomain: "sabor-e-saude-a233e.firebaseapp.com",
-  databaseURL: "https://sabor-e-saude-a233e-default-rtdb.firebaseio.com",
-  projectId: "sabor-e-saude-a233e",
-  storageBucket: "sabor-e-saude-a233e.firebasestorage.app",
-  messagingSenderId: "283293618461",
-  appId: "1:283293618461:web:1db0ad8b6db9f145d791f4",
-  measurementId: "G-R6LW9FKEQF"
-};
+  const firebaseConfig = {
+    apiKey: "SUA_API_KEY",
+    authDomain: "SEU_PROJETO.firebaseapp.com",
+    databaseURL: "https://SEU_PROJETO-default-rtdb.firebaseio.com",
+    projectId: "SEU_PROJETO",
+    storageBucket: "SEU_PROJETO.appspot.com",
+    messagingSenderId: "SEU_SENDER_ID",
+    appId: "SEU_APP_ID"
+  };
 
   const WHATSAPP_RESTAURANTE = "5547996988109";
 
@@ -1142,36 +1141,6 @@ function renderVegetais() {
     </button>`).join('');
 }
 
-    const secao   = document.getElementById('secao-vegetais');
-    const vegMax  = currentCombo?.vegetal_max || 0;
-    const vegMin  = currentCombo?.vegetal_min || 0;
-
-    if (!vegMax) { secao.classList.add('hidden'); return; }
-    secao.classList.remove('hidden');
-
-    const vegetais = marmitasCache.filter(m => m.cat === 'vegetal' && m.visivel);
-    if (!vegetais.length) { secao.classList.add('hidden'); return; }
-
-    document.getElementById('vegetal-counter').textContent     = '0';
-    document.getElementById('vegetal-counter-max').textContent = ` / ${vegMax}`;
-    document.getElementById('vegetal-instrucao').textContent   =
-      vegMin > 0
-        ? `Escolha de ${vegMin} a ${vegMax} vegetal(is) para acompanhar sua marmita`
-        : `Escolha até ${vegMax} vegetal(is) para acompanhar sua marmita (opcional)`;
-
-    const container = document.getElementById('vegetais-container');
-    container.innerHTML = vegetais.map(v => `
-      <button type="button"
-              id="vegetal-btn-${v.id}"
-              onclick="toggleVegetal(${v.id})"
-              class="vegetal-btn flex items-center gap-2 px-4 py-3 border-2 border-sage/30
-                     rounded-xl bg-white text-left text-sm font-medium hover:border-forest
-                     transition-all w-full">
-        <span class="text-xl">🥦</span>
-        <span>${v.nome}</span>
-      </button>`).join('');
-  
-
   function toggleVegetal(id) {
     const vegMax = currentCombo?.vegetal_max || 0;
     const idx    = vegetaisSelecionados.indexOf(id);
@@ -1216,7 +1185,7 @@ function renderVegetais() {
       </div>`).join('');
   }
 
-  function renderMarmitas() {
+function renderMarmitas() {
   // Itens principais: visíveis, disponíveis em combo, SEM vegetais
   const disponiveis = marmitasCache.filter(m =>
     m.visivel && m.cat !== 'vegetal' && m.dispCombo !== false
@@ -1254,7 +1223,7 @@ function renderVegetais() {
     </div>`).join('');
 }
 
-  function updateQty(id, delta) {
+function updateQty(id, delta) {
   const total = Object.values(quantities).reduce((a,b) => a+b, 0);
   if (delta > 0 && total >= maxMarmitas) {
     showToast(`⚠️ Kit completo! Máximo de ${maxMarmitas} marmitas`);
