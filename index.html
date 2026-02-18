@@ -297,7 +297,7 @@
     <div class="flex items-center gap-3">
       <!-- LOGO: substitua o src pela URL da sua imagem -->
       <img id="logo-empresa"
-           src="https://via.placeholder.com/48x48/FDF8F3/2D5A3D?text=SS"
+           src="https://raw.githubusercontent.com/Sabor-e-Saude/cardapio-pedidos/refs/heads/main/logo.png"
            alt="Logo Sabor e Saúde"
            class="w-12 h-12 rounded-full object-cover border-2 border-sage/40">
       <div>
@@ -372,19 +372,34 @@
         <!-- SEÇÃO MARMITAS -->
         <div id="marmitas-section" class="hidden fade-in border-t border-sage/20 pt-8">
 
-          <!-- BARRA DE PROGRESSO -->
-          <div class="bg-forest text-white p-6 rounded-2xl mb-8 shadow-xl flex justify-between items-center">
-            <div>
-              <p class="text-xs opacity-70 uppercase font-bold">Progresso do Kit</p>
-              <p class="text-lg font-bold" id="combo-name-display">Carregando...</p>
-              <p class="text-xs opacity-70 mt-1" id="combo-tipo-badge"></p>
-            </div>
-            <div class="text-right" id="progress-counter">
+      <!-- BARRA DE PROGRESSO -->
+      <div class="bg-forest text-white p-6 rounded-2xl mb-8 shadow-xl">
+        <div class="flex justify-between items-center">
+          <div>
+            <p class="text-xs opacity-70 uppercase font-bold">Progresso do Kit</p>
+            <p class="text-lg font-bold" id="combo-name-display">Carregando...</p>
+            <p class="text-xs opacity-70 mt-1" id="combo-tipo-badge"></p>
+          </div>
+          <div class="text-right" id="progress-counter">
+            <p class="text-xs opacity-60 uppercase mb-1">🍱 Marmitas</p>
+            <div class="flex items-baseline gap-1">
               <span class="text-3xl font-display font-bold" id="current-marmitas">0</span>
               <span class="text-xl opacity-50">/</span>
               <span class="text-xl opacity-50" id="max-marmitas">10</span>
             </div>
           </div>
+        </div>
+
+        <!-- Barra de progresso visual -->
+        <div id="progress-bar-container" class="mt-4">
+          <div class="w-full bg-white/20 rounded-full h-2">
+            <div id="progress-bar"
+                class="bg-white h-2 rounded-full transition-all duration-300"
+                style="width: 0%"></div>
+          </div>
+        </div>
+      </div>
+
 
           <!-- COMBO FECHADO: ITENS INCLUSOS -->
           <div id="combo-fechado-itens"
@@ -399,21 +414,33 @@
             <div id="marmitas-container" class="grid grid-cols-1 gap-3 mb-8"></div>
           </div>
 
-          <!-- ===== SELEÇÃO DE VEGETAIS (NOVO) ===== -->
-          <div id="secao-vegetais" class="hidden mb-8 fade-in">
-            <div class="bg-white rounded-3xl p-6 shadow-sm border border-sage/20">
-              <div class="flex justify-between items-center mb-2">
-                <h3 class="font-display text-xl text-forest">🥦 Escolha seus Vegetais</h3>
-                <div class="text-right">
-                  <span class="text-sm font-bold text-forest" id="vegetal-counter">0</span>
-                  <span class="text-sm text-gray-400" id="vegetal-counter-max"></span>
-                </div>
-              </div>
-              <p class="text-xs text-gray-400 mb-4" id="vegetal-instrucao">Selecione os vegetais desejados</p>
-              <div id="vegetais-container"
-                   class="grid grid-cols-2 sm:grid-cols-3 gap-2"></div>
-            </div>
-          </div>
+<!-- ===== SELEÇÃO DE VEGETAIS ===== -->
+<div id="secao-vegetais" class="hidden mb-8 fade-in">
+  <div class="bg-white rounded-3xl p-6 shadow-sm border-2 border-green-100">
+
+    <!-- Cabeçalho -->
+    <div class="flex justify-between items-center mb-2">
+      <h3 class="font-display text-xl text-forest">🥦 Escolha seus Vegetais</h3>
+      <div class="flex items-center gap-1 bg-green-50 px-3 py-1 rounded-full">
+        <span class="text-sm font-bold text-green-700" id="vegetal-counter">0</span>
+        <span class="text-sm text-gray-400" id="vegetal-counter-max"></span>
+      </div>
+    </div>
+
+    <!-- Instrução -->
+    <div class="bg-green-50 rounded-xl px-4 py-3 mb-5">
+      <p class="text-sm text-green-700 font-medium" id="vegetal-instrucao"></p>
+      <p class="text-xs text-green-600 mt-1">
+        💡 Os vegetais são <strong>adicionais</strong> ao seu kit — não contam no limite de marmitas
+      </p>
+    </div>
+
+    <!-- Grid de vegetais -->
+    <div id="vegetais-container" class="grid grid-cols-2 sm:grid-cols-3 gap-2"></div>
+
+  </div>
+</div>
+
 
           <!-- PREFERÊNCIAS DO PEDIDO -->
           <div class="bg-white rounded-3xl p-6 shadow-sm border border-sage/20 mb-8">
@@ -1080,7 +1107,41 @@ const firebaseConfig = {
   // ============================================================
   // VEGETAIS
   // ============================================================
-  function renderVegetais() {
+function renderVegetais() {
+  const secao  = document.getElementById('secao-vegetais');
+  const vegMax = currentCombo?.vegetal_max || 0;
+  const vegMin = currentCombo?.vegetal_min || 0;
+
+  if (!vegMax) { secao.classList.add('hidden'); return; }
+
+  const vegetais = marmitasCache.filter(m => m.cat === 'vegetal' && m.visivel);
+  if (!vegetais.length) { secao.classList.add('hidden'); return; }
+
+  secao.classList.remove('hidden');
+
+  document.getElementById('vegetal-counter').textContent     = '0';
+  document.getElementById('vegetal-counter-max').textContent = ` / ${vegMax}`;
+  document.getElementById('vegetal-instrucao').textContent   =
+    vegMin > 0
+      ? `Escolha de ${vegMin} a ${vegMax} vegetal(is) — eles são adicionais ao seu kit`
+      : `Escolha até ${vegMax} vegetal(is) para acompanhar seu kit (opcional)`;
+
+  const container = document.getElementById('vegetais-container');
+  container.innerHTML = vegetais.map(v => `
+    <button type="button"
+            id="vegetal-btn-${v.id}"
+            onclick="toggleVegetal(${v.id})"
+            class="vegetal-btn flex items-center gap-2 px-4 py-3 border-2 border-sage/30
+                   rounded-xl bg-white text-left text-sm font-medium hover:border-forest
+                   transition-all w-full">
+      <span class="text-xl">🥦</span>
+      <div>
+        <p class="font-medium">${v.nome}</p>
+        <p class="text-xs text-gray-400">${v.kcal} kcal</p>
+      </div>
+    </button>`).join('');
+}
+
     const secao   = document.getElementById('secao-vegetais');
     const vegMax  = currentCombo?.vegetal_max || 0;
     const vegMin  = currentCombo?.vegetal_min || 0;
@@ -1109,7 +1170,7 @@ const firebaseConfig = {
         <span class="text-xl">🥦</span>
         <span>${v.nome}</span>
       </button>`).join('');
-  }
+  
 
   function toggleVegetal(id) {
     const vegMax = currentCombo?.vegetal_max || 0;
@@ -1156,41 +1217,66 @@ const firebaseConfig = {
   }
 
   function renderMarmitas() {
-    // Apenas itens que NÃO são vegetais, visíveis e disponíveis em combo
-    const disponiveis = marmitasCache.filter(m =>
-      m.visivel && m.cat !== 'vegetal' && m.dispCombo !== false
-    );
-    const el = document.getElementById('marmitas-container');
-    if (!disponiveis.length) {
-      el.innerHTML = '<p class="text-gray-400 text-center py-8">Nenhum item disponível.</p>';
-      return;
-    }
-    el.innerHTML = disponiveis.map(m => `
-      <div class="bg-white p-4 rounded-2xl flex justify-between items-center shadow-sm border border-gray-100 hover:border-sage/50 transition-all">
-        <div class="flex-1 pr-4">
-          <p class="font-bold text-forest">${CAT_EMOJI[m.cat]||'🍴'} ${m.nome}</p>
-          <p class="text-xs text-gray-400 leading-tight mt-1">${m.desc} • ${m.kcal} kcal</p>
-        </div>
-        <div class="flex items-center gap-3 bg-cream p-1 rounded-xl">
-          <button type="button" onclick="updateQty(${m.id},-1)"
-                  class="w-8 h-8 rounded-lg bg-white shadow-sm font-bold hover:bg-red-50 transition-all">−</button>
-          <span id="qty-${m.id}" class="font-bold w-6 text-center">0</span>
-          <button type="button" onclick="updateQty(${m.id},1)"
-                  class="w-8 h-8 rounded-lg bg-forest text-white shadow-sm font-bold hover:bg-forest/80 transition-all">+</button>
-        </div>
-      </div>`).join('');
+  // Itens principais: visíveis, disponíveis em combo, SEM vegetais
+  const disponiveis = marmitasCache.filter(m =>
+    m.visivel && m.cat !== 'vegetal' && m.dispCombo !== false
+  );
+  const el = document.getElementById('marmitas-container');
+  if (!disponiveis.length) {
+    el.innerHTML = '<p class="text-gray-400 text-center py-8">Nenhum item disponível.</p>';
+    return;
   }
 
+  // Agrupar por categoria
+  const porCat = {};
+  disponiveis.forEach(m => {
+    if (!porCat[m.cat]) porCat[m.cat] = [];
+    porCat[m.cat].push(m);
+  });
+
+  el.innerHTML = Object.keys(porCat).map(cat => `
+    <div class="mb-6">
+      <p class="text-xs font-bold uppercase text-gray-400 mb-3 ml-1">${CAT_ICONS[cat] || '🍴 Outros'}</p>
+      ${porCat[cat].map(m => `
+        <div class="bg-white p-4 rounded-2xl flex justify-between items-center shadow-sm border border-gray-100 hover:border-sage/50 transition-all mb-2">
+          <div class="flex-1 pr-4">
+            <p class="font-bold text-forest">${CAT_EMOJI[m.cat]||'🍴'} ${m.nome}</p>
+            <p class="text-xs text-gray-400 leading-tight mt-1">${m.desc} • ${m.kcal} kcal</p>
+          </div>
+          <div class="flex items-center gap-3 bg-cream p-1 rounded-xl">
+            <button type="button" onclick="updateQty(${m.id},-1)"
+                    class="w-8 h-8 rounded-lg bg-white shadow-sm font-bold hover:bg-red-50 transition-all">−</button>
+            <span id="qty-${m.id}" class="font-bold w-6 text-center">0</span>
+            <button type="button" onclick="updateQty(${m.id},1)"
+                    class="w-8 h-8 rounded-lg bg-forest text-white shadow-sm font-bold hover:bg-forest/80 transition-all">+</button>
+          </div>
+        </div>`).join('')}
+    </div>`).join('');
+}
+
   function updateQty(id, delta) {
-    const total = Object.values(quantities).reduce((a,b) => a+b, 0);
-    if (delta > 0 && total >= maxMarmitas) { showToast('⚠️ O kit já está completo!'); return; }
-    quantities[id] = Math.max(0, (quantities[id] || 0) + delta);
-    const el = document.getElementById(`qty-${id}`);
-    if (el) el.textContent = quantities[id];
-    document.getElementById('current-marmitas').textContent =
-      Object.values(quantities).reduce((a,b) => a+b, 0);
-    atualizarTotal();
+  const total = Object.values(quantities).reduce((a,b) => a+b, 0);
+  if (delta > 0 && total >= maxMarmitas) {
+    showToast(`⚠️ Kit completo! Máximo de ${maxMarmitas} marmitas`);
+    return;
   }
+  quantities[id] = Math.max(0, (quantities[id] || 0) + delta);
+  const el = document.getElementById(`qty-${id}`);
+  if (el) el.textContent = quantities[id];
+
+  const novoTotal = Object.values(quantities).reduce((a,b) => a+b, 0);
+  document.getElementById('current-marmitas').textContent = novoTotal;
+
+  // Atualizar barra de progresso
+  const pct = Math.min(100, Math.round((novoTotal / maxMarmitas) * 100));
+  const bar  = document.getElementById('progress-bar');
+  if (bar) bar.style.width = pct + '%';
+
+  // Toast quando completar
+  if (novoTotal === maxMarmitas) showToast('🎉 Kit completo! Agora escolha seus vegetais');
+
+  atualizarTotal();
+}
 
   function atualizarTotal() {
     if (currentCombo)
