@@ -107,7 +107,7 @@
   </div>
 </div>
 
-<!-- ==================== MODAL MARMITA (ATUALIZADO) ==================== -->
+<!-- ==================== MODAL MARMITA ==================== -->
 <div id="modal-marmita" class="hidden fixed inset-0 z-[60] flex items-center justify-center p-4 modal-bg">
   <div class="bg-white rounded-3xl p-8 w-full max-w-lg shadow-2xl max-h-[90vh] overflow-y-auto">
     <h2 class="font-display text-2xl text-forest mb-6" id="modal-marmita-title">Novo Item</h2>
@@ -131,7 +131,10 @@
         </div>
       </div>
       <div>
-        <label class="block text-xs font-bold uppercase text-gray-400 mb-1">Descrição *</label>
+        <div class="flex justify-between items-center mb-1">
+          <label class="block text-xs font-bold uppercase text-gray-400">Descrição *</label>
+          <button type="button" id="btn-gerar-ia" onclick="gerarDescricaoIA()" class="text-xs text-forest font-bold hover:underline">✨ Gerar IA</button>
+        </div>
         <textarea id="marmita-desc" required
                   class="w-full px-4 py-2 border rounded-lg focus:outline-forest h-20"></textarea>
       </div>
@@ -158,7 +161,6 @@
             <p class="text-xs text-gray-500">Desmarque para ocultar do cardápio</p>
           </div>
         </label>
-        <!-- NOVO: disponível em combo -->
         <label class="flex items-center gap-3 cursor-pointer border-t border-sage/20 pt-3">
           <input type="checkbox" id="marmita-disponivel-combo" checked class="w-5 h-5 rounded">
           <div>
@@ -182,7 +184,7 @@
   </div>
 </div>
 
-<!-- ==================== MODAL COMBO (ATUALIZADO) ==================== -->
+<!-- ==================== MODAL COMBO ==================== -->
 <div id="modal-combo" class="hidden fixed inset-0 z-[60] flex items-center justify-center p-4 modal-bg">
   <div class="bg-white rounded-3xl p-8 w-full max-w-2xl shadow-2xl max-h-[90vh] overflow-y-auto">
     <h2 class="font-display text-2xl text-forest mb-6" id="modal-combo-title">Novo Combo</h2>
@@ -241,7 +243,7 @@
         </div>
       </div>
 
-      <!-- NOVO: LIMITE DE VEGETAIS -->
+      <!-- LIMITE DE VEGETAIS -->
       <div class="bg-green-50 border-2 border-green-100 p-4 rounded-xl">
         <label class="block text-xs font-bold uppercase text-gray-400 mb-2">🥦 Vegetais no Pedido</label>
         <p class="text-xs text-gray-500 mb-3">Quantos vegetais o cliente poderá escolher ao montar este combo?</p>
@@ -295,7 +297,6 @@
   <!-- HEADER -->
   <header class="bg-forest text-cream px-6 py-4 flex justify-between items-center sticky top-0 z-40 shadow-md">
     <div class="flex items-center gap-3">
-      <!-- LOGO: substitua o src pela URL da sua imagem -->
       <img id="logo-empresa"
            src="https://raw.githubusercontent.com/Sabor-e-Saude/cardapio-pedidos/refs/heads/main/logo.png"
            alt="Logo Sabor e Saúde"
@@ -305,7 +306,6 @@
       </div>
     </div>
     <div class="flex items-center gap-2">
-      <!-- BOTÃO MINIMIZAR SIDEBAR (só aparece no admin) -->
       <button id="btn-toggle-sidebar" onclick="toggleSidebar()"
               class="hidden text-xs border border-sage/30 px-3 py-2 rounded-lg hover:bg-white/10 transition-all"
               title="Minimizar/expandir menu">
@@ -410,12 +410,24 @@
 
           <!-- COMBO ABERTO: SELEÇÃO -->
           <div id="selecao-marmitas-container">
+            <!-- Assistente IA -->
+            <div class="bg-forest/5 border border-forest/20 rounded-2xl p-4 mb-6">
+              <h4 class="font-bold text-forest flex items-center gap-2 mb-2">✨ Assistente Fit IA</h4>
+              <p class="text-sm text-gray-600 mb-3">Diga o seu objetivo (ex: Emagrecimento, mais proteína) e a nossa Inteligência Artificial escolhe as refeições ideais!</p>
+              <div class="flex gap-2 flex-col sm:flex-row">
+                <input type="text" id="ia-objetivo" placeholder="Ex: Quero ganhar massa muscular, sem peixe..." class="flex-1 px-4 py-2 rounded-xl border border-sage/30 focus:outline-forest text-sm bg-white">
+                <button type="button" onclick="preencherComboComIA()" id="btn-ia-preencher" class="bg-forest text-white px-4 py-2 rounded-xl font-bold hover:bg-forest/90 transition-all text-sm whitespace-nowrap flex justify-center items-center">
+                  ✨ Gerar Seleção
+                </button>
+              </div>
+            </div>
+
             <h3 class="text-xl font-bold text-forest mb-4">Selecione suas refeições:</h3>
             <div id="marmitas-container" class="grid grid-cols-1 gap-3 mb-8"></div>
           </div>
 
 <!-- ===== SELEÇÃO DE VEGETAIS ===== -->
-<div id="secao-vegetais" class="hidden mb-8 fade-in">
+<div id="secao-vegetais" class="hidden mb-8 fade-in scroll-mt-24">
   <div class="bg-white rounded-3xl p-6 shadow-sm border-2 border-green-100">
 
     <!-- Cabeçalho -->
@@ -442,66 +454,68 @@
 </div>
 
 
-          <!-- PREFERÊNCIAS DO PEDIDO -->
-          <div class="bg-white rounded-3xl p-6 shadow-sm border border-sage/20 mb-8">
-            <h3 class="font-display text-2xl text-forest mb-6">Preferências do Pedido</h3>
-            <div class="mb-6">
-              <label class="block text-xs font-bold uppercase text-gray-400 mb-2 ml-1">
-                Preferência de Tempero
-              </label>
-              <div class="flex gap-2">
-                <button type="button" onclick="setSpiceLevel(1)"
-                        class="spice-btn flex-1 py-3 border border-sage/20 rounded-xl bg-white hover:border-forest transition-all">
-                  🌿 Suave
-                </button>
-                <button type="button" onclick="setSpiceLevel(2)"
-                        class="spice-btn flex-1 py-3 border-2 border-forest bg-forest/5 rounded-xl font-bold">
-                  🌶️ Médio
-                </button>
-                <button type="button" onclick="setSpiceLevel(3)"
-                        class="spice-btn flex-1 py-3 border border-sage/20 rounded-xl bg-white hover:border-forest transition-all">
-                  🔥 Picante
-                </button>
-              </div>
-            </div>
-            <div>
-              <label class="block text-xs font-bold uppercase text-gray-400 mb-1 ml-1">
-                Observações Adicionais
-              </label>
-              <textarea id="observations"
-                        placeholder="Ex: Sem cebola, restrições alimentares, preferências especiais..."
-                        class="w-full px-4 py-3 bg-cream/50 border border-sage/20 rounded-xl focus:outline-forest h-24"></textarea>
-            </div>
-          </div>
-
-          <!-- DADOS PARA ENTREGA -->
-          <div class="bg-white rounded-3xl p-6 shadow-sm border border-sage/20 mb-8">
-            <h3 class="font-display text-2xl text-forest mb-6">Dados para Entrega</h3>
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-              <div>
-                <label class="block text-xs font-bold uppercase text-gray-400 mb-1 ml-1">Seu Nome *</label>
-                <input id="cliente-nome" type="text" placeholder="Ex: João Silva"
-                       class="w-full px-4 py-3 bg-cream/50 border border-sage/20 rounded-xl focus:outline-forest">
-              </div>
-              <div>
-                <label class="block text-xs font-bold uppercase text-gray-400 mb-1 ml-1">WhatsApp *</label>
-                <input id="cliente-tel" type="tel" placeholder="(00) 00000-0000"
-                       class="w-full px-4 py-3 bg-cream/50 border border-sage/20 rounded-xl focus:outline-forest">
-              </div>
-            </div>
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
-              <div class="md:col-span-2">
-                <label class="block text-xs font-bold uppercase text-gray-400 mb-1 ml-1">
-                  Endereço de Entrega *
+          <!-- PREFERÊNCIAS E CHECKOUT -->
+          <div id="secao-checkout" class="scroll-mt-24">
+            <div class="bg-white rounded-3xl p-6 shadow-sm border border-sage/20 mb-8">
+              <h3 class="font-display text-2xl text-forest mb-6">Preferências do Pedido</h3>
+              <div class="mb-6">
+                <label class="block text-xs font-bold uppercase text-gray-400 mb-2 ml-1">
+                  Preferência de Tempero
                 </label>
-                <input id="cliente-endereco" type="text"
-                       placeholder="Rua, número, bairro e ponto de referência"
-                       class="w-full px-4 py-3 bg-cream/50 border border-sage/20 rounded-xl focus:outline-forest">
+                <div class="flex gap-2">
+                  <button type="button" onclick="setSpiceLevel(1)"
+                          class="spice-btn flex-1 py-3 border border-sage/20 rounded-xl bg-white hover:border-forest transition-all">
+                    🌿 Suave
+                  </button>
+                  <button type="button" onclick="setSpiceLevel(2)"
+                          class="spice-btn flex-1 py-3 border-2 border-forest bg-forest/5 rounded-xl font-bold">
+                    🌶️ Médio
+                  </button>
+                  <button type="button" onclick="setSpiceLevel(3)"
+                          class="spice-btn flex-1 py-3 border border-sage/20 rounded-xl bg-white hover:border-forest transition-all">
+                    🔥 Picante
+                  </button>
+                </div>
               </div>
               <div>
-                <label class="block text-xs font-bold uppercase text-gray-400 mb-1 ml-1">Cidade *</label>
-                <input id="cliente-cidade" type="text" placeholder="Ex: Blumenau"
-                       class="w-full px-4 py-3 bg-cream/50 border border-sage/20 rounded-xl focus:outline-forest">
+                <label class="block text-xs font-bold uppercase text-gray-400 mb-1 ml-1">
+                  Observações Adicionais
+                </label>
+                <textarea id="observations"
+                          placeholder="Ex: Sem cebola, restrições alimentares, preferências especiais..."
+                          class="w-full px-4 py-3 bg-cream/50 border border-sage/20 rounded-xl focus:outline-forest h-24"></textarea>
+              </div>
+            </div>
+
+            <!-- DADOS PARA ENTREGA -->
+            <div class="bg-white rounded-3xl p-6 shadow-sm border border-sage/20 mb-8">
+              <h3 class="font-display text-2xl text-forest mb-6">Dados para Entrega</h3>
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                <div>
+                  <label class="block text-xs font-bold uppercase text-gray-400 mb-1 ml-1">Seu Nome *</label>
+                  <input id="cliente-nome" type="text" placeholder="Ex: João Silva"
+                         class="w-full px-4 py-3 bg-cream/50 border border-sage/20 rounded-xl focus:outline-forest">
+                </div>
+                <div>
+                  <label class="block text-xs font-bold uppercase text-gray-400 mb-1 ml-1">WhatsApp *</label>
+                  <input id="cliente-tel" type="tel" placeholder="(00) 00000-0000"
+                         class="w-full px-4 py-3 bg-cream/50 border border-sage/20 rounded-xl focus:outline-forest">
+                </div>
+              </div>
+              <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+                <div class="md:col-span-2">
+                  <label class="block text-xs font-bold uppercase text-gray-400 mb-1 ml-1">
+                    Endereço de Entrega *
+                  </label>
+                  <input id="cliente-endereco" type="text"
+                         placeholder="Rua, número, bairro e ponto de referência"
+                         class="w-full px-4 py-3 bg-cream/50 border border-sage/20 rounded-xl focus:outline-forest">
+                </div>
+                <div>
+                  <label class="block text-xs font-bold uppercase text-gray-400 mb-1 ml-1">Cidade *</label>
+                  <input id="cliente-cidade" type="text" placeholder="Ex: Blumenau"
+                         class="w-full px-4 py-3 bg-cream/50 border border-sage/20 rounded-xl focus:outline-forest">
+                </div>
               </div>
             </div>
           </div>
@@ -707,6 +721,14 @@
   </div>
 </div>
 
+<!-- ==================== CUSTOM DIALOG (ALERT/CONFIRM) ==================== -->
+<div id="custom-dialog" class="hidden fixed inset-0 z-[100] flex items-center justify-center p-4 modal-bg">
+  <div class="bg-white rounded-3xl p-6 w-full max-w-sm shadow-2xl text-center">
+    <p id="dialog-msg" class="text-gray-700 font-medium mb-6 text-sm"></p>
+    <div class="flex gap-3 justify-center" id="dialog-btns"></div>
+  </div>
+</div>
+
 <!-- ==================== TOAST ==================== -->
 <div id="toast"
      class="hidden fixed bottom-24 left-1/2 -translate-x-1/2 bg-charcoal text-white
@@ -774,20 +796,100 @@ const firebaseConfig = {
   };
 
   // ============================================================
-  // FIREBASE HELPERS
+  // UTILITÁRIOS (TOAST E CUSTOM DIALOGS)
+  // ============================================================
+  function showToast(msg) {
+    const t = document.getElementById('toast');
+    t.textContent = msg;
+    t.classList.remove('hidden');
+    setTimeout(() => t.classList.add('hidden'), 3500);
+  }
+
+  function showCustomConfirm(msg, onConfirm) {
+    const dialog = document.getElementById('custom-dialog');
+    document.getElementById('dialog-msg').textContent = msg;
+    document.getElementById('dialog-btns').innerHTML = `
+      <button id="btn-dialog-cancel" class="flex-1 border border-gray-300 py-2 rounded-xl font-bold hover:bg-gray-50 transition-all text-sm">Cancelar</button>
+      <button id="btn-dialog-ok" class="flex-1 bg-forest text-white py-2 rounded-xl font-bold hover:bg-forest/90 transition-all text-sm">Confirmar</button>
+    `;
+    dialog.classList.remove('hidden');
+
+    document.getElementById('btn-dialog-cancel').onclick = () => dialog.classList.add('hidden');
+    document.getElementById('btn-dialog-ok').onclick = () => {
+      dialog.classList.add('hidden');
+      onConfirm();
+    };
+  }
+
+  function showCustomAlert(msg) {
+    const dialog = document.getElementById('custom-dialog');
+    document.getElementById('dialog-msg').innerHTML = msg.replace(/\n/g, '<br>');
+    document.getElementById('dialog-btns').innerHTML = `
+      <button id="btn-dialog-ok" class="w-full bg-forest text-white py-2 rounded-xl font-bold hover:bg-forest/90 transition-all text-sm">OK</button>
+    `;
+    dialog.classList.remove('hidden');
+    document.getElementById('btn-dialog-ok').onclick = () => dialog.classList.add('hidden');
+  }
+
+  // ============================================================
+  // GEMINI API CONFIG
+  // ============================================================
+  const GEMINI_API_KEY = "";
+  const GEMINI_MODEL = "gemini-2.5-flash-preview-09-2025";
+
+  async function callGemini(prompt, systemInstruction = "", jsonSchema = null) {
+    const url = `https://generativelanguage.googleapis.com/v1beta/models/${GEMINI_MODEL}:generateContent?key=${GEMINI_API_KEY}`;
+    const payload = {
+      contents: [{ parts: [{ text: prompt }] }],
+      systemInstruction: systemInstruction ? { parts: [{ text: systemInstruction }] } : undefined,
+    };
+    if (jsonSchema) {
+      payload.generationConfig = { responseMimeType: "application/json", responseSchema: jsonSchema };
+    }
+    const delays = [1000, 2000, 4000, 8000, 16000];
+    for (let i = 0; i < 5; i++) {
+      try {
+        const res = await fetch(url, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(payload) });
+        if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
+        const data = await res.json();
+        const text = data.candidates?.[0]?.content?.parts?.[0]?.text;
+        return jsonSchema ? JSON.parse(text) : text;
+      } catch (e) {
+        if (i === 4) { showToast("❌ Erro ao contactar a IA. Tente novamente."); console.error(e); return null; }
+        await new Promise(r => setTimeout(r, delays[i]));
+      }
+    }
+  }
+
+  // ============================================================
+  // FIREBASE HELPERS - CORRIGIDOS (Tratamento de Permissões)
   // ============================================================
   async function fbGet(path) {
     if (!firebaseInitialized) return null;
     const snap = await database.ref(path).once('value');
     return snap.val();
   }
+  
   async function fbSet(path, value) {
-    if (!firebaseInitialized) return;
-    await database.ref(path).set(value);
+    if (!firebaseInitialized) return false;
+    try {
+      await database.ref(path).set(value);
+      return true;
+    } catch (e) {
+      console.warn("Erro ao salvar no Firebase (falta permissão ou rede):", e);
+      return false; // Retorna falso para o sistema usar o localStorage de backup e nunca bloquear o utilizador
+    }
   }
+  
   async function fbRemove(path) {
-    if (!firebaseInitialized) return;
-    await database.ref(path).remove();
+    if (!firebaseInitialized) return false;
+    try {
+      await database.ref(path).remove();
+      return true;
+    } catch (e) {
+      console.warn("Erro ao remover no Firebase:", e);
+      return false;
+    }
   }
   function lsGet(key)       { return JSON.parse(localStorage.getItem(key) || '[]'); }
   function lsSet(key, data) { localStorage.setItem(key, JSON.stringify(data)); }
@@ -801,20 +903,20 @@ const firebaseConfig = {
     return d ? Object.values(d) : [];
   }
   async function saveMarmita(m) {
-    if (!firebaseInitialized) {
+    let success = false;
+    if (firebaseInitialized) success = await fbSet(`marmitas/${m.id}`, m);
+    if (!success) {
       let list = lsGet('marmitas_fit_data');
       const i  = list.findIndex(x => x.id === m.id);
       i !== -1 ? list[i] = m : list.push(m);
       lsSet('marmitas_fit_data', list);
-    } else {
-      await fbSet(`marmitas/${m.id}`, m);
     }
   }
   async function deleteMarmita(id) {
-    if (!firebaseInitialized) {
+    let success = false;
+    if (firebaseInitialized) success = await fbRemove(`marmitas/${id}`);
+    if (!success) {
       lsSet('marmitas_fit_data', lsGet('marmitas_fit_data').filter(m => m.id !== id));
-    } else {
-      await fbRemove(`marmitas/${id}`);
     }
   }
 
@@ -827,20 +929,20 @@ const firebaseConfig = {
     return d ? Object.values(d) : [];
   }
   async function saveCombo(c) {
-    if (!firebaseInitialized) {
+    let success = false;
+    if (firebaseInitialized) success = await fbSet(`combos/${c.id}`, c);
+    if (!success) {
       let list = lsGet('combos_fit_data');
       const i  = list.findIndex(x => x.id === c.id);
       i !== -1 ? list[i] = c : list.push(c);
       lsSet('combos_fit_data', list);
-    } else {
-      await fbSet(`combos/${c.id}`, c);
     }
   }
   async function deleteCombo(id) {
-    if (!firebaseInitialized) {
+    let success = false;
+    if (firebaseInitialized) success = await fbRemove(`combos/${id}`);
+    if (!success) {
       lsSet('combos_fit_data', lsGet('combos_fit_data').filter(c => c.id !== id));
-    } else {
-      await fbRemove(`combos/${id}`);
     }
   }
 
@@ -853,26 +955,29 @@ const firebaseConfig = {
     return d ? Object.values(d) : [];
   }
   async function savePedido(pedido) {
-    if (!firebaseInitialized) {
+    let success = false;
+    if (firebaseInitialized) success = await fbSet(`pedidos/${pedido.id}`, pedido);
+    
+    // Fallback de segurança se o Firebase falhar
+    if (!success) {
       let list = lsGet('pedidos_fit_data');
       list.push(pedido);
       lsSet('pedidos_fit_data', list);
-    } else {
-      await fbSet(`pedidos/${pedido.id}`, pedido);
     }
     pedidosCache = await getPedidos();
   }
   async function excluirPedido(id) {
-    if (!confirm('Excluir este pedido do banco de dados?')) return;
-    if (!firebaseInitialized) {
-      lsSet('pedidos_fit_data', lsGet('pedidos_fit_data').filter(p => p.id !== id));
-    } else {
-      await fbRemove(`pedidos/${id}`);
-    }
-    pedidosCache = await getPedidos();
-    showToast('✅ Pedido excluído!');
-    aplicarFiltroData();
-    atualizarDashboard();
+    showCustomConfirm('Excluir este pedido do banco de dados?', async () => {
+      let success = false;
+      if (firebaseInitialized) success = await fbRemove(`pedidos/${id}`);
+      if (!success) {
+        lsSet('pedidos_fit_data', lsGet('pedidos_fit_data').filter(p => p.id !== id));
+      }
+      pedidosCache = await getPedidos();
+      showToast('✅ Pedido excluído!');
+      aplicarFiltroData();
+      atualizarDashboard();
+    });
   }
 
   // ============================================================
@@ -1089,11 +1194,21 @@ const firebaseConfig = {
       mostrarComboFechado();
       document.getElementById('selecao-marmitas-container').classList.add('hidden');
       document.getElementById('progress-counter').classList.add('hidden');
+      
+      // Auto-scroll para Combo Fechado
+      if (currentCombo.vegetal_max > 0) {
+         setTimeout(() => document.getElementById('secao-vegetais').scrollIntoView({behavior: 'smooth', block: 'start'}), 600);
+      } else {
+         setTimeout(() => document.getElementById('secao-checkout').scrollIntoView({behavior: 'smooth', block: 'start'}), 600);
+      }
     } else {
       document.getElementById('combo-fechado-itens').classList.add('hidden');
       document.getElementById('selecao-marmitas-container').classList.remove('hidden');
       document.getElementById('progress-counter').classList.remove('hidden');
       renderMarmitas();
+      
+      const bar = document.getElementById('progress-bar');
+      if (bar) bar.style.width = '0%';
     }
 
     renderVegetais();
@@ -1154,6 +1269,14 @@ function renderVegetais() {
       }
       vegetaisSelecionados.push(id);
       btn.classList.add('selected');
+      
+      // Auto-scroll
+      if (vegetaisSelecionados.length === vegMax) {
+        setTimeout(() => {
+          showToast('✅ Vegetais selecionados! Finalize o pedido.');
+          document.getElementById('secao-checkout').scrollIntoView({behavior: 'smooth', block: 'start'});
+        }, 500);
+      }
     } else {
       vegetaisSelecionados.splice(idx, 1);
       btn.classList.remove('selected');
@@ -1242,8 +1365,22 @@ function updateQty(id, delta) {
   const bar  = document.getElementById('progress-bar');
   if (bar) bar.style.width = pct + '%';
 
-  // Toast quando completar
-  if (novoTotal === maxMarmitas) showToast('🎉 Kit completo! Agora escolha seus vegetais');
+  // Toast quando completar e redirecionamento (Auto-scroll)
+  if (novoTotal === maxMarmitas) {
+    showToast('🎉 Kit completo!');
+    
+    const vegMax = currentCombo?.vegetal_max || 0;
+    if (vegMax > 0) {
+      setTimeout(() => {
+        showToast('🥦 Agora escolha seus vegetais!');
+        document.getElementById('secao-vegetais').scrollIntoView({behavior: 'smooth', block: 'start'});
+      }, 700);
+    } else {
+      setTimeout(() => {
+        document.getElementById('secao-checkout').scrollIntoView({behavior: 'smooth', block: 'start'});
+      }, 700);
+    }
+  }
 
   atualizarTotal();
 }
@@ -1267,7 +1404,7 @@ function updateQty(id, delta) {
   }
 
   // ============================================================
-  // FINALIZAR PEDIDO
+  // FINALIZAR PEDIDO (Botão WhatsApp Corrigido)
   // ============================================================
   function finalizarPedido() {
     const nome     = document.getElementById('cliente-nome').value.trim();
@@ -1293,7 +1430,15 @@ function updateQty(id, delta) {
     } else {
       const total = Object.values(quantities).reduce((a,b) => a+b, 0);
       if (total === 0) { showToast('⚠️ Selecione pelo menos um item!'); return; }
-      if (total < maxMarmitas && !confirm(`Faltam ${maxMarmitas - total} itens. Continuar assim mesmo?`)) return;
+      
+      // Corrigido: Usando o custom confirm em vez do nativo
+      if (total < maxMarmitas) {
+        showCustomConfirm(`Faltam ${maxMarmitas - total} itens para completar. Continuar mesmo assim?`, () => {
+          registrarEEnviar(nome, tel, endereco, cidade, obs, false);
+        });
+        return;
+      }
+      
       registrarEEnviar(nome, tel, endereco, cidade, obs, false);
     }
   }
@@ -1366,6 +1511,7 @@ function updateQty(id, delta) {
       total:            currentCombo.preco_base
     };
 
+    // A operação de salvar não bloqueará o código agora
     await savePedido(pedido);
     atualizarBadgePedidos();
 
@@ -1387,10 +1533,13 @@ function updateQty(id, delta) {
     );
 
     showToast('✅ Pedido salvo! Abrindo WhatsApp...');
-    setTimeout(() => window.open(`https://wa.me/${WHATSAPP_RESTAURANTE}?text=${msg}`, '_blank'), 800);
-
-    // RESETAR tudo após envio
-    setTimeout(() => resetarAposEnvio(), 1200);
+    
+    // Abrir o WhatsApp sem setTimeout para não ser bloqueado pelos navegadores
+    const url = `https://wa.me/${WHATSAPP_RESTAURANTE}?text=${msg}`;
+    window.open(url, '_blank');
+    
+    // Limpa a tela
+    resetarAposEnvio();
   }
 
   function resetarAposEnvio() {
@@ -1406,10 +1555,12 @@ function updateQty(id, delta) {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }
 
+  // Corrigido: Usando o custom confirm em vez do nativo que crashava
   function resetarPedido() {
-    if (!confirm('Resetar seu pedido atual?')) return;
-    resetarAposEnvio();
-    showToast('🔄 Pedido resetado!');
+    showCustomConfirm('Deseja realmente limpar seu pedido atual?', () => {
+      resetarAposEnvio();
+      showToast('🔄 Pedido resetado!');
+    });
   }
 
   // ============================================================
@@ -1820,10 +1971,11 @@ function updateQty(id, delta) {
   }
 
   async function excluirMarmitaAdmin(id) {
-    if (!confirm('Excluir este item do cardápio?')) return;
-    await deleteMarmita(id);
-    showToast('✅ Item excluído!');
-    if (!firebaseInitialized) { renderMarmitasAdmin(); renderCardapio(); }
+    showCustomConfirm('Excluir este item do cardápio?', async () => {
+      await deleteMarmita(id);
+      showToast('✅ Item excluído!');
+      if (!firebaseInitialized) { renderMarmitasAdmin(); renderCardapio(); }
+    });
   }
 
   // ============================================================
@@ -2040,20 +2192,101 @@ function updateQty(id, delta) {
   }
 
   async function excluirComboAdmin(id) {
-    if (!confirm('Excluir este combo?')) return;
-    await deleteCombo(id);
-    showToast('✅ Combo excluído!');
-    if (!firebaseInitialized) { renderCombosAdmin(); renderCardapio(); }
+    showCustomConfirm('Excluir este combo?', async () => {
+      await deleteCombo(id);
+      showToast('✅ Combo excluído!');
+      if (!firebaseInitialized) { renderCombosAdmin(); renderCardapio(); }
+    });
   }
 
   // ============================================================
-  // UTILITÁRIOS
+  // INTEGRAÇÕES GEMINI IA
   // ============================================================
-  function showToast(msg) {
-    const t = document.getElementById('toast');
-    t.textContent = msg;
-    t.classList.remove('hidden');
-    setTimeout(() => t.classList.add('hidden'), 3500);
+  async function gerarDescricaoIA() {
+    const nome = document.getElementById('marmita-nome').value.trim();
+    const kcal = document.getElementById('marmita-kcal').value;
+    if (!nome) return showToast("⚠️ Escreva o nome da marmita primeiro!");
+    
+    const txtArea = document.getElementById('marmita-desc');
+    const btn = document.getElementById('btn-gerar-ia');
+    const origText = btn.innerHTML;
+    
+    btn.innerHTML = '⏳ A gerar...';
+    btn.disabled = true;
+
+    const prompt = `Crie uma descrição apetitosa, comercial e muito curta (máximo 2 frases) para uma refeição/marmita fit chamada "${nome}" que tem ${kcal || 'algumas'} calorias. Destaque os ingredientes de forma atrativa e foque na saúde e nutrição. Responda apenas com a descrição.`;
+    
+    const resultado = await callGemini(prompt, "És um copywriter especialista em culinária saudável e fitness em Portugal.");
+    
+    if (resultado) {
+      txtArea.value = resultado.trim();
+      showToast("✨ Descrição gerada com sucesso!");
+    }
+    
+    btn.innerHTML = origText;
+    btn.disabled = false;
+  }
+
+  async function preencherComboComIA() {
+    const objetivo = document.getElementById('ia-objetivo').value.trim();
+    if (!objetivo) return showToast("⚠️ Escreva o seu objetivo primeiro!");
+
+    const btn = document.getElementById('btn-ia-preencher');
+    const origText = btn.innerHTML;
+    btn.innerHTML = '⏳ A analisar...';
+    btn.disabled = true;
+
+    const disponiveis = marmitasCache.filter(m => m.visivel && m.cat !== 'vegetal' && m.dispCombo !== false);
+    const cardapioInfo = disponiveis.map(m => `ID: ${m.id} | Nome: ${m.nome} | Kcal: ${m.kcal} | Categoria: ${m.cat}`).join('\n');
+    
+    const max = maxMarmitas;
+    const prompt = `O cliente tem o seguinte objetivo/preferência: "${objetivo}". Ele comprou um combo de ${max} marmitas. Aqui está o cardápio disponível:\n${cardapioInfo}\nRegras:\n1. Escolhe exatamente ${max} marmitas no total.\n2. Podes repetir marmitas, desde que a soma das quantidades seja exatamente ${max}.\n3. Justifica a tua escolha com uma mensagem curta, amigável e motivadora (em português de Portugal).`;
+
+    const schema = { type: "OBJECT", properties: { mensagem: { type: "STRING" }, selecoes: { type: "ARRAY", items: { type: "OBJECT", properties: { id: { type: "INTEGER" }, qtd: { type: "INTEGER" } } } } } };
+
+    const resultado = await callGemini(prompt, "És um nutricionista e assistente inteligente do restaurante Sabor e Saúde.", schema);
+
+    if (resultado && resultado.selecoes) {
+      quantities = {};
+      let totalAdicionado = 0;
+      resultado.selecoes.forEach(item => {
+        if (totalAdicionado + item.qtd > max) return;
+        const m = disponiveis.find(x => x.id === item.id);
+        if (m) {
+          quantities[m.id] = item.qtd;
+          totalAdicionado += item.qtd;
+        }
+      });
+
+      if (totalAdicionado < max) showToast("⚠️ A IA preencheu parte do kit. Podes completar o resto!");
+      else showToast("✨ Kit preenchido com IA com sucesso!");
+
+      disponiveis.forEach(m => {
+        const el = document.getElementById(`qty-${m.id}`);
+        if (el) el.textContent = quantities[m.id] || 0;
+      });
+
+      document.getElementById('current-marmitas').textContent = totalAdicionado;
+      const pct = Math.min(100, Math.round((totalAdicionado / maxMarmitas) * 100));
+      const bar = document.getElementById('progress-bar');
+      if (bar) bar.style.width = pct + '%';
+      atualizarTotal();
+
+      // Deslizar caso a IA preencha tudo
+      if (totalAdicionado === maxMarmitas) {
+         const vegMax = currentCombo?.vegetal_max || 0;
+         if (vegMax > 0) {
+           setTimeout(() => document.getElementById('secao-vegetais').scrollIntoView({behavior: 'smooth', block: 'start'}), 1200);
+         } else {
+           setTimeout(() => document.getElementById('secao-checkout').scrollIntoView({behavior: 'smooth', block: 'start'}), 1200);
+         }
+      }
+
+      showCustomAlert("✨ A Inteligência Artificial diz:\n\n" + resultado.mensagem);
+    }
+    
+    btn.innerHTML = origText;
+    btn.disabled = false;
   }
 
   // ============================================================
