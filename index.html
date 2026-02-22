@@ -1342,9 +1342,10 @@ function updateQty(id, delta) {
     let listaVegetaisWpp = '';
     if (nomesVegetais.length) {
       listaVegetaisWpp = `\n*🥦 Vegetais:*\n${nomesVegetais.map(v => `• ${v}`).join('\n')}\n`;
-      nomesVegetais.forEach(v => {
-        itens_detalhes[`[Vegetal] ${v}`] = (itens_detalhes[`[Vegetal] ${v}`] || 0) + 1;
-      });
+    nomesVegetais.forEach(v => {
+      const chave = `Vegetal_${v.replace(/[\.\#\$\/\[\]]/g, '_')}`;
+      itens_detalhes[chave] = (itens_detalhes[chave] || 0) + 1;
+    });
     }
 
     const pedidoId = 'pedido_' + Date.now();
