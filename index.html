@@ -107,7 +107,7 @@
   </div>
 </div>
 
-<!-- ==================== MODAL MARMITA ==================== -->
+<!-- ==================== MODAL MARMITA (ATUALIZADO) ==================== -->
 <div id="modal-marmita" class="hidden fixed inset-0 z-[60] flex items-center justify-center p-4 modal-bg">
   <div class="bg-white rounded-3xl p-8 w-full max-w-lg shadow-2xl max-h-[90vh] overflow-y-auto">
     <h2 class="font-display text-2xl text-forest mb-6" id="modal-marmita-title">Novo Item</h2>
@@ -134,13 +134,6 @@
         <label class="block text-xs font-bold uppercase text-gray-400 mb-1">Descrição *</label>
         <textarea id="marmita-desc" required
                   class="w-full px-4 py-2 border rounded-lg focus:outline-forest h-20"></textarea>
-        <div class="flex justify-between items-center mt-1">
-          <span class="text-[11px] text-gray-400">Descrição curta, apetitosa e clara.</span>
-          <button type="button" onclick="gerarDescricaoIAMarmita()"
-                  class="text-[11px] text-forest font-bold px-2 py-1 rounded-lg hover:bg-sage/20 transition-all flex items-center gap-1">
-            🤖 Gerar com IA
-          </button>
-        </div>
       </div>
       <div>
         <label class="block text-xs font-bold uppercase text-gray-400 mb-1">Categoria *</label>
@@ -155,6 +148,8 @@
           <option value="vegetal">🥦 Vegetal</option>
         </select>
       </div>
+
+      <!-- VISIBILIDADE -->
       <div class="bg-sage/10 p-4 rounded-xl space-y-3">
         <label class="flex items-center gap-3 cursor-pointer">
           <input type="checkbox" id="marmita-visivel" checked class="w-5 h-5 rounded">
@@ -163,6 +158,7 @@
             <p class="text-xs text-gray-500">Desmarque para ocultar do cardápio</p>
           </div>
         </label>
+        <!-- NOVO: disponível em combo -->
         <label class="flex items-center gap-3 cursor-pointer border-t border-sage/20 pt-3">
           <input type="checkbox" id="marmita-disponivel-combo" checked class="w-5 h-5 rounded">
           <div>
@@ -171,6 +167,7 @@
           </div>
         </label>
       </div>
+
       <div class="flex gap-3 pt-2">
         <button type="submit"
                 class="flex-1 bg-forest text-white py-3 rounded-xl font-bold hover:bg-forest/90 transition-all">
@@ -185,7 +182,7 @@
   </div>
 </div>
 
-<!-- ==================== MODAL COMBO ==================== -->
+<!-- ==================== MODAL COMBO (ATUALIZADO) ==================== -->
 <div id="modal-combo" class="hidden fixed inset-0 z-[60] flex items-center justify-center p-4 modal-bg">
   <div class="bg-white rounded-3xl p-8 w-full max-w-2xl shadow-2xl max-h-[90vh] overflow-y-auto">
     <h2 class="font-display text-2xl text-forest mb-6" id="modal-combo-title">Novo Combo</h2>
@@ -196,6 +193,8 @@
         <input id="combo-nome" type="text" required placeholder="Ex: Kit 10 Marmitas"
                class="w-full px-4 py-2 border rounded-lg focus:outline-forest">
       </div>
+
+      <!-- TIPO -->
       <div class="bg-cream p-4 rounded-xl border-2 border-sage/20">
         <label class="block text-xs font-bold uppercase text-gray-400 mb-3">Tipo de Combo *</label>
         <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
@@ -215,6 +214,8 @@
           </label>
         </div>
       </div>
+
+      <!-- CONFIG ABERTO -->
       <div id="config-aberto" class="grid grid-cols-2 gap-4">
         <div>
           <label class="block text-xs font-bold uppercase text-gray-400 mb-1">Quantidade de Itens *</label>
@@ -227,6 +228,8 @@
                  class="w-full px-4 py-2 border rounded-lg focus:outline-forest">
         </div>
       </div>
+
+      <!-- CONFIG FECHADO -->
       <div id="config-fechado" class="hidden">
         <label class="block text-xs font-bold uppercase text-gray-400 mb-3">Itens do Combo *</label>
         <div class="bg-white border-2 border-sage/20 rounded-xl p-4 max-h-72 overflow-y-auto"
@@ -237,6 +240,8 @@
                  class="w-full px-4 py-2 border rounded-lg focus:outline-forest">
         </div>
       </div>
+
+      <!-- NOVO: LIMITE DE VEGETAIS -->
       <div class="bg-green-50 border-2 border-green-100 p-4 rounded-xl">
         <label class="block text-xs font-bold uppercase text-gray-400 mb-2">🥦 Vegetais no Pedido</label>
         <p class="text-xs text-gray-500 mb-3">Quantos vegetais o cliente poderá escolher ao montar este combo?</p>
@@ -255,9 +260,12 @@
         </div>
         <p class="text-xs text-gray-400 mt-2">💡 Deixe máximo em 0 para não oferecer vegetais neste combo</p>
       </div>
+
       <div class="bg-sage/10 p-4 rounded-lg">
         <p class="text-xs text-gray-600">💡 <span id="preco-unitario-preview">Configure o combo acima</span></p>
       </div>
+
+      <!-- VISIBILIDADE -->
       <div class="bg-sage/10 p-4 rounded-lg">
         <label class="flex items-center gap-3 cursor-pointer">
           <input type="checkbox" id="combo-visivel" checked class="w-5 h-5 rounded">
@@ -267,6 +275,7 @@
           </div>
         </label>
       </div>
+
       <div class="flex gap-3 pt-2">
         <button type="submit"
                 class="flex-1 bg-forest text-white py-3 rounded-xl font-bold hover:bg-forest/90 transition-all">
@@ -286,6 +295,7 @@
   <!-- HEADER -->
   <header class="bg-forest text-cream px-6 py-4 flex justify-between items-center sticky top-0 z-40 shadow-md">
     <div class="flex items-center gap-3">
+      <!-- LOGO: substitua o src pela URL da sua imagem -->
       <img id="logo-empresa"
            src="https://raw.githubusercontent.com/Sabor-e-Saude/cardapio-pedidos/refs/heads/main/logo.png"
            alt="Logo Sabor e Saúde"
@@ -295,6 +305,7 @@
       </div>
     </div>
     <div class="flex items-center gap-2">
+      <!-- BOTÃO MINIMIZAR SIDEBAR (só aparece no admin) -->
       <button id="btn-toggle-sidebar" onclick="toggleSidebar()"
               class="hidden text-xs border border-sage/30 px-3 py-2 rounded-lg hover:bg-white/10 transition-all"
               title="Minimizar/expandir menu">
@@ -361,89 +372,34 @@
         <!-- SEÇÃO MARMITAS -->
         <div id="marmitas-section" class="hidden fade-in border-t border-sage/20 pt-8">
 
-          <!-- BARRA DE PROGRESSO -->
-          <div class="bg-forest text-white p-6 rounded-2xl mb-8 shadow-xl">
-            <div class="flex justify-between items-center">
-              <div>
-                <p class="text-xs opacity-70 uppercase font-bold">Progresso do Kit</p>
-                <p class="text-lg font-bold" id="combo-name-display">Carregando...</p>
-                <p class="text-xs opacity-70 mt-1" id="combo-tipo-badge"></p>
-              </div>
-              <div class="text-right" id="progress-counter">
-                <p class="text-xs opacity-60 uppercase mb-1">🍱 Marmitas</p>
-                <div class="flex items-baseline gap-1">
-                  <span class="text-3xl font-display font-bold" id="current-marmitas">0</span>
-                  <span class="text-xl opacity-50">/</span>
-                  <span class="text-xl opacity-50" id="max-marmitas">10</span>
-                </div>
-              </div>
-            </div>
-            <div id="progress-bar-container" class="mt-4">
-              <div class="w-full bg-white/20 rounded-full h-2">
-                <div id="progress-bar"
-                     class="bg-white h-2 rounded-full transition-all duration-300"
-                     style="width: 0%"></div>
-              </div>
+      <!-- BARRA DE PROGRESSO -->
+      <div class="bg-forest text-white p-6 rounded-2xl mb-8 shadow-xl">
+        <div class="flex justify-between items-center">
+          <div>
+            <p class="text-xs opacity-70 uppercase font-bold">Progresso do Kit</p>
+            <p class="text-lg font-bold" id="combo-name-display">Carregando...</p>
+            <p class="text-xs opacity-70 mt-1" id="combo-tipo-badge"></p>
+          </div>
+          <div class="text-right" id="progress-counter">
+            <p class="text-xs opacity-60 uppercase mb-1">🍱 Marmitas</p>
+            <div class="flex items-baseline gap-1">
+              <span class="text-3xl font-display font-bold" id="current-marmitas">0</span>
+              <span class="text-xl opacity-50">/</span>
+              <span class="text-xl opacity-50" id="max-marmitas">10</span>
             </div>
           </div>
+        </div>
 
-          <!-- ===== BOX IA CLIENTE ===== -->
-          <div id="ia-cliente-box" class="hidden bg-white rounded-3xl p-6 shadow-sm border-2 border-sage/30 mb-8 fade-in">
-            <div class="flex justify-between items-center mb-1">
-              <div class="flex items-center gap-2">
-                <span class="text-2xl">🤖</span>
-                <h3 class="font-display text-xl text-forest">Assistente Nutricional</h3>
-              </div>
-              <span class="text-[11px] bg-forest/10 text-forest px-2 py-1 rounded-full font-bold">IA Sabor e Saúde</span>
-            </div>
-            <p class="text-xs text-gray-400 mb-4 ml-9">Informe seu perfil e deixe o nutricionista montar seu kit ideal automaticamente.</p>
-
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-              <div>
-                <label class="block text-xs font-bold uppercase text-gray-400 mb-1 ml-1">Objetivo</label>
-                <select id="ia-objetivo"
-                        class="w-full px-4 py-2 bg-cream/50 border border-sage/20 rounded-xl focus:outline-forest">
-                  <option value="emagrecimento">Emagrecimento</option>
-                  <option value="ganho de massa muscular">Ganho de massa</option>
-                  <option value="reeducação alimentar">Reeducação alimentar</option>
-                  <option value="manutenção de peso">Manutenção de peso</option>
-                  <option value="saúde e bem-estar geral">Saúde e bem-estar</option>
-                </select>
-              </div>
-              <div>
-                <label class="block text-xs font-bold uppercase text-gray-400 mb-1 ml-1">Nível de atividade</label>
-                <select id="ia-atividade"
-                        class="w-full px-4 py-2 bg-cream/50 border border-sage/20 rounded-xl focus:outline-forest">
-                  <option value="sedentário">Sedentário</option>
-                  <option value="levemente ativo">Levemente ativo</option>
-                  <option value="moderadamente ativo">Moderado</option>
-                  <option value="muito ativo">Muito ativo</option>
-                </select>
-              </div>
-            </div>
-            <div class="grid grid-cols-3 gap-3 mb-4">
-              <div>
-                <label class="block text-xs font-bold uppercase text-gray-400 mb-1 ml-1">Idade</label>
-                <input id="ia-idade" type="number" min="16" placeholder="ex: 30"
-                       class="w-full px-3 py-2 bg-cream/50 border border-sage/20 rounded-xl focus:outline-forest">
-              </div>
-              <div>
-                <label class="block text-xs font-bold uppercase text-gray-400 mb-1 ml-1">Peso (kg)</label>
-                <input id="ia-peso" type="number" step="0.1" placeholder="ex: 75"
-                       class="w-full px-3 py-2 bg-cream/50 border border-sage/20 rounded-xl focus:outline-forest">
-              </div>
-              <div>
-                <label class="block text-xs font-bold uppercase text-gray-400 mb-1 ml-1">Altura (cm)</label>
-                <input id="ia-altura" type="number" placeholder="ex: 170"
-                       class="w-full px-3 py-2 bg-cream/50 border border-sage/20 rounded-xl focus:outline-forest">
-              </div>
-            </div>
-            <button type="button" onclick="gerarSugestaoIACliente()" id="btn-ia-gerar"
-                    class="w-full bg-forest text-white py-3 rounded-xl font-bold hover:bg-forest/90 transition-all mb-3 flex items-center justify-center gap-2">
-              🤖 Gerar sugestão automática de kit
-            </button>
-            <div id="ia-cliente-resposta" class="hidden text-sm text-gray-700 bg-cream/80 rounded-2xl p-5 border border-sage/20 leading-relaxed"></div>
+        <!-- Barra de progresso visual -->
+        <div id="progress-bar-container" class="mt-4">
+          <div class="w-full bg-white/20 rounded-full h-2">
+            <div id="progress-bar"
+                class="bg-white h-2 rounded-full transition-all duration-300"
+                style="width: 0%"></div>
           </div>
+        </div>
+      </div>
+
 
           <!-- COMBO FECHADO: ITENS INCLUSOS -->
           <div id="combo-fechado-itens"
@@ -458,25 +414,33 @@
             <div id="marmitas-container" class="grid grid-cols-1 gap-3 mb-8"></div>
           </div>
 
-          <!-- ===== SELEÇÃO DE VEGETAIS ===== -->
-          <div id="secao-vegetais" class="hidden mb-8 fade-in">
-            <div class="bg-white rounded-3xl p-6 shadow-sm border-2 border-green-100">
-              <div class="flex justify-between items-center mb-2">
-                <h3 class="font-display text-xl text-forest">🥦 Escolha seus Vegetais</h3>
-                <div class="flex items-center gap-1 bg-green-50 px-3 py-1 rounded-full">
-                  <span class="text-sm font-bold text-green-700" id="vegetal-counter">0</span>
-                  <span class="text-sm text-gray-400" id="vegetal-counter-max"></span>
-                </div>
-              </div>
-              <div class="bg-green-50 rounded-xl px-4 py-3 mb-5">
-                <p class="text-sm text-green-700 font-medium" id="vegetal-instrucao"></p>
-                <p class="text-xs text-green-600 mt-1">
-                  💡 Os vegetais são <strong>adicionais</strong> ao seu kit — não contam no limite de marmitas
-                </p>
-              </div>
-              <div id="vegetais-container" class="grid grid-cols-2 sm:grid-cols-3 gap-2"></div>
-            </div>
-          </div>
+<!-- ===== SELEÇÃO DE VEGETAIS ===== -->
+<div id="secao-vegetais" class="hidden mb-8 fade-in">
+  <div class="bg-white rounded-3xl p-6 shadow-sm border-2 border-green-100">
+
+    <!-- Cabeçalho -->
+    <div class="flex justify-between items-center mb-2">
+      <h3 class="font-display text-xl text-forest">🥦 Escolha seus Vegetais</h3>
+      <div class="flex items-center gap-1 bg-green-50 px-3 py-1 rounded-full">
+        <span class="text-sm font-bold text-green-700" id="vegetal-counter">0</span>
+        <span class="text-sm text-gray-400" id="vegetal-counter-max"></span>
+      </div>
+    </div>
+
+    <!-- Instrução -->
+    <div class="bg-green-50 rounded-xl px-4 py-3 mb-5">
+      <p class="text-sm text-green-700 font-medium" id="vegetal-instrucao"></p>
+      <p class="text-xs text-green-600 mt-1">
+        💡 Os vegetais são <strong>adicionais</strong> ao seu kit — não contam no limite de marmitas
+      </p>
+    </div>
+
+    <!-- Grid de vegetais -->
+    <div id="vegetais-container" class="grid grid-cols-2 sm:grid-cols-3 gap-2"></div>
+
+  </div>
+</div>
+
 
           <!-- PREFERÊNCIAS DO PEDIDO -->
           <div class="bg-white rounded-3xl p-6 shadow-sm border border-sage/20 mb-8">
@@ -559,6 +523,7 @@
 
         </div>
       </section>
+
       <!-- ===== DASHBOARD ADMIN ===== -->
       <section id="page-dashboard" class="hidden">
         <h2 class="text-2xl font-bold mb-6 font-display text-forest">Painel Administrativo</h2>
@@ -749,23 +714,20 @@
 </div>
 <script>
   // ============================================================
-  // CONFIGURAÇÕES
+  // FIREBASE CONFIG — substitua pelos seus dados
   // ============================================================
-  const firebaseConfig = {
-    apiKey: "AIzaSyBL0z6PwA6Ik_U671G7HJZLsHT9udCT7YI",
-    authDomain: "sabor-e-saude-a233e.firebaseapp.com",
-    databaseURL: "https://sabor-e-saude-a233e-default-rtdb.firebaseio.com",
-    projectId: "sabor-e-saude-a233e",
-    storageBucket: "sabor-e-saude-a233e.firebasestorage.app",
-    messagingSenderId: "283293618461",
-    appId: "1:283293618461:web:1db0ad8b6db9f145d791f4",
-    measurementId: "G-R6LW9FKEQF"
-  };
+const firebaseConfig = {
+  apiKey: "AIzaSyBL0z6PwA6Ik_U671G7HJZLsHT9udCT7YI",
+  authDomain: "sabor-e-saude-a233e.firebaseapp.com",
+  databaseURL: "https://sabor-e-saude-a233e-default-rtdb.firebaseio.com",
+  projectId: "sabor-e-saude-a233e",
+  storageBucket: "sabor-e-saude-a233e.firebasestorage.app",
+  messagingSenderId: "283293618461",
+  appId: "1:283293618461:web:1db0ad8b6db9f145d791f4",
+  measurementId: "G-R6LW9FKEQF"
+};
 
   const WHATSAPP_RESTAURANTE = "5547996988109";
-
-  // ⚠️ SUBSTITUA pela sua chave do Google AI Studio (aistudio.google.com)
-  const GEMINI_API_KEY = "AIzaSyAB4epz1kNI1FNWsJs4LCrHUIBF6EsDioc";
 
   // ============================================================
   // INICIALIZAÇÃO FIREBASE
@@ -783,17 +745,17 @@
   // ============================================================
   // ESTADO GLOBAL
   // ============================================================
-  let isAdmin              = false;
-  let sidebarVisible       = true;
-  let currentCombo         = null;
-  let quantities           = {};
+  let isAdmin          = false;
+  let sidebarVisible   = true;
+  let currentCombo     = null;
+  let quantities       = {};
   let vegetaisSelecionados = [];
-  let spiceLevel           = 2;
-  let maxMarmitas          = 0;
-  let marmitasCache        = [];
-  let combosCache          = [];
-  let pedidosCache         = [];
-  let pedidoAtualModal     = null;
+  let spiceLevel       = 2;
+  let maxMarmitas      = 0;
+  let marmitasCache    = [];
+  let combosCache      = [];
+  let pedidosCache     = [];
+  let pedidoAtualModal = null;
 
   const CAT_ICONS = {
     marmita:    '🍱 Marmitas',
@@ -810,195 +772,6 @@
     marmita:'🍱', sopa:'🍲', suco:'🥤', sobremesa:'🍰',
     proteico:'💪', 'low-carb':'🥗', vegano:'🌱', vegetal:'🥦'
   };
-
-  // ============================================================
-  // IA — HELPER GEMINI
-  // ============================================================
-async function chamarGemini(prompt) {
-  try {
-    const resp = await fetch(
-'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=' + GEMINI_API_KEY,
-      {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          contents: [{ role: 'user', parts: [{ text: prompt }] }]
-        })
-      }
-    );
-
-    const data = await resp.json();
-
-    // LOG COMPLETO no console para diagnóstico
-    console.log('STATUS HTTP:', resp.status);
-    console.log('RESPOSTA IA:', JSON.stringify(data, null, 2));
-
-    if (!resp.ok) {
-      const msg = data?.error?.message || 'Erro desconhecido';
-      showToast(`❌ Erro API: ${msg}`);
-      return null;
-    }
-
-    return data.candidates?.[0]?.content?.parts?.[0]?.text || null;
-
-  } catch (err) {
-    console.error('Erro IA (fetch):', err);
-    showToast('❌ Erro de conexão com a IA');
-    return null;
-  }
-}
-
-  // ============================================================
-  // IA CLIENTE — Sugestão de Kit
-  // ============================================================
-  async function gerarSugestaoIACliente() {
-    if (!currentCombo) { showToast('Selecione um combo antes de usar a IA'); return; }
-
-    const objetivo  = document.getElementById('ia-objetivo').value;
-    const atividade = document.getElementById('ia-atividade').value;
-    const idade     = document.getElementById('ia-idade').value  || 'não informado';
-    const peso      = document.getElementById('ia-peso').value   || 'não informado';
-    const altura    = document.getElementById('ia-altura').value || 'não informado';
-    const maxItens  = currentCombo.qtd;
-
-    const marmitas = marmitasCache
-      .filter(m => m.visivel && m.cat !== 'vegetal' && m.dispCombo !== false)
-      .map(m => `${m.id} - ${m.nome} (${m.kcal} kcal, categoria: ${m.cat})`);
-
-    if (!marmitas.length) { showToast('Nenhum item disponível para sugestão'); return; }
-
-    const btnIA = document.getElementById('btn-ia-gerar');
-    btnIA.disabled = true;
-    btnIA.textContent = '⏳ Gerando sugestão...';
-
-    const prompt = `
-Você é o nutricionista oficial da Sabor e Saúde, empresa de marmitas saudáveis de Blumenau-SC.
-Monte um plano de exatamente ${maxItens} marmitas para um kit, escolhendo entre estes itens:
-
-${marmitas.join('\n')}
-
-Dados do cliente:
-- Objetivo: ${objetivo}
-- Nível de atividade: ${atividade}
-- Idade: ${idade} anos
-- Peso: ${peso} kg
-- Altura: ${altura} cm
-
-INSTRUÇÕES OBRIGATÓRIAS:
-1. Responda em português brasileiro.
-2. Primeira parte: texto de 3 a 5 frases, se apresentando como nutricionista da Sabor e Saúde e explicando a lógica da seleção considerando o objetivo do cliente. Seja acolhedor e profissional.
-3. Segunda parte: lista SOMENTE neste formato exato, uma por linha (sem texto extra):
-LISTA_ITENS:
-ID - QUANTIDADE
-
-Exemplo da segunda parte:
-LISTA_ITENS:
-1 - 4
-2 - 3
-3 - 3
-
-A soma das quantidades deve ser exatamente ${maxItens}.
-`;
-
-    const resposta = await chamarGemini(prompt);
-    btnIA.disabled = false;
-    btnIA.innerHTML = '🤖 Gerar sugestão automática de kit';
-
-    if (!resposta) { showToast('Não foi possível gerar sugestão. Tente novamente.'); return; }
-
-    // Separar texto explicativo da lista de itens
-    const parteIdx    = resposta.indexOf('LISTA_ITENS:');
-    const textoExpl   = parteIdx !== -1 ? resposta.substring(0, parteIdx).trim() : resposta.trim();
-    const parteItens  = parteIdx !== -1 ? resposta.substring(parteIdx + 12) : '';
-
-    const linhasItens = parteItens.split('\n').map(l => l.trim()).filter(l => /^\d+\s*-\s*\d+/.test(l));
-
-    quantities = {};
-    let total = 0;
-    for (const l of linhasItens) {
-      const partes = l.split('-').map(s => s.trim());
-      const id  = parseInt(partes[0]);
-      const qtd = parseInt(partes[1]);
-      if (!isNaN(id) && !isNaN(qtd) && qtd > 0) {
-        quantities[id] = (quantities[id] || 0) + qtd;
-        total += qtd;
-      }
-    }
-
-    // Normalizar se necessário
-    if (total > maxItens) {
-      let diff = total - maxItens;
-      for (const id of Object.keys(quantities).reverse()) {
-        const reduz = Math.min(quantities[id], diff);
-        quantities[id] -= reduz;
-        diff -= reduz;
-        if (diff === 0) break;
-      }
-    }
-
-    // Atualizar UI
-    renderMarmitas();
-    Object.entries(quantities).forEach(([id, qtd]) => {
-      const span = document.getElementById(`qty-${id}`);
-      if (span) span.textContent = qtd;
-    });
-    const novoTotal = Object.values(quantities).reduce((a, b) => a + b, 0);
-    document.getElementById('current-marmitas').textContent = novoTotal;
-    const pct = Math.min(100, Math.round((novoTotal / maxMarmitas) * 100));
-    const bar = document.getElementById('progress-bar');
-    if (bar) bar.style.width = pct + '%';
-
-    // Mostrar texto do nutricionista
-    const box = document.getElementById('ia-cliente-resposta');
-    if (box) {
-      box.innerHTML = `
-        <div class="flex items-start gap-3">
-          <span class="text-2xl">👨‍⚕️</span>
-          <div>
-            <p class="font-bold text-forest text-sm mb-1">Recomendação do Nutricionista</p>
-            <p class="text-gray-600 leading-relaxed">${textoExpl.replace(/\n/g, '<br>')}</p>
-          </div>
-        </div>`;
-      box.classList.remove('hidden');
-    }
-    showToast('✅ Kit gerado! Role para ver e personalizar.');
-  }
-
-  // ============================================================
-  // IA ADMIN — Gerar Descrição de Item
-  // ============================================================
-  async function gerarDescricaoIAMarmita() {
-    const nome  = document.getElementById('marmita-nome').value.trim();
-    const kcal  = document.getElementById('marmita-kcal').value.trim();
-    const cat   = document.getElementById('marmita-cat').value;
-    const campo = document.getElementById('marmita-desc');
-
-    if (!nome || !kcal) { showToast('Preencha nome e calorias antes de usar a IA'); return; }
-
-    const catLabel = CAT_ICONS[cat] || 'Marmita';
-
-    const prompt = `
-Você é nutricionista e redator da Sabor e Saúde, empresa de marmitas saudáveis.
-Escreva uma descrição curta (1 a 2 frases, máximo 120 caracteres) para este item do cardápio digital.
-
-Nome: ${nome}
-Categoria: ${catLabel}
-Calorias: ${kcal} kcal
-
-Regras:
-- Texto em português brasileiro, tom acolhedor e profissional.
-- Destaque o sabor e o benefício nutricional principal.
-- Não repita o nome do item mais de uma vez.
-- Sem emojis.
-- Responda APENAS com a descrição, sem aspas, sem explicações adicionais.
-`;
-
-    showToast('🤖 Gerando descrição...');
-    const resposta = await chamarGemini(prompt);
-    if (!resposta) { showToast('Não foi possível gerar descrição. Tente novamente.'); return; }
-    campo.value = resposta.replace(/\n+/g, ' ').replace(/^["']|["']$/g, '').trim();
-    showToast('✅ Descrição preenchida com IA!');
-  }
 
   // ============================================================
   // FIREBASE HELPERS
@@ -1103,7 +876,7 @@ Regras:
   }
 
   // ============================================================
-  // INICIALIZAÇÃO
+  // INICIALIZAÇÃO DO APP
   // ============================================================
   async function initData() {
     document.getElementById('loading').classList.remove('hidden');
@@ -1137,6 +910,7 @@ Regras:
       combosCache = iniciais;
     }
 
+    // Listeners tempo real Firebase
     if (firebaseInitialized) {
       database.ref('marmitas').on('value', snap => {
         const d = snap.val();
@@ -1158,7 +932,8 @@ Regras:
       });
     }
 
-    const hoje        = new Date();
+    // Datas padrão filtro (mês atual)
+    const hoje       = new Date();
     const primeiroDia = new Date(hoje.getFullYear(), hoje.getMonth(), 1);
     document.getElementById('filtro-data-inicio').value = primeiroDia.toISOString().split('T')[0];
     document.getElementById('filtro-data-fim').value    = hoje.toISOString().split('T')[0];
@@ -1182,14 +957,27 @@ Regras:
     if (pageId === 'pedidos')   aplicarFiltroData();
   }
 
+  // ============================================================
+  // SIDEBAR TOGGLE
+  // ============================================================
   function toggleSidebar() {
     const sb  = document.getElementById('sidebar');
     const btn = document.getElementById('btn-toggle-sidebar');
     sidebarVisible = !sidebarVisible;
-    sidebarVisible ? sb.classList.remove('hidden') : sb.classList.add('hidden');
-    btn.title = sidebarVisible ? 'Minimizar menu' : 'Expandir menu';
+    if (sidebarVisible) {
+      sb.classList.remove('hidden');
+      btn.textContent = '☰';
+      btn.title = 'Minimizar menu';
+    } else {
+      sb.classList.add('hidden');
+      btn.textContent = '☰';
+      btn.title = 'Expandir menu';
+    }
   }
 
+  // ============================================================
+  // ADMIN: LOGIN
+  // ============================================================
   function openAdminModal()  { document.getElementById('admin-modal').classList.remove('hidden'); }
   function closeAdminModal() {
     document.getElementById('admin-modal').classList.add('hidden');
@@ -1216,6 +1004,7 @@ Regras:
 
   function entrarComoCliente() {
     isAdmin = false;
+    sidebarVisible = true;
     document.getElementById('sidebar').classList.add('hidden');
     document.getElementById('btn-toggle-sidebar').classList.add('hidden');
     document.getElementById('btn-admin-view').classList.remove('hidden');
@@ -1232,6 +1021,9 @@ Regras:
     }
   }
 
+  // ============================================================
+  // DASHBOARD
+  // ============================================================
   function atualizarDashboard() {
     const mv  = marmitasCache.filter(m => m.visivel).length;
     const cv  = combosCache.filter(c => c.visivel !== false).length;
@@ -1243,6 +1035,7 @@ Regras:
     document.getElementById('stat-total-pedidos').textContent     = pedidosCache.length;
     document.getElementById('stat-faturamento').textContent       = `R$ ${fat.toFixed(2)}`;
   }
+
   // ============================================================
   // CARDÁPIO CLIENTE
   // ============================================================
@@ -1281,8 +1074,8 @@ Regras:
     currentCombo = combosCache.find(c => c.id === id);
     if (!currentCombo) { showToast('❌ Combo não encontrado'); return; }
 
-    maxMarmitas          = currentCombo.qtd;
-    quantities           = {};
+    maxMarmitas        = currentCombo.qtd;
+    quantities         = {};
     vegetaisSelecionados = [];
 
     document.getElementById('marmitas-section').classList.remove('hidden');
@@ -1292,24 +1085,15 @@ Regras:
     document.getElementById('combo-tipo-badge').textContent   =
       currentCombo.tipo === 'fechado' ? '📦 Combo Fechado' : '🛒 Você escolhe os itens';
 
-    const bar = document.getElementById('progress-bar');
-    if (bar) bar.style.width = '0%';
-
     if (currentCombo.tipo === 'fechado') {
       mostrarComboFechado();
       document.getElementById('selecao-marmitas-container').classList.add('hidden');
       document.getElementById('progress-counter').classList.add('hidden');
-      document.getElementById('ia-cliente-box').classList.add('hidden');
     } else {
       document.getElementById('combo-fechado-itens').classList.add('hidden');
       document.getElementById('selecao-marmitas-container').classList.remove('hidden');
       document.getElementById('progress-counter').classList.remove('hidden');
       renderMarmitas();
-      // Exibir box de IA para combo aberto
-      const iaBox  = document.getElementById('ia-cliente-box');
-      const iaResp = document.getElementById('ia-cliente-resposta');
-      if (iaBox)  iaBox.classList.remove('hidden');
-      if (iaResp) { iaResp.classList.add('hidden'); iaResp.innerHTML = ''; }
     }
 
     renderVegetais();
@@ -1323,44 +1107,46 @@ Regras:
   // ============================================================
   // VEGETAIS
   // ============================================================
-  function renderVegetais() {
-    const secao  = document.getElementById('secao-vegetais');
-    const vegMax = currentCombo?.vegetal_max || 0;
-    const vegMin = currentCombo?.vegetal_min || 0;
+function renderVegetais() {
+  const secao  = document.getElementById('secao-vegetais');
+  const vegMax = currentCombo?.vegetal_max || 0;
+  const vegMin = currentCombo?.vegetal_min || 0;
 
-    if (!vegMax) { secao.classList.add('hidden'); return; }
+  if (!vegMax) { secao.classList.add('hidden'); return; }
 
-    const vegetais = marmitasCache.filter(m => m.cat === 'vegetal' && m.visivel);
-    if (!vegetais.length) { secao.classList.add('hidden'); return; }
+  const vegetais = marmitasCache.filter(m => m.cat === 'vegetal' && m.visivel);
+  if (!vegetais.length) { secao.classList.add('hidden'); return; }
 
-    secao.classList.remove('hidden');
-    document.getElementById('vegetal-counter').textContent     = '0';
-    document.getElementById('vegetal-counter-max').textContent = ` / ${vegMax}`;
-    document.getElementById('vegetal-instrucao').textContent   =
-      vegMin > 0
-        ? `Escolha de ${vegMin} a ${vegMax} vegetal(is) — eles são adicionais ao seu kit`
-        : `Escolha até ${vegMax} vegetal(is) para acompanhar seu kit (opcional)`;
+  secao.classList.remove('hidden');
 
-    const container = document.getElementById('vegetais-container');
-    container.innerHTML = vegetais.map(v => `
-      <button type="button"
-              id="vegetal-btn-${v.id}"
-              onclick="toggleVegetal(${v.id})"
-              class="vegetal-btn flex items-center gap-2 px-4 py-3 border-2 border-sage/30
-                     rounded-xl bg-white text-left text-sm font-medium hover:border-forest
-                     transition-all w-full">
-        <span class="text-xl">🥦</span>
-        <div>
-          <p class="font-medium">${v.nome}</p>
-          <p class="text-xs text-gray-400">${v.kcal} kcal</p>
-        </div>
-      </button>`).join('');
-  }
+  document.getElementById('vegetal-counter').textContent     = '0';
+  document.getElementById('vegetal-counter-max').textContent = ` / ${vegMax}`;
+  document.getElementById('vegetal-instrucao').textContent   =
+    vegMin > 0
+      ? `Escolha de ${vegMin} a ${vegMax} vegetal(is) — eles são adicionais ao seu kit`
+      : `Escolha até ${vegMax} vegetal(is) para acompanhar seu kit (opcional)`;
+
+  const container = document.getElementById('vegetais-container');
+  container.innerHTML = vegetais.map(v => `
+    <button type="button"
+            id="vegetal-btn-${v.id}"
+            onclick="toggleVegetal(${v.id})"
+            class="vegetal-btn flex items-center gap-2 px-4 py-3 border-2 border-sage/30
+                   rounded-xl bg-white text-left text-sm font-medium hover:border-forest
+                   transition-all w-full">
+      <span class="text-xl">🥦</span>
+      <div>
+        <p class="font-medium">${v.nome}</p>
+        <p class="text-xs text-gray-400">${v.kcal} kcal</p>
+      </div>
+    </button>`).join('');
+}
 
   function toggleVegetal(id) {
     const vegMax = currentCombo?.vegetal_max || 0;
     const idx    = vegetaisSelecionados.indexOf(id);
     const btn    = document.getElementById(`vegetal-btn-${id}`);
+
     if (idx === -1) {
       if (vegetaisSelecionados.length >= vegMax) {
         showToast(`⚠️ Máximo de ${vegMax} vegetal(is) para este combo`);
@@ -1400,57 +1186,67 @@ Regras:
       </div>`).join('');
   }
 
-  function renderMarmitas() {
-    const disponiveis = marmitasCache.filter(m =>
-      m.visivel && m.cat !== 'vegetal' && m.dispCombo !== false
-    );
-    const el = document.getElementById('marmitas-container');
-    if (!disponiveis.length) {
-      el.innerHTML = '<p class="text-gray-400 text-center py-8">Nenhum item disponível.</p>';
-      return;
-    }
-    const porCat = {};
-    disponiveis.forEach(m => {
-      if (!porCat[m.cat]) porCat[m.cat] = [];
-      porCat[m.cat].push(m);
-    });
-    el.innerHTML = Object.keys(porCat).map(cat => `
-      <div class="mb-6">
-        <p class="text-xs font-bold uppercase text-gray-400 mb-3 ml-1">${CAT_ICONS[cat] || '🍴 Outros'}</p>
-        ${porCat[cat].map(m => `
-          <div class="bg-white p-4 rounded-2xl flex justify-between items-center shadow-sm border border-gray-100 hover:border-sage/50 transition-all mb-2">
-            <div class="flex-1 pr-4">
-              <p class="font-bold text-forest">${CAT_EMOJI[m.cat]||'🍴'} ${m.nome}</p>
-              <p class="text-xs text-gray-400 leading-tight mt-1">${m.desc} • ${m.kcal} kcal</p>
-            </div>
-            <div class="flex items-center gap-3 bg-cream p-1 rounded-xl">
-              <button type="button" onclick="updateQty(${m.id},-1)"
-                      class="w-8 h-8 rounded-lg bg-white shadow-sm font-bold hover:bg-red-50 transition-all">−</button>
-              <span id="qty-${m.id}" class="font-bold w-6 text-center">${quantities[m.id] || 0}</span>
-              <button type="button" onclick="updateQty(${m.id},1)"
-                      class="w-8 h-8 rounded-lg bg-forest text-white shadow-sm font-bold hover:bg-forest/80 transition-all">+</button>
-            </div>
-          </div>`).join('')}
-      </div>`).join('');
+function renderMarmitas() {
+  // Itens principais: visíveis, disponíveis em combo, SEM vegetais
+  const disponiveis = marmitasCache.filter(m =>
+    m.visivel && m.cat !== 'vegetal' && m.dispCombo !== false
+  );
+  const el = document.getElementById('marmitas-container');
+  if (!disponiveis.length) {
+    el.innerHTML = '<p class="text-gray-400 text-center py-8">Nenhum item disponível.</p>';
+    return;
   }
 
-  function updateQty(id, delta) {
-    const total = Object.values(quantities).reduce((a,b) => a+b, 0);
-    if (delta > 0 && total >= maxMarmitas) {
-      showToast(`⚠️ Kit completo! Máximo de ${maxMarmitas} marmitas`);
-      return;
-    }
-    quantities[id] = Math.max(0, (quantities[id] || 0) + delta);
-    const el = document.getElementById(`qty-${id}`);
-    if (el) el.textContent = quantities[id];
-    const novoTotal = Object.values(quantities).reduce((a,b) => a+b, 0);
-    document.getElementById('current-marmitas').textContent = novoTotal;
-    const pct = Math.min(100, Math.round((novoTotal / maxMarmitas) * 100));
-    const bar = document.getElementById('progress-bar');
-    if (bar) bar.style.width = pct + '%';
-    if (novoTotal === maxMarmitas) showToast('🎉 Kit completo! Agora escolha seus vegetais abaixo.');
-    atualizarTotal();
+  // Agrupar por categoria
+  const porCat = {};
+  disponiveis.forEach(m => {
+    if (!porCat[m.cat]) porCat[m.cat] = [];
+    porCat[m.cat].push(m);
+  });
+
+  el.innerHTML = Object.keys(porCat).map(cat => `
+    <div class="mb-6">
+      <p class="text-xs font-bold uppercase text-gray-400 mb-3 ml-1">${CAT_ICONS[cat] || '🍴 Outros'}</p>
+      ${porCat[cat].map(m => `
+        <div class="bg-white p-4 rounded-2xl flex justify-between items-center shadow-sm border border-gray-100 hover:border-sage/50 transition-all mb-2">
+          <div class="flex-1 pr-4">
+            <p class="font-bold text-forest">${CAT_EMOJI[m.cat]||'🍴'} ${m.nome}</p>
+            <p class="text-xs text-gray-400 leading-tight mt-1">${m.desc} • ${m.kcal} kcal</p>
+          </div>
+          <div class="flex items-center gap-3 bg-cream p-1 rounded-xl">
+            <button type="button" onclick="updateQty(${m.id},-1)"
+                    class="w-8 h-8 rounded-lg bg-white shadow-sm font-bold hover:bg-red-50 transition-all">−</button>
+            <span id="qty-${m.id}" class="font-bold w-6 text-center">0</span>
+            <button type="button" onclick="updateQty(${m.id},1)"
+                    class="w-8 h-8 rounded-lg bg-forest text-white shadow-sm font-bold hover:bg-forest/80 transition-all">+</button>
+          </div>
+        </div>`).join('')}
+    </div>`).join('');
+}
+
+function updateQty(id, delta) {
+  const total = Object.values(quantities).reduce((a,b) => a+b, 0);
+  if (delta > 0 && total >= maxMarmitas) {
+    showToast(`⚠️ Kit completo! Máximo de ${maxMarmitas} marmitas`);
+    return;
   }
+  quantities[id] = Math.max(0, (quantities[id] || 0) + delta);
+  const el = document.getElementById(`qty-${id}`);
+  if (el) el.textContent = quantities[id];
+
+  const novoTotal = Object.values(quantities).reduce((a,b) => a+b, 0);
+  document.getElementById('current-marmitas').textContent = novoTotal;
+
+  // Atualizar barra de progresso
+  const pct = Math.min(100, Math.round((novoTotal / maxMarmitas) * 100));
+  const bar  = document.getElementById('progress-bar');
+  if (bar) bar.style.width = pct + '%';
+
+  // Toast quando completar
+  if (novoTotal === maxMarmitas) showToast('🎉 Kit completo! Agora escolha seus vegetais');
+
+  atualizarTotal();
+}
 
   function atualizarTotal() {
     if (currentCombo)
@@ -1484,11 +1280,14 @@ Regras:
       showToast('❌ Preencha nome, telefone, endereço e cidade');
       return;
     }
+
+    // Validar mínimo de vegetais
     const vegMin = currentCombo?.vegetal_min || 0;
     if (vegMin > 0 && vegetaisSelecionados.length < vegMin) {
       showToast(`⚠️ Selecione pelo menos ${vegMin} vegetal(is)`);
       return;
     }
+
     if (currentCombo.tipo === 'fechado') {
       registrarEEnviar(nome, tel, endereco, cidade, obs, true);
     } else {
@@ -1501,9 +1300,10 @@ Regras:
 
   async function registrarEEnviar(nome, tel, endereco, cidade, obs, isFechado) {
     const temperos = ['🌿 Suave','🌶️ Médio','🔥 Picante'];
+
     const itens_detalhes = {};
-    let listaWpp = '';
-    let totalItens = 0;
+    let   listaWpp       = '';
+    let   totalItens     = 0;
 
     if (isFechado) {
       const porCat = {};
@@ -1533,6 +1333,7 @@ Regras:
       });
     }
 
+    // Vegetais selecionados
     const nomesVegetais = vegetaisSelecionados.map(vid => {
       const v = marmitasCache.find(x => x.id === vid);
       return v ? v.nome : '';
@@ -1547,7 +1348,7 @@ Regras:
     }
 
     const pedidoId = 'pedido_' + Date.now();
-    const pedido = {
+    const pedido   = {
       id:               pedidoId,
       timestamp:        new Date().toISOString(),
       cliente_nome:     nome,
@@ -1569,7 +1370,7 @@ Regras:
     atualizarBadgePedidos();
 
     const tipo = isFechado ? '📦 COMBO FECHADO' : '🛒 PERSONALIZADO';
-    const msg = encodeURIComponent(
+    const msg  = encodeURIComponent(
       `*🍱 NOVO PEDIDO – SABOR E SAÚDE*\n` +
       `━━━━━━━━━━━━━━━━━━━━\n` +
       `*CLIENTE:* ${nome}\n` +
@@ -1587,6 +1388,8 @@ Regras:
 
     showToast('✅ Pedido salvo! Abrindo WhatsApp...');
     setTimeout(() => window.open(`https://wa.me/${WHATSAPP_RESTAURANTE}?text=${msg}`, '_blank'), 800);
+
+    // RESETAR tudo após envio
     setTimeout(() => resetarAposEnvio(), 1200);
   }
 
@@ -1597,7 +1400,6 @@ Regras:
     spiceLevel           = 2;
     document.getElementById('marmitas-section').classList.add('hidden');
     document.getElementById('secao-vegetais').classList.add('hidden');
-    document.getElementById('ia-cliente-box').classList.add('hidden');
     ['cliente-nome','cliente-tel','cliente-endereco','cliente-cidade','observations']
       .forEach(id => { document.getElementById(id).value = ''; });
     setSpiceLevel(2);
@@ -1617,6 +1419,7 @@ Regras:
     const inicio = document.getElementById('filtro-data-inicio').value;
     const fim    = document.getElementById('filtro-data-fim').value;
     let filtrados = [...pedidosCache];
+
     if (inicio && fim) {
       const dtInicio = new Date(inicio + 'T00:00:00');
       const dtFim    = new Date(fim    + 'T23:59:59');
@@ -1629,6 +1432,7 @@ Regras:
     } else {
       document.getElementById('pedidos-periodo-label').textContent = 'Todos os pedidos';
     }
+
     renderPedidos(filtrados);
     renderFaturamentoPorCombo(filtrados);
     renderFaturamentoPorItem(filtrados);
@@ -1655,33 +1459,43 @@ Regras:
     const tbody    = document.getElementById('tabela-pedidos');
     const vazio    = document.getElementById('pedidos-vazio');
     const ordenados = [...lista].sort((a,b) => new Date(b.timestamp) - new Date(a.timestamp));
+
     if (!ordenados.length) {
       tbody.innerHTML = '';
       vazio.classList.remove('hidden');
       return;
     }
     vazio.classList.add('hidden');
+
     tbody.innerHTML = ordenados.map(p => {
-      const dt = new Date(p.timestamp);
-      const dataHora = `${dt.toLocaleDateString('pt-BR')} ${dt.toLocaleTimeString('pt-BR', {hour:'2-digit',minute:'2-digit'})}`;
+      const dt  = new Date(p.timestamp);
+      const tel = p.cliente_tel ? p.cliente_tel.replace(/\D/g,'') : '';
+      const btnWpp = tel
+        ? `<button onclick="abrirWhatsAppCliente('${tel}','${p.cliente_nome}')"
+                   class="text-green-600 hover:text-green-800 font-bold" title="WhatsApp">📱</button>`
+        : `<span class="text-gray-300" title="Sem telefone">📵</span>`;
       return `
-        <tr class="table-row">
-          <td class="px-4 py-3 text-xs text-gray-500">${dataHora}</td>
+        <tr class="table-row border-b border-gray-50">
+          <td class="px-4 py-3 text-xs text-gray-500 whitespace-nowrap">
+            ${dt.toLocaleDateString('pt-BR')}<br>
+            <span class="text-gray-400">${dt.toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'})}</span>
+          </td>
           <td class="px-4 py-3 font-medium">${p.cliente_nome}</td>
-          <td class="px-4 py-3 text-xs text-gray-500">${p.cliente_tel}</td>
-          <td class="px-4 py-3 text-xs">${p.cliente_cidade || '-'}</td>
-          <td class="px-4 py-3 text-xs">${p.combo_nome}</td>
-          <td class="px-4 py-3 text-right font-bold text-forest">R$ ${(p.total||0).toFixed(2)}</td>
+          <td class="px-4 py-3 text-xs text-gray-500">${p.cliente_tel || '—'}</td>
+          <td class="px-4 py-3 text-xs text-gray-500">${p.cliente_cidade || '—'}</td>
+          <td class="px-4 py-3 text-xs">
+            <span class="bg-sage/10 text-forest px-2 py-1 rounded-full font-bold">${p.combo_nome}</span>
+          </td>
+          <td class="px-4 py-3 text-right font-bold text-terracotta whitespace-nowrap">
+            R$ ${(p.total||0).toFixed(2)}
+          </td>
           <td class="px-4 py-3 text-center">
-            <div class="flex gap-1 justify-center">
+            <div class="flex items-center justify-center gap-2">
+              ${btnWpp}
               <button onclick="verPedido('${p.id}')"
-                      class="text-xs bg-forest text-white px-2 py-1 rounded-lg hover:bg-forest/80">
-                Ver
-              </button>
+                      class="text-blue-500 hover:text-blue-700 font-bold" title="Ver detalhes">🔍</button>
               <button onclick="excluirPedido('${p.id}')"
-                      class="text-xs bg-red-100 text-red-600 px-2 py-1 rounded-lg hover:bg-red-200">
-                Del
-              </button>
+                      class="text-red-400 hover:text-red-600 font-bold" title="Excluir">🗑️</button>
             </div>
           </td>
         </tr>`;
@@ -1689,66 +1503,140 @@ Regras:
   }
 
   function renderFaturamentoPorCombo(lista) {
-    const por = {};
+    const el   = document.getElementById('ranking-combos');
+    const mapa = {};
     lista.forEach(p => {
-      por[p.combo_nome] = (por[p.combo_nome] || 0) + (p.total || 0);
+      const k = p.combo_nome || 'Desconhecido';
+      if (!mapa[k]) mapa[k] = { qtd: 0, total: 0 };
+      mapa[k].qtd++;
+      mapa[k].total += p.total || 0;
     });
-    const sorted = Object.entries(por).sort((a,b) => b[1]-a[1]);
-    const el = document.getElementById('ranking-combos');
-    if (!sorted.length) { el.innerHTML = '<p class="text-gray-400 text-xs text-center py-4">Sem dados</p>'; return; }
-    el.innerHTML = sorted.map(([nome, val]) => `
-      <div class="flex justify-between items-center py-2 border-b border-gray-50 last:border-0">
-        <span class="text-sm font-medium text-gray-700">${nome}</span>
-        <span class="text-sm font-bold text-terracotta">R$ ${val.toFixed(2)}</span>
-      </div>`).join('');
+    const ranking = Object.entries(mapa).sort((a,b) => b[1].total - a[1].total);
+    if (!ranking.length) {
+      el.innerHTML = '<p class="text-gray-400 text-sm text-center py-4">Sem dados no período</p>';
+      return;
+    }
+    const maxVal = ranking[0][1].total || 1;
+    el.innerHTML = ranking.map(([nome, dados]) => {
+      const pct = Math.round((dados.total / maxVal) * 100);
+      return `
+        <div>
+          <div class="flex justify-between items-center mb-1">
+            <span class="text-sm font-bold text-forest truncate max-w-[60%]">${nome}</span>
+            <div class="text-right">
+              <span class="text-sm font-bold text-terracotta">R$ ${dados.total.toFixed(2)}</span>
+              <span class="text-xs text-gray-400 ml-2">${dados.qtd} pedido${dados.qtd>1?'s':''}</span>
+            </div>
+          </div>
+          <div class="w-full bg-gray-100 rounded-full h-2">
+            <div class="bg-terracotta h-2 rounded-full" style="width:${pct}%"></div>
+          </div>
+        </div>`;
+    }).join('');
   }
 
   function renderFaturamentoPorItem(lista) {
-    const por = {};
+    const el   = document.getElementById('ranking-itens');
+    const mapa = {};
     lista.forEach(p => {
       Object.entries(p.itens_detalhes || {}).forEach(([nome, qtd]) => {
-        por[nome] = (por[nome] || 0) + qtd;
+        if (!mapa[nome]) mapa[nome] = 0;
+        mapa[nome] += qtd;
       });
     });
-    const sorted = Object.entries(por).sort((a,b) => b[1]-a[1]).slice(0,10);
-    const el = document.getElementById('ranking-itens');
-    if (!sorted.length) { el.innerHTML = '<p class="text-gray-400 text-xs text-center py-4">Sem dados</p>'; return; }
-    const max = sorted[0][1];
-    el.innerHTML = sorted.map(([nome, qtd]) => `
-      <div class="py-1">
-        <div class="flex justify-between text-xs mb-1">
-          <span class="font-medium text-gray-700 truncate max-w-[70%]">${nome}</span>
-          <span class="font-bold text-forest">${qtd}x</span>
-        </div>
-        <div class="w-full bg-gray-100 rounded-full h-1.5">
-          <div class="bg-forest h-1.5 rounded-full" style="width:${Math.round((qtd/max)*100)}%"></div>
-        </div>
-      </div>`).join('');
+    const ranking = Object.entries(mapa).sort((a,b) => b[1]-a[1]).slice(0,10);
+    if (!ranking.length) {
+      el.innerHTML = '<p class="text-gray-400 text-sm text-center py-4">Sem dados no período</p>';
+      return;
+    }
+    const maxQtd = ranking[0][1] || 1;
+    el.innerHTML = ranking.map(([nome, qtd]) => {
+      const pct = Math.round((qtd / maxQtd) * 100);
+      return `
+        <div>
+          <div class="flex justify-between items-center mb-1">
+            <span class="text-sm font-bold text-forest truncate max-w-[70%]">${nome}</span>
+            <span class="text-sm font-bold text-sage">${qtd}x</span>
+          </div>
+          <div class="w-full bg-gray-100 rounded-full h-2">
+            <div class="bg-sage h-2 rounded-full" style="width:${pct}%"></div>
+          </div>
+        </div>`;
+    }).join('');
   }
 
+  // ============================================================
+  // MODAL VISUALIZAR PEDIDO
+  // ============================================================
   function verPedido(id) {
     pedidoAtualModal = pedidosCache.find(p => p.id === id);
     if (!pedidoAtualModal) return;
     const p  = pedidoAtualModal;
     const dt = new Date(p.timestamp);
-    const itens = Object.entries(p.itens_detalhes || {})
-      .map(([nome, qtd]) => `<li class="text-sm py-1 flex gap-2"><span class="font-bold text-terracotta">${qtd}x</span><span>${nome}</span></li>`)
-      .join('');
+    const tel = p.cliente_tel ? p.cliente_tel.replace(/\D/g,'') : '';
+    document.getElementById('btn-wpp-cliente').style.display = tel ? '' : 'none';
+
+    const itensHtml = Object.entries(p.itens_detalhes || {}).map(([nome, qtd]) =>
+      `<li class="flex justify-between text-sm py-1 border-b border-gray-50">
+         <span>${nome}</span>
+         <span class="font-bold text-forest">${qtd}x</span>
+       </li>`
+    ).join('');
+
+    const vegetaisHtml = (p.vegetais && p.vegetais.length)
+      ? `<div class="bg-green-50 border border-green-100 rounded-xl p-4">
+           <p class="text-xs text-gray-400 uppercase font-bold mb-2">🥦 Vegetais Selecionados</p>
+           <p class="text-sm font-medium text-green-700">${p.vegetais.join(', ')}</p>
+         </div>` : '';
+
     document.getElementById('modal-pedido-content').innerHTML = `
-      <div class="grid grid-cols-2 gap-3 text-sm">
-        <div class="bg-cream p-3 rounded-xl"><p class="text-xs text-gray-400 mb-1">Cliente</p><p class="font-bold">${p.cliente_nome}</p></div>
-        <div class="bg-cream p-3 rounded-xl"><p class="text-xs text-gray-400 mb-1">WhatsApp</p><p class="font-bold">${p.cliente_tel}</p></div>
-        <div class="bg-cream p-3 rounded-xl col-span-2"><p class="text-xs text-gray-400 mb-1">Endereço</p><p class="font-bold">${p.cliente_endereco}, ${p.cliente_cidade}</p></div>
-        <div class="bg-cream p-3 rounded-xl"><p class="text-xs text-gray-400 mb-1">Combo</p><p class="font-bold">${p.combo_nome}</p></div>
-        <div class="bg-cream p-3 rounded-xl"><p class="text-xs text-gray-400 mb-1">Tempero</p><p class="font-bold">${p.tempero || '-'}</p></div>
-        <div class="bg-cream p-3 rounded-xl"><p class="text-xs text-gray-400 mb-1">Data/Hora</p><p class="font-bold">${dt.toLocaleDateString('pt-BR')} ${dt.toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'})}</p></div>
-        <div class="bg-cream p-3 rounded-xl"><p class="text-xs text-gray-400 mb-1">Total</p><p class="font-bold text-terracotta">R$ ${(p.total||0).toFixed(2)}</p></div>
+      <div class="bg-cream rounded-xl p-4 space-y-2">
+        <div class="flex justify-between">
+          <span class="text-xs text-gray-400 uppercase font-bold">Data/Hora</span>
+          <span class="text-sm font-bold">${dt.toLocaleDateString('pt-BR')} ${dt.toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'})}</span>
+        </div>
+        <div class="flex justify-between">
+          <span class="text-xs text-gray-400 uppercase font-bold">Cliente</span>
+          <span class="text-sm font-bold">${p.cliente_nome}</span>
+        </div>
+        <div class="flex justify-between">
+          <span class="text-xs text-gray-400 uppercase font-bold">WhatsApp</span>
+          <span class="text-sm">${p.cliente_tel || '—'}</span>
+        </div>
+        <div class="flex justify-between">
+          <span class="text-xs text-gray-400 uppercase font-bold">Endereço</span>
+          <span class="text-sm text-right max-w-[60%]">${p.cliente_endereco || '—'}, ${p.cliente_cidade || ''}</span>
+        </div>
       </div>
-      <div class="mt-4">
-        <p class="text-xs font-bold uppercase text-gray-400 mb-2">Itens do Pedido</p>
-        <ul class="divide-y divide-gray-50 bg-cream rounded-xl px-4">${itens}</ul>
+      <div class="bg-cream rounded-xl p-4 space-y-2">
+        <div class="flex justify-between">
+          <span class="text-xs text-gray-400 uppercase font-bold">Combo</span>
+          <span class="text-sm font-bold text-forest">${p.combo_nome}</span>
+        </div>
+        <div class="flex justify-between">
+          <span class="text-xs text-gray-400 uppercase font-bold">Tipo</span>
+          <span class="text-sm">${p.combo_tipo === 'fechado' ? '📦 Fechado' : '🛒 Aberto'}</span>
+        </div>
+        <div class="flex justify-between">
+          <span class="text-xs text-gray-400 uppercase font-bold">Tempero</span>
+          <span class="text-sm">${p.tempero || '—'}</span>
+        </div>
+        ${p.observacoes ? `
+        <div class="flex justify-between">
+          <span class="text-xs text-gray-400 uppercase font-bold">Obs</span>
+          <span class="text-sm text-right max-w-[60%]">${p.observacoes}</span>
+        </div>` : ''}
       </div>
-      ${p.observacoes ? `<div class="mt-3 bg-yellow-50 p-3 rounded-xl text-sm"><p class="text-xs font-bold text-gray-400 mb-1">Observações</p><p>${p.observacoes}</p></div>` : ''}`;
+      ${vegetaisHtml}
+      <div class="bg-white border border-sage/20 rounded-xl p-4">
+        <p class="text-xs text-gray-400 uppercase font-bold mb-3">Itens do Pedido</p>
+        <ul class="space-y-1">${itensHtml || '<li class="text-sm text-gray-400">Combo fechado</li>'}</ul>
+      </div>
+      <div class="flex justify-between items-center bg-forest text-white rounded-xl p-4">
+        <span class="font-bold uppercase text-sm">Total do Pedido</span>
+        <span class="text-2xl font-display font-bold">R$ ${(p.total||0).toFixed(2)}</span>
+      </div>`;
+
     document.getElementById('modal-pedido').classList.remove('hidden');
   }
 
@@ -1757,32 +1645,71 @@ Regras:
     pedidoAtualModal = null;
   }
 
-  function abrirWhatsAppCliente() {
-    if (!pedidoAtualModal) return;
-    window.open(`https://wa.me/${pedidoAtualModal.cliente_tel.replace(/\D/g,'')}`, '_blank');
+  function abrirWhatsAppCliente(tel, nome) {
+    let numero = tel, nomeCliente = nome;
+    if (!tel && pedidoAtualModal) {
+      numero      = pedidoAtualModal.cliente_tel.replace(/\D/g,'');
+      nomeCliente = pedidoAtualModal.cliente_nome;
+    }
+    if (!numero) { showToast('❌ Cliente sem número cadastrado'); return; }
+    if (!numero.startsWith('55')) numero = '55' + numero;
+    const msg = encodeURIComponent(`Olá ${nomeCliente}! 😊 Aqui é do *Sabor e Saúde*. Tudo bem?`);
+    window.open(`https://wa.me/${numero}?text=${msg}`, '_blank');
   }
 
-  function exportarBancoDados() {
-    const dados = { marmitas: marmitasCache, combos: combosCache, pedidos: pedidosCache, exportado_em: new Date().toISOString() };
-    const blob = new Blob([JSON.stringify(dados, null, 2)], { type: 'application/json' });
-    const url  = URL.createObjectURL(blob);
-    const a    = document.createElement('a');
-    a.href     = url;
-    a.download = `sabor-saude-backup-${dataHoje()}.json`;
-    a.click();
-    URL.revokeObjectURL(url);
-    showToast('✅ Backup exportado!');
+  // ============================================================
+  // EXPORTAR BANCO DE DADOS
+  // ============================================================
+  async function exportarBancoDados() {
+    showToast('⏳ Preparando exportação...');
+    const marmitas = await getMarmitas();
+    const combos   = await getCombos();
+    const pedidos  = await getPedidos();
+
+    const jsonCompleto = { exportado_em: new Date().toLocaleString('pt-BR'), marmitas, combos, pedidos };
+    const blobJson  = new Blob([JSON.stringify(jsonCompleto, null, 2)], { type: 'application/json' });
+    const linkJson  = document.createElement('a');
+    linkJson.href   = URL.createObjectURL(blobJson);
+    linkJson.download = `saboresaude_backup_${dataHoje()}.json`;
+    linkJson.click();
+
+    if (pedidos.length) {
+      const cab   = ['ID','Data','Hora','Cliente','WhatsApp','Endereço','Cidade','Combo','Tipo','Tempero','Vegetais','Total (R$)','Qtd Itens','Itens','Observações'];
+      const linhas = pedidos
+        .sort((a,b) => new Date(b.timestamp) - new Date(a.timestamp))
+        .map(p => {
+          const dt    = new Date(p.timestamp);
+          const itens = Object.entries(p.itens_detalhes || {}).map(([n,q]) => `${q}x ${n}`).join(' | ');
+          return [
+            p.id,
+            dt.toLocaleDateString('pt-BR'),
+            dt.toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'}),
+            p.cliente_nome,
+            p.cliente_tel || '',
+            (p.cliente_endereco || '').replace(/\n/g,' '),
+            p.cliente_cidade || '',
+            p.combo_nome,
+            p.combo_tipo === 'fechado' ? 'Fechado' : 'Aberto',
+            p.tempero || '',
+            (p.vegetais || []).join(' | '),
+            (p.total || 0).toFixed(2),
+            p.qtd_itens || 0,
+            itens,
+            (p.observacoes || '').replace(/\n/g,' ')
+          ].map(v => `"${v}"`).join(',');
+        });
+      const csvContent = '\uFEFF' + [cab.join(','), ...linhas].join('\n');
+      const blobCsv    = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+      const linkCsv    = document.createElement('a');
+      linkCsv.href     = URL.createObjectURL(blobCsv);
+      linkCsv.download = `saboresaude_pedidos_${dataHoje()}.csv`;
+      setTimeout(() => linkCsv.click(), 500);
+    }
+    setTimeout(() => showToast('✅ Arquivos exportados!'), 800);
   }
 
-  function dataHoje() {
-    return new Date().toISOString().split('T')[0];
-  }
-
-  function formatarData(str) {
-    if (!str) return '';
-    const [y,m,d] = str.split('-');
-    return `${d}/${m}/${y}`;
-  }
+  function dataHoje()        { return new Date().toISOString().split('T')[0]; }
+  function formatarData(str) { if (!str) return ''; const [y,m,d]=str.split('-'); return `${d}/${m}/${y}`; }
 
   // ============================================================
   // ADMIN: MARMITAS
@@ -1790,108 +1717,113 @@ Regras:
   function renderMarmitasAdmin() {
     const el = document.getElementById('marmitas-admin-list');
     if (!marmitasCache.length) {
-      el.innerHTML = '<p class="text-gray-400 col-span-2 text-center py-8">Nenhum item cadastrado.</p>';
+      el.innerHTML = '<p class="text-gray-400 text-center py-8 col-span-full">Nenhum item cadastrado.</p>';
       return;
     }
-    el.innerHTML = marmitasCache.map(m => `
-      <div class="bg-white p-5 rounded-2xl shadow-sm border ${m.visivel ? 'border-sage/20' : 'border-gray-200 opacity-60'}">
-        <div class="flex justify-between items-start mb-3">
-          <div>
-            <p class="font-bold text-forest">${CAT_EMOJI[m.cat]||'🍴'} ${m.nome}</p>
-            <p class="text-xs text-gray-400 mt-1">${m.cat} • ${m.kcal} kcal • R$ ${(m.preco||0).toFixed(2)}</p>
+    el.innerHTML = marmitasCache.map(m => {
+      const vBadge    = m.visivel
+        ? '<span class="text-xs bg-green-100 text-green-700 px-2 py-1 rounded-full">👁️ Visível</span>'
+        : '<span class="text-xs bg-gray-100 text-gray-500 px-2 py-1 rounded-full">👻 Oculto</span>';
+      const cBadge    = m.dispCombo !== false
+        ? '<span class="text-xs bg-blue-100 text-blue-600 px-2 py-1 rounded-full">📦 No combo</span>'
+        : '<span class="text-xs bg-orange-100 text-orange-500 px-2 py-1 rounded-full">🚫 Fora do combo</span>';
+      const btnToggle = m.visivel
+        ? `<button onclick="toggleMarmita(${m.id},false)"
+                   class="text-xs bg-yellow-50 text-yellow-700 px-3 py-2 rounded-lg font-bold hover:bg-yellow-100 transition-all">
+             👻 Ocultar</button>`
+        : `<button onclick="toggleMarmita(${m.id},true)"
+                   class="text-xs bg-green-50 text-green-700 px-3 py-2 rounded-lg font-bold hover:bg-green-100 transition-all">
+             👁️ Exibir</button>`;
+      return `
+        <div class="bg-white p-5 rounded-2xl shadow-sm border border-sage/20 ${!m.visivel?'opacity-60':''}">
+          <div class="flex justify-between items-start mb-3">
+            <div class="flex-1">
+              <h3 class="font-bold text-lg text-forest">${m.nome}</h3>
+              <div class="flex gap-2 mt-2 flex-wrap">
+                <span class="text-xs text-gray-400 uppercase bg-gray-50 px-2 py-1 rounded">${m.cat}</span>
+                ${vBadge} ${cBadge}
+              </div>
+            </div>
+            <span class="text-2xl font-bold text-terracotta ml-4">R$ ${m.preco.toFixed(2)}</span>
           </div>
-          <div class="flex gap-1">
-            <button onclick="toggleMarmita(${m.id})"
-                    class="text-xs px-2 py-1 rounded-lg ${m.visivel ? 'bg-sage/20 text-forest' : 'bg-gray-100 text-gray-400'} hover:opacity-80">
-              ${m.visivel ? '👁️' : '🚫'}
-            </button>
-            <button onclick="editarMarmita(${m.id})"
-                    class="text-xs bg-forest/10 text-forest px-2 py-1 rounded-lg hover:bg-forest/20">
-              ✏️
-            </button>
-            <button onclick="excluirMarmitaAdmin(${m.id})"
-                    class="text-xs bg-red-50 text-red-500 px-2 py-1 rounded-lg hover:bg-red-100">
-              🗑️
-            </button>
+          <p class="text-sm text-gray-600 mb-3">${m.desc}</p>
+          <div class="flex items-center justify-between flex-wrap gap-2">
+            <span class="text-xs bg-sage/10 px-3 py-1 rounded-full font-bold text-sage">${m.kcal} kcal</span>
+            <div class="flex gap-2 flex-wrap">
+              ${btnToggle}
+              <button onclick="editarMarmita(${m.id})"
+                      class="text-xs bg-blue-50 text-blue-600 px-3 py-2 rounded-lg font-bold hover:bg-blue-100 transition-all">
+                ✏️ Editar</button>
+              <button onclick="excluirMarmitaAdmin(${m.id})"
+                      class="text-xs bg-red-50 text-red-600 px-3 py-2 rounded-lg font-bold hover:bg-red-100 transition-all">
+                🗑️ Excluir</button>
+            </div>
           </div>
-        </div>
-        <p class="text-sm text-gray-600">${m.desc}</p>
-        <div class="flex gap-2 mt-2 flex-wrap">
-          ${m.dispCombo !== false ? '<span class="text-[10px] bg-blue-50 text-blue-500 px-2 py-0.5 rounded-full">📦 Em combos</span>' : '<span class="text-[10px] bg-gray-100 text-gray-400 px-2 py-0.5 rounded-full">Fora de combos</span>'}
-        </div>
-      </div>`).join('');
+        </div>`;
+    }).join('');
   }
 
-  async function toggleMarmita(id) {
+  async function toggleMarmita(id, estado) {
     const m = marmitasCache.find(x => x.id === id);
     if (!m) return;
-    m.visivel = !m.visivel;
+    m.visivel = estado;
     await saveMarmita(m);
-    renderMarmitasAdmin();
-    renderCardapio();
-    showToast(m.visivel ? '✅ Item visível' : '🚫 Item ocultado');
+    showToast(`✅ Item ${estado ? 'visível' : 'oculto'}!`);
+    if (!firebaseInitialized) { renderMarmitasAdmin(); renderCardapio(); }
   }
 
-  function abrirModalMarmita() {
-    document.getElementById('modal-marmita-title').textContent = 'Novo Item';
-    document.getElementById('edit-marmita-id').value = '';
-    document.getElementById('marmita-nome').value    = '';
-    document.getElementById('marmita-preco').value   = '';
-    document.getElementById('marmita-kcal').value    = '';
-    document.getElementById('marmita-desc').value    = '';
-    document.getElementById('marmita-cat').value     = 'marmita';
-    document.getElementById('marmita-visivel').checked          = true;
-    document.getElementById('marmita-disponivel-combo').checked = true;
+  function abrirModalMarmita(id = null) {
+    document.getElementById('modal-marmita-title').textContent = id ? 'Editar Item' : 'Novo Item';
+    document.getElementById('edit-marmita-id').value = id || '';
+    if (id) {
+      const m = marmitasCache.find(x => x.id === id);
+      if (m) {
+        document.getElementById('marmita-nome').value             = m.nome;
+        document.getElementById('marmita-preco').value            = m.preco;
+        document.getElementById('marmita-kcal').value             = m.kcal;
+        document.getElementById('marmita-desc').value             = m.desc;
+        document.getElementById('marmita-cat').value              = m.cat;
+        document.getElementById('marmita-visivel').checked        = m.visivel !== false;
+        document.getElementById('marmita-disponivel-combo').checked = m.dispCombo !== false;
+      }
+    } else {
+      ['marmita-nome','marmita-preco','marmita-kcal','marmita-desc'].forEach(f => {
+        document.getElementById(f).value = '';
+      });
+      document.getElementById('marmita-cat').value                = 'marmita';
+      document.getElementById('marmita-visivel').checked          = true;
+      document.getElementById('marmita-disponivel-combo').checked = true;
+    }
     document.getElementById('modal-marmita').classList.remove('hidden');
   }
 
-  function closeModalMarmita() {
-    document.getElementById('modal-marmita').classList.add('hidden');
-  }
-
-  function editarMarmita(id) {
-    const m = marmitasCache.find(x => x.id === id);
-    if (!m) return;
-    document.getElementById('modal-marmita-title').textContent = 'Editar Item';
-    document.getElementById('edit-marmita-id').value = m.id;
-    document.getElementById('marmita-nome').value    = m.nome;
-    document.getElementById('marmita-preco').value   = m.preco || 0;
-    document.getElementById('marmita-kcal').value    = m.kcal;
-    document.getElementById('marmita-desc').value    = m.desc;
-    document.getElementById('marmita-cat').value     = m.cat;
-    document.getElementById('marmita-visivel').checked          = m.visivel;
-    document.getElementById('marmita-disponivel-combo').checked = m.dispCombo !== false;
-    document.getElementById('modal-marmita').classList.remove('hidden');
-  }
+  function closeModalMarmita() { document.getElementById('modal-marmita').classList.add('hidden'); }
+  function editarMarmita(id)   { abrirModalMarmita(id); }
 
   async function salvarMarmita(e) {
     e.preventDefault();
-    const idVal = document.getElementById('edit-marmita-id').value;
-    const m = {
-      id:        idVal ? parseInt(idVal) : Date.now(),
+    const id = document.getElementById('edit-marmita-id').value;
+    const marmita = {
+      id:        id ? parseInt(id) : (marmitasCache.length ? Math.max(...marmitasCache.map(m=>m.id))+1 : 1),
       nome:      document.getElementById('marmita-nome').value.trim(),
-      preco:     parseFloat(document.getElementById('marmita-preco').value) || 0,
+      preco:     parseFloat(document.getElementById('marmita-preco').value),
       kcal:      parseInt(document.getElementById('marmita-kcal').value),
       desc:      document.getElementById('marmita-desc').value.trim(),
       cat:       document.getElementById('marmita-cat').value,
       visivel:   document.getElementById('marmita-visivel').checked,
       dispCombo: document.getElementById('marmita-disponivel-combo').checked
     };
-    await saveMarmita(m);
-    marmitasCache = await getMarmitas();
+    await saveMarmita(marmita);
+    showToast(id ? '✅ Item atualizado!' : '✅ Item criado!');
     closeModalMarmita();
-    renderMarmitasAdmin();
-    renderCardapio();
-    showToast('✅ Item salvo com sucesso!');
+    if (!firebaseInitialized) { renderMarmitasAdmin(); renderCardapio(); }
   }
 
   async function excluirMarmitaAdmin(id) {
     if (!confirm('Excluir este item do cardápio?')) return;
     await deleteMarmita(id);
-    marmitasCache = await getMarmitas();
-    renderMarmitasAdmin();
-    renderCardapio();
     showToast('✅ Item excluído!');
+    if (!firebaseInitialized) { renderMarmitasAdmin(); renderCardapio(); }
   }
 
   // ============================================================
@@ -1904,234 +1836,224 @@ Regras:
       return;
     }
     el.innerHTML = combosCache.map(c => {
-      const tipo  = c.tipo === 'fechado' ? '📦 Fechado' : '🛒 Aberto';
-      const veg   = c.vegetal_max > 0 ? `🥦 até ${c.vegetal_max} vegetais` : '';
+      const tipoBadge = c.tipo === 'fechado'
+        ? '<span class="text-xs bg-terracotta/20 text-terracotta px-3 py-1 rounded-full font-bold">📦 Fechado</span>'
+        : '<span class="text-xs bg-sage/20 text-sage px-3 py-1 rounded-full font-bold">🛒 Aberto</span>';
+      const vBadge    = c.visivel !== false
+        ? '<span class="text-xs bg-green-100 text-green-700 px-2 py-1 rounded-full">👁️ Visível</span>'
+        : '<span class="text-xs bg-gray-100 text-gray-500 px-2 py-1 rounded-full">👻 Oculto</span>';
+      const vegInfo   = c.vegetal_max > 0
+        ? `<span class="text-xs bg-green-100 text-green-700 px-2 py-1 rounded-full">🥦 ${c.vegetal_min}-${c.vegetal_max} vegetais</span>`
+        : '';
+      const info = c.tipo === 'fechado'
+        ? `${Object.keys(c.itens||{}).length} tipos de itens`
+        : `${c.qtd} itens • R$ ${(c.preco_base/c.qtd).toFixed(2)} cada`;
+      const btnToggle = c.visivel !== false
+        ? `<button onclick="toggleCombo(${c.id},false)"
+                   class="text-xs bg-yellow-50 text-yellow-700 px-3 py-2 rounded-lg font-bold hover:bg-yellow-100 transition-all">
+             👻 Ocultar</button>`
+        : `<button onclick="toggleCombo(${c.id},true)"
+                   class="text-xs bg-green-50 text-green-700 px-3 py-2 rounded-lg font-bold hover:bg-green-100 transition-all">
+             👁️ Exibir</button>`;
       return `
-        <div class="bg-white p-5 rounded-2xl shadow-sm border ${c.visivel !== false ? 'border-sage/20' : 'border-gray-200 opacity-60'}">
-          <div class="flex justify-between items-start">
-            <div>
-              <p class="font-bold text-forest text-lg">${c.nome}</p>
-              <p class="text-xs text-gray-400 mt-1">${tipo} • ${c.qtd} itens • R$ ${c.preco_base.toFixed(2)} ${veg ? '• ' + veg : ''}</p>
+        <div class="bg-white p-6 rounded-2xl shadow-sm border border-sage/20 ${c.visivel===false?'opacity-60':''}">
+          <div class="flex justify-between items-start mb-3">
+            <div class="flex-1">
+              <div class="flex items-center gap-2 mb-2 flex-wrap">
+                <h3 class="font-bold text-xl text-forest">${c.nome}</h3>
+                ${tipoBadge} ${vBadge} ${vegInfo}
+              </div>
+              <p class="text-sm text-gray-500">${info}</p>
             </div>
-            <div class="flex gap-1">
-              <button onclick="toggleCombo(${c.id})"
-                      class="text-xs px-2 py-1 rounded-lg ${c.visivel !== false ? 'bg-sage/20 text-forest' : 'bg-gray-100 text-gray-400'} hover:opacity-80">
-                ${c.visivel !== false ? '👁️' : '🚫'}
-              </button>
-              <button onclick="editarCombo(${c.id})"
-                      class="text-xs bg-forest/10 text-forest px-2 py-1 rounded-lg hover:bg-forest/20">
-                ✏️
-              </button>
-              <button onclick="excluirComboAdmin(${c.id})"
-                      class="text-xs bg-red-50 text-red-500 px-2 py-1 rounded-lg hover:bg-red-100">
-                🗑️
-              </button>
-            </div>
+            <span class="text-2xl font-bold text-terracotta ml-4">R$ ${c.preco_base.toFixed(2)}</span>
+          </div>
+          <div class="flex gap-2 justify-end flex-wrap">
+            ${btnToggle}
+            <button onclick="editarCombo(${c.id})"
+                    class="text-xs bg-blue-50 text-blue-600 px-3 py-2 rounded-lg font-bold hover:bg-blue-100 transition-all">
+              ✏️ Editar</button>
+            <button onclick="excluirComboAdmin(${c.id})"
+                    class="text-xs bg-red-50 text-red-600 px-3 py-2 rounded-lg font-bold hover:bg-red-100 transition-all">
+              🗑️ Excluir</button>
           </div>
         </div>`;
     }).join('');
   }
 
-  async function toggleCombo(id) {
+  async function toggleCombo(id, estado) {
     const c = combosCache.find(x => x.id === id);
     if (!c) return;
-    c.visivel = c.visivel === false ? true : false;
+    c.visivel = estado;
     await saveCombo(c);
-    combosCache = await getCombos();
-    renderCombosAdmin();
-    renderCardapio();
-    showToast(c.visivel !== false ? '✅ Combo visível' : '🚫 Combo ocultado');
+    showToast(`✅ Combo ${estado ? 'visível' : 'oculto'}!`);
+    if (!firebaseInitialized) { renderCombosAdmin(); renderCardapio(); }
   }
+
   function toggleTipoCombo() {
     const tipo = document.querySelector('input[name="tipo-combo"]:checked').value;
-    document.getElementById('config-aberto').classList.toggle('hidden',  tipo === 'fechado');
+    document.getElementById('config-aberto').classList.toggle('hidden', tipo === 'fechado');
     document.getElementById('config-fechado').classList.toggle('hidden', tipo === 'aberto');
-    if (tipo === 'fechado') carregarItensComboFechado();
+    if (tipo === 'fechado') {
+      document.getElementById('combo-qtd').removeAttribute('required');
+      document.getElementById('combo-preco').removeAttribute('required');
+      document.getElementById('combo-preco-fechado').setAttribute('required','required');
+      carregarItensComboFechado();
+    } else {
+      document.getElementById('combo-qtd').setAttribute('required','required');
+      document.getElementById('combo-preco').setAttribute('required','required');
+      document.getElementById('combo-preco-fechado').removeAttribute('required');
+    }
     atualizarPreviewCombo();
   }
 
   function carregarItensComboFechado() {
-    const el = document.getElementById('itens-combo-container');
-    const disponiveis = marmitasCache.filter(m => m.visivel);
-    if (!disponiveis.length) {
-      el.innerHTML = '<p class="text-gray-400 text-sm text-center py-4">Nenhum item disponível.</p>';
-      return;
-    }
+    const el     = document.getElementById('itens-combo-container');
+    // Apenas itens disponíveis em combo e que não sejam vegetais
     const porCat = {};
-    disponiveis.forEach(m => {
-      if (!porCat[m.cat]) porCat[m.cat] = [];
-      porCat[m.cat].push(m);
-    });
+    marmitasCache
+      .filter(m => m.dispCombo !== false && m.cat !== 'vegetal')
+      .forEach(m => {
+        if (!porCat[m.cat]) porCat[m.cat] = [];
+        porCat[m.cat].push(m);
+      });
     el.innerHTML = Object.keys(porCat).map(cat => `
       <div class="mb-4">
-        <p class="text-xs font-bold uppercase text-gray-400 mb-2">${CAT_ICONS[cat] || 'Outros'}</p>
-        ${porCat[cat].map(m => `
-          <div class="flex items-center justify-between py-2 border-b border-gray-50 last:border-0">
-            <span class="text-sm text-gray-700">${m.nome} <span class="text-gray-400">(${m.kcal} kcal)</span></span>
+        <p class="font-bold text-sm text-forest mb-2">${CAT_ICONS[cat]||'📦 Outros'}</p>
+        ${porCat[cat].map(item => `
+          <div class="flex items-center gap-3 py-2 px-3 hover:bg-sage/5 rounded-lg">
+            <div class="flex-1">
+              <span class="text-sm">${item.nome}</span>
+              <span class="text-xs text-gray-400 ml-2">${item.kcal} kcal</span>
+            </div>
             <div class="flex items-center gap-2">
-              <button type="button" onclick="alterarQtdComboFechado(${m.id}, -1)"
-                      class="w-7 h-7 rounded-lg bg-gray-100 font-bold hover:bg-red-50 transition-all text-sm">−</button>
-              <span id="fechado-qty-${m.id}" class="font-bold w-5 text-center text-sm">0</span>
-              <button type="button" onclick="alterarQtdComboFechado(${m.id}, 1)"
-                      class="w-7 h-7 rounded-lg bg-forest text-white font-bold hover:bg-forest/80 transition-all text-sm">+</button>
+              <label class="text-xs text-gray-500">Qtd:</label>
+              <input type="number" name="item-combo-${item.id}" min="0" value="0"
+                     onchange="atualizarPreviewCombo()"
+                     class="qty-input w-16 px-2 py-1 border border-sage/30 rounded text-center text-sm focus:outline-forest">
             </div>
           </div>`).join('')}
       </div>`).join('');
   }
 
-  function alterarQtdComboFechado(id, delta) {
-    const span = document.getElementById(`fechado-qty-${id}`);
-    if (!span) return;
-    const atual = parseInt(span.textContent) || 0;
-    const novo  = Math.max(0, atual + delta);
-    span.textContent = novo;
-    atualizarPreviewCombo();
-  }
-
   function atualizarPreviewCombo() {
-    const tipo = document.querySelector('input[name="tipo-combo"]:checked')?.value;
-    const preview = document.getElementById('preco-unitario-preview');
-    if (!preview) return;
+    const tipo = document.querySelector('input[name="tipo-combo"]:checked').value;
+    const el   = document.getElementById('preco-unitario-preview');
     if (tipo === 'aberto') {
-      const qtd   = parseInt(document.getElementById('combo-qtd').value)  || 0;
+      const qtd   = parseInt(document.getElementById('combo-qtd').value)    || 0;
       const preco = parseFloat(document.getElementById('combo-preco').value) || 0;
-      if (qtd > 0 && preco > 0) {
-        preview.textContent = `Cada marmita sai por R$ ${(preco / qtd).toFixed(2)}`;
-      } else {
-        preview.textContent = 'Configure o combo acima';
-      }
+      el.textContent = (qtd > 0 && preco > 0)
+        ? `Cada item sairá por R$ ${(preco/qtd).toFixed(2)}`
+        : 'Preencha quantidade e preço';
     } else {
       let total = 0;
-      marmitasCache.forEach(m => {
-        const span = document.getElementById(`fechado-qty-${m.id}`);
-        if (span) total += parseInt(span.textContent) || 0;
-      });
-      preview.textContent = `Total de ${total} item(ns) no combo fechado`;
+      document.querySelectorAll('input[name^="item-combo-"]').forEach(i => { total += parseInt(i.value)||0; });
+      const preco = parseFloat(document.getElementById('combo-preco-fechado').value) || 0;
+      el.textContent = total > 0
+        ? `${total} itens${preco > 0 ? ` • R$ ${(preco/total).toFixed(2)} por item` : ' • Defina o preço'}`
+        : 'Selecione os itens e defina o preço';
     }
   }
 
-  function abrirModalCombo() {
-    document.getElementById('modal-combo-title').textContent = 'Novo Combo';
-    document.getElementById('edit-combo-id').value    = '';
-    document.getElementById('combo-nome').value       = '';
-    document.getElementById('combo-qtd').value        = '';
-    document.getElementById('combo-preco').value      = '';
-    document.getElementById('combo-preco-fechado').value = '';
-    document.getElementById('combo-vegetal-min').value   = '0';
-    document.getElementById('combo-vegetal-max').value   = '0';
-    document.getElementById('combo-visivel').checked     = true;
-    document.querySelector('input[name="tipo-combo"][value="aberto"]').checked = true;
-    document.getElementById('config-aberto').classList.remove('hidden');
-    document.getElementById('config-fechado').classList.add('hidden');
-    document.getElementById('preco-unitario-preview').textContent = 'Configure o combo acima';
-    document.getElementById('modal-combo').classList.remove('hidden');
-  }
-
-  function closeModalCombo() {
-    document.getElementById('modal-combo').classList.add('hidden');
-  }
-
-  function editarCombo(id) {
-    const c = combosCache.find(x => x.id === id);
-    if (!c) return;
-    document.getElementById('modal-combo-title').textContent     = 'Editar Combo';
-    document.getElementById('edit-combo-id').value               = c.id;
-    document.getElementById('combo-nome').value                  = c.nome;
-    document.getElementById('combo-vegetal-min').value           = c.vegetal_min || 0;
-    document.getElementById('combo-vegetal-max').value           = c.vegetal_max || 0;
-    document.getElementById('combo-visivel').checked             = c.visivel !== false;
-    document.querySelector(`input[name="tipo-combo"][value="${c.tipo}"]`).checked = true;
-
-    if (c.tipo === 'aberto') {
-      document.getElementById('combo-qtd').value   = c.qtd;
-      document.getElementById('combo-preco').value = c.preco_base;
-      document.getElementById('config-aberto').classList.remove('hidden');
-      document.getElementById('config-fechado').classList.add('hidden');
+  function abrirModalCombo(id = null) {
+    document.getElementById('modal-combo-title').textContent = id ? 'Editar Combo' : 'Novo Combo';
+    document.getElementById('edit-combo-id').value = id || '';
+    if (id) {
+      const c = combosCache.find(x => x.id === id);
+      if (c) {
+        document.getElementById('combo-nome').value        = c.nome;
+        document.getElementById('combo-visivel').checked   = c.visivel !== false;
+        document.getElementById('combo-vegetal-min').value = c.vegetal_min || 0;
+        document.getElementById('combo-vegetal-max').value = c.vegetal_max || 0;
+        if (c.tipo === 'fechado') {
+          document.querySelector('input[name="tipo-combo"][value="fechado"]').checked = true;
+          toggleTipoCombo();
+          document.getElementById('combo-preco-fechado').value = c.preco_base;
+          setTimeout(() => {
+            Object.entries(c.itens || {}).forEach(([itemId, qtd]) => {
+              const inp = document.querySelector(`input[name="item-combo-${itemId}"]`);
+              if (inp) inp.value = qtd;
+            });
+            atualizarPreviewCombo();
+          }, 100);
+        } else {
+          document.querySelector('input[name="tipo-combo"][value="aberto"]').checked = true;
+          toggleTipoCombo();
+          document.getElementById('combo-qtd').value   = c.qtd;
+          document.getElementById('combo-preco').value = c.preco_base;
+          atualizarPreviewCombo();
+        }
+      }
     } else {
-      document.getElementById('combo-preco-fechado').value = c.preco_base;
-      document.getElementById('config-aberto').classList.add('hidden');
-      document.getElementById('config-fechado').classList.remove('hidden');
-      carregarItensComboFechado();
-      // Preencher quantidades salvas
-      setTimeout(() => {
-        Object.entries(c.itens || {}).forEach(([itemId, qtd]) => {
-          const span = document.getElementById(`fechado-qty-${itemId}`);
-          if (span) span.textContent = qtd;
-        });
-        atualizarPreviewCombo();
-      }, 100);
+      document.getElementById('combo-nome').value          = '';
+      document.getElementById('combo-qtd').value           = '';
+      document.getElementById('combo-preco').value         = '';
+      document.getElementById('combo-preco-fechado').value = '';
+      document.getElementById('combo-vegetal-min').value   = '0';
+      document.getElementById('combo-vegetal-max').value   = '0';
+      document.getElementById('combo-visivel').checked     = true;
+      document.querySelector('input[name="tipo-combo"][value="aberto"]').checked = true;
+      toggleTipoCombo();
     }
-    atualizarPreviewCombo();
     document.getElementById('modal-combo').classList.remove('hidden');
+    document.getElementById('combo-qtd').addEventListener('input',   atualizarPreviewCombo);
+    document.getElementById('combo-preco').addEventListener('input', atualizarPreviewCombo);
   }
+
+  function closeModalCombo() { document.getElementById('modal-combo').classList.add('hidden'); }
+  function editarCombo(id)   { abrirModalCombo(id); }
 
   async function salvarCombo(e) {
     e.preventDefault();
-    const tipo  = document.querySelector('input[name="tipo-combo"]:checked').value;
-    const idVal = document.getElementById('edit-combo-id').value;
+    const id      = document.getElementById('edit-combo-id').value;
+    const nome    = document.getElementById('combo-nome').value.trim();
+    const visivel = document.getElementById('combo-visivel').checked;
+    const tipo    = document.querySelector('input[name="tipo-combo"]:checked').value;
+    const vegMin  = parseInt(document.getElementById('combo-vegetal-min').value) || 0;
+    const vegMax  = parseInt(document.getElementById('combo-vegetal-max').value) || 0;
+    let qtd, preco_base, itens = {};
 
-    let qtd        = 0;
-    let preco_base = 0;
-    let itens      = {};
-
-    if (tipo === 'aberto') {
-      qtd        = parseInt(document.getElementById('combo-qtd').value)    || 0;
-      preco_base = parseFloat(document.getElementById('combo-preco').value) || 0;
-    } else {
-      preco_base = parseFloat(document.getElementById('combo-preco-fechado').value) || 0;
-      marmitasCache.forEach(m => {
-        const span = document.getElementById(`fechado-qty-${m.id}`);
-        if (span) {
-          const q = parseInt(span.textContent) || 0;
-          if (q > 0) { itens[m.id] = q; qtd += q; }
-        }
+    if (tipo === 'fechado') {
+      let total = 0;
+      document.querySelectorAll('input[name^="item-combo-"]').forEach(inp => {
+        const itemId = inp.name.replace('item-combo-','');
+        const q = parseInt(inp.value) || 0;
+        if (q > 0) { itens[itemId] = q; total += q; }
       });
+      if (!total) { showToast('⚠️ Selecione pelo menos um item!'); return; }
+      qtd        = total;
+      preco_base = parseFloat(document.getElementById('combo-preco-fechado').value);
+    } else {
+      qtd        = parseInt(document.getElementById('combo-qtd').value);
+      preco_base = parseFloat(document.getElementById('combo-preco').value);
     }
 
-    if (!qtd || !preco_base) {
-      showToast('⚠️ Preencha quantidade e preço');
-      return;
-    }
-
-    const c = {
-      id:          idVal ? parseInt(idVal) : Date.now(),
-      nome:        document.getElementById('combo-nome').value.trim(),
-      qtd,
-      preco_base,
-      tipo,
-      itens,
-      vegetal_min: parseInt(document.getElementById('combo-vegetal-min').value) || 0,
-      vegetal_max: parseInt(document.getElementById('combo-vegetal-max').value) || 0,
-      visivel:     document.getElementById('combo-visivel').checked
+    const combo = {
+      id:          id ? parseInt(id) : (combosCache.length ? Math.max(...combosCache.map(c=>c.id))+1 : 1),
+      nome, qtd, preco_base, visivel, tipo, itens,
+      vegetal_min: vegMin,
+      vegetal_max: vegMax
     };
-
-    await saveCombo(c);
-    combosCache = await getCombos();
+    await saveCombo(combo);
+    showToast(id ? '✅ Combo atualizado!' : '✅ Combo criado!');
     closeModalCombo();
-    renderCombosAdmin();
-    renderCardapio();
-    showToast('✅ Combo salvo com sucesso!');
+    if (!firebaseInitialized) { renderCombosAdmin(); renderCardapio(); }
   }
 
   async function excluirComboAdmin(id) {
     if (!confirm('Excluir este combo?')) return;
     await deleteCombo(id);
-    combosCache = await getCombos();
-    renderCombosAdmin();
-    renderCardapio();
     showToast('✅ Combo excluído!');
+    if (!firebaseInitialized) { renderCombosAdmin(); renderCardapio(); }
   }
 
   // ============================================================
-  // TOAST
+  // UTILITÁRIOS
   // ============================================================
-  let toastTimer = null;
   function showToast(msg) {
-    const el = document.getElementById('toast');
-    el.textContent = msg;
-    el.classList.remove('hidden');
-    if (toastTimer) clearTimeout(toastTimer);
-    toastTimer = setTimeout(() => el.classList.add('hidden'), 3000);
+    const t = document.getElementById('toast');
+    t.textContent = msg;
+    t.classList.remove('hidden');
+    setTimeout(() => t.classList.add('hidden'), 3500);
   }
 
   // ============================================================
