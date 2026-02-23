@@ -131,10 +131,7 @@
         </div>
       </div>
       <div>
-        <div class="flex justify-between items-center mb-1">
-          <label class="block text-xs font-bold uppercase text-gray-400">Descrição *</label>
-          <button type="button" id="btn-gerar-ia" onclick="gerarDescricaoIA()" class="text-xs text-forest font-bold hover:underline">✨ Gerar IA</button>
-        </div>
+        <label class="block text-xs font-bold uppercase text-gray-400 mb-1">Descrição *</label>
         <textarea id="marmita-desc" required
                   class="w-full px-4 py-2 border rounded-lg focus:outline-forest h-20"></textarea>
       </div>
@@ -430,18 +427,6 @@
 
           <!-- COMBO ABERTO: SELEÇÃO -->
           <div id="selecao-marmitas-container">
-            <!-- Assistente IA -->
-            <div class="bg-forest/5 border border-forest/20 rounded-2xl p-4 mb-6">
-              <h4 class="font-bold text-forest flex items-center gap-2 mb-2">✨ Assistente Fit IA</h4>
-              <p class="text-sm text-gray-600 mb-3">Diga o seu objetivo (ex: Emagrecimento, mais proteína) e a nossa Inteligência Artificial escolhe as refeições ideais!</p>
-              <div class="flex gap-2 flex-col sm:flex-row">
-                <input type="text" id="ia-objetivo" placeholder="Ex: Quero ganhar massa muscular, sem peixe..." class="flex-1 px-4 py-2 rounded-xl border border-sage/30 focus:outline-forest text-sm bg-white">
-                <button type="button" onclick="preencherComboComIA()" id="btn-ia-preencher" class="bg-forest text-white px-4 py-2 rounded-xl font-bold hover:bg-forest/90 transition-all text-sm whitespace-nowrap flex justify-center items-center">
-                  ✨ Gerar Seleção
-                </button>
-              </div>
-            </div>
-
             <h3 class="text-xl font-bold text-forest mb-4">Selecione suas refeições:</h3>
             <div id="marmitas-container" class="grid grid-cols-1 gap-3 mb-8"></div>
           </div>
@@ -849,40 +834,6 @@ const firebaseConfig = {
     `;
     dialog.classList.remove('hidden');
     document.getElementById('btn-dialog-ok').onclick = () => dialog.classList.add('hidden');
-  }
-
-  // ============================================================
-  // GEMINI API CONFIG
-  // ============================================================
-  const GEMINI_API_KEY = "AIzaSyCUHPVHLPBCCj7RNBJNUh5Bys5nP-B1_Ag"; // ⚠️ COLOQUE SUA CHAVE DA API AQUI SE FOR PUBLICAR FORA DA PLATAFORMA (Ex: "AIzaSy...")
-  const GEMINI_MODEL = "gemini-2.5-flash-preview-09-2025";
-
-  async function callGemini(prompt, systemInstruction = "", jsonSchema = null) {
-    const url = `https://generativelanguage.googleapis.com/v1beta/models/${GEMINI_MODEL}:generateContent?key=${GEMINI_API_KEY}`;
-    const payload = {
-      contents: [{ parts: [{ text: prompt }] }],
-      systemInstruction: systemInstruction ? { parts: [{ text: systemInstruction }] } : undefined,
-    };
-    if (jsonSchema) {
-      payload.generationConfig = { responseMimeType: "application/json", responseSchema: jsonSchema };
-    }
-    const delays = [1000, 2000, 4000, 8000, 16000];
-    for (let i = 0; i < 5; i++) {
-      try {
-        const res = await fetch(url, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(payload) });
-        if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
-        const data = await res.json();
-        const text = data.candidates?.[0]?.content?.parts?.[0]?.text;
-        return jsonSchema ? JSON.parse(text) : text;
-      } catch (e) {
-        if (i === 4) { 
-          showToast("❌ Erro IA: Verifique se inseriu a sua API Key no código."); 
-          console.error("Erro na IA: Faltou preencher a constante GEMINI_API_KEY ou a chave é inválida.", e); 
-          return null; 
-        }
-        await new Promise(r => setTimeout(r, delays[i]));
-      }
-    }
   }
 
   // ============================================================
@@ -1316,8 +1267,6 @@ function renderVegetais() {
 
 function mostrarComboFechado() {
   const el = document.getElementById('lista-itens-fechado');
-  if (!el) return;
-  el.innerHTML = '';
 }
 
 function toggleDescItem(btn) {
@@ -1327,6 +1276,7 @@ function toggleDescItem(btn) {
   desc.classList.toggle('hidden', aberto);
   arrow.textContent = aberto ? '▼' : '▲';
 }
+
 
 function renderMarmitas() {
   const lote = currentCombo?.lote_selecao || 1;
@@ -1371,7 +1321,7 @@ function renderMarmitas() {
           </div>
         </div>`).join('')}
     </div>`).join('');
-  }
+}
 
 function updateQty(id, delta) {
   const lote = currentCombo?.lote_selecao || 1;
@@ -2272,105 +2222,6 @@ function updateQty(id, delta) {
       showToast('✅ Combo excluído!');
       if (!firebaseInitialized) { renderCombosAdmin(); renderCardapio(); }
     });
-  }
-
-  // ============================================================
-  // INTEGRAÇÕES GEMINI IA
-  // ============================================================
-  async function gerarDescricaoIA() {
-    const nome = document.getElementById('marmita-nome').value.trim();
-    const kcal = document.getElementById('marmita-kcal').value;
-    if (!nome) return showToast("⚠️ Escreva o nome da marmita primeiro!");
-    
-    const txtArea = document.getElementById('marmita-desc');
-    const btn = document.getElementById('btn-gerar-ia');
-    const origText = btn.innerHTML;
-    
-    btn.innerHTML = '⏳ A gerar...';
-    btn.disabled = true;
-
-    const prompt = `Crie uma descrição apetitosa, comercial e muito curta (máximo 2 frases) para uma refeição/marmita fit chamada "${nome}" que tem ${kcal || 'algumas'} calorias. Destaque os ingredientes de forma atrativa e foque na saúde e nutrição. Responda apenas com a descrição.`;
-    
-    const resultado = await callGemini(prompt, "És um copywriter especialista em culinária saudável e fitness em Portugal.");
-    
-    if (resultado) {
-      txtArea.value = resultado.trim();
-      showToast("✨ Descrição gerada com sucesso!");
-    }
-    
-    btn.innerHTML = origText;
-    btn.disabled = false;
-  }
-
-  async function preencherComboComIA() {
-    const objetivo = document.getElementById('ia-objetivo').value.trim();
-    if (!objetivo) return showToast("⚠️ Escreva o seu objetivo primeiro!");
-
-    const btn = document.getElementById('btn-ia-preencher');
-    const origText = btn.innerHTML;
-    btn.innerHTML = '⏳ A analisar...';
-    btn.disabled = true;
-
-    const lote = currentCombo?.lote_selecao || 1;
-
-    const disponiveis = marmitasCache.filter(m => {
-      if (!m.visivel || m.cat === 'vegetal' || m.dispCombo === false) return false;
-      if (currentCombo?.itens_disponiveis && currentCombo.itens_disponiveis.length > 0) {
-        return currentCombo.itens_disponiveis.includes(m.id);
-      }
-      return true;
-    });
-
-    const cardapioInfo = disponiveis.map(m => `ID: ${m.id} | Nome: ${m.nome} | Kcal: ${m.kcal} | Categoria: ${m.cat}`).join('\n');
-    
-    const max = maxMarmitas;
-    const prompt = `O cliente tem o seguinte objetivo/preferência: "${objetivo}". Ele comprou um combo de ${max} marmitas. Aqui está o cardápio disponível:\n${cardapioInfo}\nRegras:\n1. Escolhe exatamente ${max} marmitas no total.\n2. Podes repetir marmitas, mas a quantidade (qtd) de cada item selecionado DEVE ser obrigatoriamente um múltiplo de ${lote}.\n3. A soma de todas as quantidades tem que ser exatamente ${max}.\n4. Justifica a tua escolha com uma mensagem curta, amigável e motivadora (em português de Portugal).`;
-
-    const schema = { type: "OBJECT", properties: { mensagem: { type: "STRING" }, selecoes: { type: "ARRAY", items: { type: "OBJECT", properties: { id: { type: "INTEGER" }, qtd: { type: "INTEGER" } } } } } };
-
-    const resultado = await callGemini(prompt, "És um nutricionista e assistente inteligente do restaurante Sabor e Saúde.", schema);
-
-    if (resultado && resultado.selecoes) {
-      quantities = {};
-      let totalAdicionado = 0;
-      resultado.selecoes.forEach(item => {
-        if (totalAdicionado + item.qtd > max) return;
-        const m = disponiveis.find(x => x.id === item.id);
-        if (m) {
-          quantities[m.id] = item.qtd;
-          totalAdicionado += item.qtd;
-        }
-      });
-
-      if (totalAdicionado < max) showToast("⚠️ A IA preencheu parte do kit. Podes completar o resto!");
-      else showToast("✨ Kit preenchido com IA com sucesso!");
-
-      disponiveis.forEach(m => {
-        const el = document.getElementById(`qty-${m.id}`);
-        if (el) el.textContent = quantities[m.id] || 0;
-      });
-
-      document.getElementById('current-marmitas').textContent = totalAdicionado;
-      const pct = Math.min(100, Math.round((totalAdicionado / maxMarmitas) * 100));
-      const bar = document.getElementById('progress-bar');
-      if (bar) bar.style.width = pct + '%';
-      atualizarTotal();
-
-      // Deslizar caso a IA preencha tudo
-      if (totalAdicionado === maxMarmitas) {
-         const vegMax = currentCombo?.vegetal_max || 0;
-         if (vegMax > 0) {
-           setTimeout(() => document.getElementById('secao-vegetais').scrollIntoView({behavior: 'smooth', block: 'start'}), 1200);
-         } else {
-           setTimeout(() => document.getElementById('secao-checkout').scrollIntoView({behavior: 'smooth', block: 'start'}), 1200);
-         }
-      }
-
-      showCustomAlert("✨ A Inteligência Artificial diz:\n\n" + resultado.mensagem);
-    }
-    
-    btn.innerHTML = origText;
-    btn.disabled = false;
   }
 
   // ============================================================
