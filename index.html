@@ -367,7 +367,24 @@
         </div>
 
         <!-- GRID DE COMBOS -->
-        <div id="combos-container" class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-10"></div>
+        <div id="combos-container" class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6"></div>
+
+<!-- BOTÃO DIETA DIFERENCIADA -->
+<div class="mb-10">
+  <button onclick="abrirCotacaoEspecial()"
+          class="w-full bg-white border-2 border-dashed border-sage/40 rounded-3xl p-5
+                 flex items-center gap-4 hover:border-forest hover:bg-sage/5 transition-all group text-left">
+    <div class="w-12 h-12 bg-forest/10 rounded-2xl flex items-center justify-center shrink-0 group-hover:bg-forest/20 transition-all">
+      <span class="text-2xl">🥗</span>
+    </div>
+    <div>
+      <p class="font-bold text-forest">Tenho uma dieta diferenciada</p>
+      <p class="text-xs text-gray-400 mt-0.5">Restrições alimentares, dieta prescrita ou necessidade especial? Fale conosco para uma cotação personalizada.</p>
+    </div>
+    <span class="ml-auto text-gray-300 group-hover:text-forest transition-all text-xl shrink-0">→</span>
+  </button>
+</div>
+
 
         <!-- SEÇÃO MARMITAS -->
         <div id="marmitas-section" class="hidden fade-in border-t border-sage/20 pt-8">
@@ -1040,35 +1057,57 @@ const firebaseConfig = {
   // CARDÁPIO CLIENTE
   // ============================================================
   function renderCardapio() {
-    const visiveis = combosCache.filter(c => c.visivel !== false);
-    const el = document.getElementById('combos-container');
-    if (!visiveis.length) {
-      el.innerHTML = '<p class="text-gray-400 col-span-full text-center py-8">Nenhum combo disponível.</p>';
-      return;
-    }
-    el.innerHTML = visiveis.map(c => {
-      const badge = c.tipo === 'fechado'
-        ? '<span class="text-xs bg-terracotta/20 text-terracotta px-2 py-1 rounded-full font-bold">📦 Fechado</span>'
-        : '<span class="text-xs bg-sage/20 text-sage px-2 py-1 rounded-full font-bold">🛒 Aberto</span>';
-      const info = c.tipo === 'fechado'
-        ? `<p class="text-xs text-gray-400 mt-2">💡 Combo com itens pré-definidos</p>`
-        : `<p class="text-xs text-gray-400 mt-2">💡 Cada item sai por <span class="font-bold text-sage">R$ ${(c.preco_base/c.qtd).toFixed(2)}</span></p>`;
-      const vegInfo = (c.vegetal_max > 0)
-        ? `<p class="text-xs text-green-600 mt-1">🥦 Inclui até ${c.vegetal_max} vegetal(is)</p>` : '';
-      return `
-        <button onclick="selecionarCombo(${c.id})"
-                class="bg-white p-6 rounded-3xl border-2 border-transparent hover:border-forest shadow-sm text-left transition-all hover:-translate-y-1">
-          <div class="flex justify-between items-start mb-2">
-            <p class="text-forest font-bold text-xl">${c.nome}</p>
-            ${badge}
-          </div>
-          <div class="mt-4">
-            <span class="text-3xl font-display font-bold text-terracotta">R$ ${c.preco_base.toFixed(2)}</span>
-          </div>
-          ${info}${vegInfo}
-        </button>`;
-    }).join('');
+  const visiveis = combosCache.filter(c => c.visivel !== false);
+  const el = document.getElementById('combos-container');
+  if (!visiveis.length) {
+    el.innerHTML = '<p class="text-gray-400 col-span-full text-center py-8">Nenhum combo disponível.</p>';
+    return;
   }
+  el.innerHTML = visiveis.map(c => {
+    const badge = c.tipo === 'fechado'
+      ? '<span class="text-xs bg-terracotta/20 text-terracotta px-2 py-1 rounded-full font-bold">📦 Fechado</span>'
+      : '<span class="text-xs bg-sage/20 text-sage px-2 py-1 rounded-full font-bold">🛒 Aberto</span>';
+
+    const vegInfo = (c.vegetal_max > 0)
+      ? `<p class="text-xs text-green-600 mt-1">🥦 Inclui até ${c.vegetal_max} vegetal(is)</p>` : '';
+
+    let infoExtra = '';
+    if (c.tipo === 'fechado') {
+      // Calcular total de itens e montar prévia
+      let totalItens = 0;
+      const nomes = [];
+      Object.entries(c.itens || {}).forEach(([itemId, qtd]) => {
+        const m = marmitasCache.find(x => x.id === parseInt(itemId));
+        if (m && qtd > 0) {
+          totalItens += qtd;
+          nomes.push(`${qtd}x ${m.nome}`);
+        }
+      });
+      const previa = nomes.slice(0, 3).join(', ') + (nomes.length > 3 ? ` +${nomes.length - 3} mais` : '');
+      infoExtra = `
+        <div class="mt-3 bg-cream rounded-xl p-3">
+          <p class="text-xs font-bold text-forest mb-1">📋 ${totalItens} itens inclusos</p>
+          <p class="text-xs text-gray-400 leading-relaxed">${previa}</p>
+        </div>`;
+    } else {
+      infoExtra = `<p class="text-xs text-gray-400 mt-2">💡 Cada item sai por <span class="font-bold text-sage">R$ ${(c.preco_base / c.qtd).toFixed(2)}</span></p>`;
+    }
+
+    return `
+      <button onclick="selecionarCombo(${c.id})"
+              class="bg-white p-6 rounded-3xl border-2 border-transparent hover:border-forest shadow-sm text-left transition-all hover:-translate-y-1">
+        <div class="flex justify-between items-start mb-2">
+          <p class="text-forest font-bold text-xl">${c.nome}</p>
+          ${badge}
+        </div>
+        <div class="mt-3">
+          <span class="text-3xl font-display font-bold text-terracotta">R$ ${c.preco_base.toFixed(2)}</span>
+        </div>
+        ${infoExtra}${vegInfo}
+      </button>`;
+  }).join('');
+}
+
 
   function selecionarCombo(id) {
     currentCombo = combosCache.find(c => c.id === id);
@@ -1162,29 +1201,55 @@ function renderVegetais() {
   }
 
   function mostrarComboFechado() {
-    const el = document.getElementById('lista-itens-fechado');
-    document.getElementById('combo-fechado-itens').classList.remove('hidden');
-    const porCat = {};
-    Object.entries(currentCombo.itens || {}).forEach(([itemId, qtd]) => {
-      const m = marmitasCache.find(x => x.id === parseInt(itemId));
-      if (m && qtd > 0) {
-        if (!porCat[m.cat]) porCat[m.cat] = [];
-        porCat[m.cat].push({...m, quantidade: qtd});
-      }
-    });
-    el.innerHTML = Object.keys(porCat).map(cat => `
+  const el = document.getElementById('lista-itens-fechado');
+  document.getElementById('combo-fechado-itens').classList.remove('hidden');
+
+  const porCat = {};
+  Object.entries(currentCombo.itens || {}).forEach(([itemId, qtd]) => {
+    const m = marmitasCache.find(x => x.id === parseInt(itemId));
+    if (m && qtd > 0) {
+      if (!porCat[m.cat]) porCat[m.cat] = [];
+      porCat[m.cat].push({ ...m, quantidade: qtd });
+    }
+  });
+
+  let totalGeral = 0;
+  Object.values(porCat).forEach(arr => arr.forEach(i => totalGeral += i.quantidade));
+
+  el.innerHTML = `
+    <p class="text-xs text-gray-400 mb-4">Total: <span class="font-bold text-forest">${totalGeral} itens</span> inclusos neste combo</p>
+    ${Object.keys(porCat).map(cat => `
       <div class="mb-4">
-        <p class="font-bold text-sm text-forest mb-2">${CAT_ICONS[cat] || '📦 Outros'}</p>
-        <ul class="space-y-1 ml-4">
+        <p class="font-bold text-xs uppercase text-gray-400 mb-2">${CAT_ICONS[cat] || '📦 Outros'}</p>
+        <div class="space-y-2">
           ${porCat[cat].map(item => `
-            <li class="text-sm text-gray-700 flex items-center gap-2">
-              <span class="font-bold text-terracotta">${item.quantidade}x</span>
-              <span>${item.nome}</span>
-              <span class="text-xs text-gray-400">(${item.kcal} kcal)</span>
-            </li>`).join('')}
-        </ul>
-      </div>`).join('');
-  }
+            <div class="bg-cream rounded-xl overflow-hidden">
+              <button type="button"
+                      onclick="toggleDescItem(this)"
+                      class="w-full flex items-center justify-between px-4 py-3 text-left hover:bg-sage/10 transition-all">
+                <div class="flex items-center gap-3">
+                  <span class="bg-forest text-white text-xs font-bold px-2 py-1 rounded-lg min-w-[32px] text-center">${item.quantidade}x</span>
+                  <span class="font-medium text-charcoal text-sm">${CAT_EMOJI[item.cat] || '🍴'} ${item.nome}</span>
+                  <span class="text-xs text-gray-400">${item.kcal} kcal</span>
+                </div>
+                <span class="text-gray-400 text-xs ml-2 shrink-0">▼</span>
+              </button>
+              <div class="desc-item hidden px-4 pb-3">
+                <p class="text-xs text-gray-500 leading-relaxed border-t border-sage/20 pt-2">${item.desc}</p>
+              </div>
+            </div>`).join('')}
+        </div>
+      </div>`).join('')}`;
+}
+
+function toggleDescItem(btn) {
+  const desc = btn.nextElementSibling;
+  const arrow = btn.querySelector('span:last-child');
+  const aberto = !desc.classList.contains('hidden');
+  desc.classList.toggle('hidden', aberto);
+  arrow.textContent = aberto ? '▼' : '▲';
+}
+
 
 function renderMarmitas() {
   // Itens principais: visíveis, disponíveis em combo, SEM vegetais
@@ -2060,6 +2125,16 @@ function updateQty(id, delta) {
   // ============================================================
   // START
   // ============================================================
+
+  function abrirCotacaoEspecial() {
+  const msg = encodeURIComponent(
+    `Olá! Vim pelo cardápio digital da Sabor e Saúde 🥗\n\n` +
+    `Tenho uma dieta diferenciada e gostaria de uma cotação personalizada.\n\n` +
+    `Poderia me ajudar?`
+  );
+  window.open(`https://wa.me/${WHATSAPP_RESTAURANTE}?text=${msg}`, '_blank');
+}
+
   window.onload = initData;
 </script>
 </body>
