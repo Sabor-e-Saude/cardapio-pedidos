@@ -216,18 +216,61 @@
       </div>
 
       <!-- CONFIG ABERTO -->
-      <div id="config-aberto" class="grid grid-cols-2 gap-4">
-        <div>
-          <label class="block text-xs font-bold uppercase text-gray-400 mb-1">Quantidade de Itens *</label>
-          <input id="combo-qtd" type="number" min="1" required
-                 class="w-full px-4 py-2 border rounded-lg focus:outline-forest">
+      <div id="config-aberto" class="space-y-4">
+        <div class="grid grid-cols-2 gap-4">
+          <div>
+            <label class="block text-xs font-bold uppercase text-gray-400 mb-1">Quantidade de Itens *</label>
+            <input id="combo-qtd" type="number" min="1"
+                  class="w-full px-4 py-2 border rounded-lg focus:outline-forest"
+                  oninput="atualizarPreviewCombo()">
+          </div>
+          <div>
+            <label class="block text-xs font-bold uppercase text-gray-400 mb-1">Preço Total (R$) *</label>
+            <input id="combo-preco" type="number" step="0.01"
+                  class="w-full px-4 py-2 border rounded-lg focus:outline-forest"
+                  oninput="atualizarPreviewCombo()">
+          </div>
         </div>
-        <div>
-          <label class="block text-xs font-bold uppercase text-gray-400 mb-1">Preço Total (R$) *</label>
-          <input id="combo-preco" type="number" step="0.01" required
-                 class="w-full px-4 py-2 border rounded-lg focus:outline-forest">
+
+        <!-- SELEÇÃO MÚLTIPLA -->
+        <div class="bg-blue-50 border-2 border-blue-100 p-4 rounded-xl">
+          <div class="flex items-center justify-between mb-2">
+            <div>
+              <p class="font-bold text-sm text-blue-800">🔢 Seleção em Múltiplos</p>
+              <p class="text-xs text-blue-600 mt-0.5">O cliente só pode escolher em blocos desse valor (0, 5, 10…)</p>
+            </div>
+            <label class="flex items-center gap-2 cursor-pointer">
+              <input type="checkbox" id="combo-multiplo-ativo" class="w-4 h-4"
+                    onchange="toggleMultiplo()">
+              <span class="text-xs font-bold text-blue-700">Ativar</span>
+            </label>
+          </div>
+          <div id="combo-multiplo-config" class="hidden mt-3">
+            <label class="block text-xs text-gray-500 mb-1">Valor do múltiplo (ex: 5)</label>
+            <input id="combo-multiplo-valor" type="number" min="1" value="5" placeholder="5"
+                  class="w-full px-4 py-2 border border-blue-200 rounded-xl focus:outline-forest bg-white">
+            <p class="text-xs text-gray-400 mt-1">💡 Com múltiplo 5: cliente escolhe 0, 5, 10, 15… de cada item</p>
+          </div>
+        </div>
+
+        <!-- ITENS DISPONÍVEIS NESTE COMBO -->
+        <div class="bg-sage/10 border-2 border-sage/20 p-4 rounded-xl">
+          <div class="flex items-center justify-between mb-2">
+            <div>
+              <p class="font-bold text-sm text-forest">🍱 Itens disponíveis neste combo</p>
+              <p class="text-xs text-gray-500 mt-0.5">Deixe todos desmarcados para exibir todos os itens habilitados globalmente</p>
+            </div>
+            <div class="flex gap-2">
+              <button type="button" onclick="marcarTodosItensCombo(true)"
+                      class="text-xs text-forest font-bold px-2 py-1 rounded-lg hover:bg-sage/20">Todos</button>
+              <button type="button" onclick="marcarTodosItensCombo(false)"
+                      class="text-xs text-gray-400 font-bold px-2 py-1 rounded-lg hover:bg-gray-100">Nenhum</button>
+            </div>
+          </div>
+          <div id="itens-disponiveis-combo" class="max-h-52 overflow-y-auto space-y-1 mt-3"></div>
         </div>
       </div>
+
 
       <!-- CONFIG FECHADO -->
       <div id="config-fechado" class="hidden">
@@ -1252,18 +1295,24 @@ function toggleDescItem(btn) {
 
 
 function renderMarmitas() {
-  // Itens principais: visíveis, disponíveis em combo, SEM vegetais
-  const disponiveis = marmitasCache.filter(m =>
+  // Filtrar por itens habilitados globalmente
+  let disponiveis = marmitasCache.filter(m =>
     m.visivel && m.cat !== 'vegetal' && m.dispCombo !== false
   );
+
+  // Filtrar pelos itens específicos do combo (se configurado)
+  if (currentCombo?.itens_disponiveis?.length > 0) {
+    disponiveis = disponiveis.filter(m => currentCombo.itens_disponiveis.includes(m.id));
+  }
+
   const el = document.getElementById('marmitas-container');
   if (!disponiveis.length) {
     el.innerHTML = '<p class="text-gray-400 text-center py-8">Nenhum item disponível.</p>';
     return;
   }
 
-  // Agrupar por categoria
-  const porCat = {};
+  const multiplo = currentCombo?.multiplo_valor || 0;
+  const porCat   = {};
   disponiveis.forEach(m => {
     if (!porCat[m.cat]) porCat[m.cat] = [];
     porCat[m.cat].push(m);
@@ -1275,14 +1324,15 @@ function renderMarmitas() {
       ${porCat[cat].map(m => `
         <div class="bg-white p-4 rounded-2xl flex justify-between items-center shadow-sm border border-gray-100 hover:border-sage/50 transition-all mb-2">
           <div class="flex-1 pr-4">
-            <p class="font-bold text-forest">${CAT_EMOJI[m.cat]||'🍴'} ${m.nome}</p>
+            <p class="font-bold text-forest">${CAT_EMOJI[m.cat] || '🍴'} ${m.nome}</p>
             <p class="text-xs text-gray-400 leading-tight mt-1">${m.desc} • ${m.kcal} kcal</p>
+            ${multiplo > 0 ? `<p class="text-[10px] text-blue-500 mt-1">🔢 Múltiplo de ${multiplo}</p>` : ''}
           </div>
           <div class="flex items-center gap-3 bg-cream p-1 rounded-xl">
-            <button type="button" onclick="updateQty(${m.id},-1)"
+            <button type="button" onclick="updateQty(${m.id}, -1)"
                     class="w-8 h-8 rounded-lg bg-white shadow-sm font-bold hover:bg-red-50 transition-all">−</button>
-            <span id="qty-${m.id}" class="font-bold w-6 text-center">0</span>
-            <button type="button" onclick="updateQty(${m.id},1)"
+            <span id="qty-${m.id}" class="font-bold w-8 text-center">${quantities[m.id] || 0}</span>
+            <button type="button" onclick="updateQty(${m.id}, 1)"
                     class="w-8 h-8 rounded-lg bg-forest text-white shadow-sm font-bold hover:bg-forest/80 transition-all">+</button>
           </div>
         </div>`).join('')}
@@ -1290,28 +1340,30 @@ function renderMarmitas() {
 }
 
 function updateQty(id, delta) {
-  const total = Object.values(quantities).reduce((a,b) => a+b, 0);
-  if (delta > 0 && total >= maxMarmitas) {
+  const multiplo = currentCombo?.multiplo_valor || 0;
+  const passo    = multiplo > 0 ? multiplo : 1;
+  const atual    = quantities[id] || 0;
+  const novo     = Math.max(0, atual + delta * passo);
+  const total    = Object.entries(quantities).reduce((a, [k, v]) => a + (parseInt(k) === id ? 0 : v), 0) + novo;
+
+  if (delta > 0 && total > maxMarmitas) {
     showToast(`⚠️ Kit completo! Máximo de ${maxMarmitas} marmitas`);
     return;
   }
-  quantities[id] = Math.max(0, (quantities[id] || 0) + delta);
+
+  quantities[id] = novo;
   const el = document.getElementById(`qty-${id}`);
-  if (el) el.textContent = quantities[id];
+  if (el) el.textContent = novo;
 
-  const novoTotal = Object.values(quantities).reduce((a,b) => a+b, 0);
+  const novoTotal = Object.values(quantities).reduce((a, b) => a + b, 0);
   document.getElementById('current-marmitas').textContent = novoTotal;
-
-  // Atualizar barra de progresso
   const pct = Math.min(100, Math.round((novoTotal / maxMarmitas) * 100));
-  const bar  = document.getElementById('progress-bar');
+  const bar = document.getElementById('progress-bar');
   if (bar) bar.style.width = pct + '%';
-
-  // Toast quando completar
-  if (novoTotal === maxMarmitas) showToast('🎉 Kit completo! Agora escolha seus vegetais');
-
+  if (novoTotal === maxMarmitas) showToast('🎉 Kit completo! Agora escolha seus vegetais abaixo.');
   atualizarTotal();
 }
+
 
   function atualizarTotal() {
     if (currentCombo)
@@ -1971,6 +2023,43 @@ function updateQty(id, delta) {
     }
     atualizarPreviewCombo();
   }
+  function toggleMultiplo() {
+  const ativo = document.getElementById('combo-multiplo-ativo').checked;
+  document.getElementById('combo-multiplo-config').classList.toggle('hidden', !ativo);
+}
+
+function marcarTodosItensCombo(estado) {
+  document.querySelectorAll('input[name="item-disp-combo"]').forEach(cb => cb.checked = estado);
+}
+
+function carregarItensDisponiveisCombo(itensSelecionados = null) {
+  const el = document.getElementById('itens-disponiveis-combo');
+  const disponiveis = marmitasCache.filter(m => m.dispCombo !== false && m.cat !== 'vegetal' && m.visivel);
+  if (!disponiveis.length) {
+    el.innerHTML = '<p class="text-xs text-gray-400 text-center py-2">Nenhum item disponível</p>';
+    return;
+  }
+  const porCat = {};
+  disponiveis.forEach(m => {
+    if (!porCat[m.cat]) porCat[m.cat] = [];
+    porCat[m.cat].push(m);
+  });
+  // Se itensSelecionados for null → nenhum marcado (= usar todos globalmente)
+  // Se for array → marcar apenas os que estão na lista
+  el.innerHTML = Object.keys(porCat).map(cat => `
+    <div class="mb-3">
+      <p class="text-xs font-bold uppercase text-gray-400 mb-1">${CAT_ICONS[cat] || 'Outros'}</p>
+      ${porCat[cat].map(m => `
+        <label class="flex items-center gap-2 py-1.5 px-2 rounded-lg hover:bg-white cursor-pointer">
+          <input type="checkbox" name="item-disp-combo" value="${m.id}"
+                 class="w-4 h-4 rounded"
+                 ${itensSelecionados === null ? '' : (itensSelecionados.includes(m.id) ? 'checked' : '')}>
+          <span class="text-sm text-charcoal">${CAT_EMOJI[m.cat] || '🍴'} ${m.nome}</span>
+          <span class="text-xs text-gray-400 ml-auto">${m.kcal} kcal</span>
+        </label>`).join('')}
+    </div>`).join('');
+}
+
 
   function carregarItensComboFechado() {
     const el     = document.getElementById('itens-combo-container');
@@ -2020,91 +2109,7 @@ function updateQty(id, delta) {
     }
   }
 
-  function abrirModalCombo(id = null) {
-    document.getElementById('modal-combo-title').textContent = id ? 'Editar Combo' : 'Novo Combo';
-    document.getElementById('edit-combo-id').value = id || '';
-    if (id) {
-      const c = combosCache.find(x => x.id === id);
-      if (c) {
-        document.getElementById('combo-nome').value        = c.nome;
-        document.getElementById('combo-visivel').checked   = c.visivel !== false;
-        document.getElementById('combo-vegetal-min').value = c.vegetal_min || 0;
-        document.getElementById('combo-vegetal-max').value = c.vegetal_max || 0;
-        if (c.tipo === 'fechado') {
-          document.querySelector('input[name="tipo-combo"][value="fechado"]').checked = true;
-          toggleTipoCombo();
-          document.getElementById('combo-preco-fechado').value = c.preco_base;
-          setTimeout(() => {
-            Object.entries(c.itens || {}).forEach(([itemId, qtd]) => {
-              const inp = document.querySelector(`input[name="item-combo-${itemId}"]`);
-              if (inp) inp.value = qtd;
-            });
-            atualizarPreviewCombo();
-          }, 100);
-        } else {
-          document.querySelector('input[name="tipo-combo"][value="aberto"]').checked = true;
-          toggleTipoCombo();
-          document.getElementById('combo-qtd').value   = c.qtd;
-          document.getElementById('combo-preco').value = c.preco_base;
-          atualizarPreviewCombo();
-        }
-      }
-    } else {
-      document.getElementById('combo-nome').value          = '';
-      document.getElementById('combo-qtd').value           = '';
-      document.getElementById('combo-preco').value         = '';
-      document.getElementById('combo-preco-fechado').value = '';
-      document.getElementById('combo-vegetal-min').value   = '0';
-      document.getElementById('combo-vegetal-max').value   = '0';
-      document.getElementById('combo-visivel').checked     = true;
-      document.querySelector('input[name="tipo-combo"][value="aberto"]').checked = true;
-      toggleTipoCombo();
-    }
-    document.getElementById('modal-combo').classList.remove('hidden');
-    document.getElementById('combo-qtd').addEventListener('input',   atualizarPreviewCombo);
-    document.getElementById('combo-preco').addEventListener('input', atualizarPreviewCombo);
-  }
-
-  function closeModalCombo() { document.getElementById('modal-combo').classList.add('hidden'); }
-  function editarCombo(id)   { abrirModalCombo(id); }
-
-  async function salvarCombo(e) {
-    e.preventDefault();
-    const id      = document.getElementById('edit-combo-id').value;
-    const nome    = document.getElementById('combo-nome').value.trim();
-    const visivel = document.getElementById('combo-visivel').checked;
-    const tipo    = document.querySelector('input[name="tipo-combo"]:checked').value;
-    const vegMin  = parseInt(document.getElementById('combo-vegetal-min').value) || 0;
-    const vegMax  = parseInt(document.getElementById('combo-vegetal-max').value) || 0;
-    let qtd, preco_base, itens = {};
-
-    if (tipo === 'fechado') {
-      let total = 0;
-      document.querySelectorAll('input[name^="item-combo-"]').forEach(inp => {
-        const itemId = inp.name.replace('item-combo-','');
-        const q = parseInt(inp.value) || 0;
-        if (q > 0) { itens[itemId] = q; total += q; }
-      });
-      if (!total) { showToast('⚠️ Selecione pelo menos um item!'); return; }
-      qtd        = total;
-      preco_base = parseFloat(document.getElementById('combo-preco-fechado').value);
-    } else {
-      qtd        = parseInt(document.getElementById('combo-qtd').value);
-      preco_base = parseFloat(document.getElementById('combo-preco').value);
-    }
-
-    const combo = {
-      id:          id ? parseInt(id) : (combosCache.length ? Math.max(...combosCache.map(c=>c.id))+1 : 1),
-      nome, qtd, preco_base, visivel, tipo, itens,
-      vegetal_min: vegMin,
-      vegetal_max: vegMax
-    };
-    await saveCombo(combo);
-    showToast(id ? '✅ Combo atualizado!' : '✅ Combo criado!');
-    closeModalCombo();
-    if (!firebaseInitialized) { renderCombosAdmin(); renderCardapio(); }
-  }
-
+abrirModalCombo
   async function excluirComboAdmin(id) {
     if (!confirm('Excluir este combo?')) return;
     await deleteCombo(id);
