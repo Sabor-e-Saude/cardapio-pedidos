@@ -1136,9 +1136,19 @@ const firebaseConfig = {
       const badge = c.tipo === 'fechado'
         ? '<span class="text-xs bg-terracotta/20 text-terracotta px-2 py-1 rounded-full font-bold">📦 Fechado</span>'
         : '<span class="text-xs bg-sage/20 text-sage px-2 py-1 rounded-full font-bold">🛒 Aberto</span>';
-      const info = c.tipo === 'fechado'
-        ? `<p class="text-xs text-gray-400 mt-2">💡 Combo com itens pré-definidos</p>`
-        : `<p class="text-xs text-gray-400 mt-2">💡 Cada item sai por <span class="font-bold text-sage">R$ ${(c.preco_base/c.qtd).toFixed(2)}</span></p>`;
+        
+      let info = '';
+      if (c.tipo === 'fechado') {
+        const nomes = [];
+        Object.entries(c.itens || {}).forEach(([itemId, q]) => {
+           const m = marmitasCache.find(x => x.id === parseInt(itemId));
+           if (m && q > 0) nomes.push(`${q}x ${m.nome}`);
+        });
+        info = `<p class="text-xs text-gray-500 mt-3 line-clamp-2 leading-relaxed">📦 ${nomes.join(' • ')}</p>`;
+      } else {
+        info = `<p class="text-xs text-gray-400 mt-2">💡 Cada item sai por <span class="font-bold text-sage">R$ ${(c.preco_base/c.qtd).toFixed(2)}</span></p>`;
+      }
+      
       const vegInfo = (c.vegetal_max > 0)
         ? `<p class="text-xs text-green-600 mt-1">🥦 Inclui até ${c.vegetal_max} vegetal(is)</p>` : '';
       return `
@@ -1265,9 +1275,36 @@ function renderVegetais() {
     document.getElementById('vegetal-counter').textContent = vegetaisSelecionados.length;
   }
 
-function mostrarComboFechado() {
-  const el = document.getElementById('lista-itens-fechado');
-}
+  function mostrarComboFechado() {
+    const el = document.getElementById('lista-itens-fechado');
+    document.getElementById('combo-fechado-itens').classList.remove('hidden');
+    const porCat = {};
+    Object.entries(currentCombo.itens || {}).forEach(([itemId, qtd]) => {
+      const m = marmitasCache.find(x => x.id === parseInt(itemId));
+      if (m && qtd > 0) {
+        if (!porCat[m.cat]) porCat[m.cat] = [];
+        porCat[m.cat].push({...m, quantidade: qtd});
+      }
+    });
+    el.innerHTML = Object.keys(porCat).map(cat => `
+      <div class="mb-4 mt-2">
+        <p class="font-bold text-sm text-forest mb-3 ml-1">${CAT_ICONS[cat] || '📦 Outros'}</p>
+        <div class="space-y-2">
+          ${porCat[cat].map(item => `
+            <div class="bg-cream/40 p-4 rounded-2xl flex justify-between items-center border border-sage/20 transition-all hover:border-sage/50">
+              <div class="flex-1 pr-4">
+                <p class="font-bold text-forest">${CAT_EMOJI[item.cat]||'🍴'} ${item.nome}</p>
+                <p class="text-xs text-gray-500 leading-tight mt-1">${item.desc}</p>
+                <p class="text-xs text-sage font-bold mt-1">${item.kcal} kcal</p>
+              </div>
+              <div class="flex flex-col items-center justify-center bg-terracotta/10 text-terracotta rounded-xl px-4 py-2 min-w-[3.5rem] shadow-sm">
+                <span class="text-[10px] uppercase font-bold opacity-70 mb-0.5">Qtd</span>
+                <span class="font-display font-bold text-xl">${item.quantidade}</span>
+              </div>
+            </div>`).join('')}
+        </div>
+      </div>`).join('');
+  }
 
 function toggleDescItem(btn) {
   const desc = btn.nextElementSibling;
