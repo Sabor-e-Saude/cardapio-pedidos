@@ -518,6 +518,7 @@
           <!-- COMBO FECHADO -->
           <div id="combo-fechado-itens" class="hidden mb-8 bg-white dark:bg-darkcard rounded-2xl p-6 shadow-sm border border-sage/20 dark:border-darkborder">
             <h3 class="text-xl font-bold text-forest dark:text-sage mb-4">📦 Itens inclusos:</h3>
+            <p class="text-xs text-gray-500 mb-4">Clique nos itens para ver seus ingredientes e descrição detalhada.</p>
             <div id="lista-itens-fechado" class="space-y-2"></div>
           </div>
 
@@ -1215,6 +1216,21 @@
     }
   }
 
+  // Função nova para expandir a descrição de UM ITEM dentro do combo fechado
+  function toggleItemDesc(id) {
+    const desc = document.getElementById(`desc-item-${id}`);
+    const icon = document.getElementById(`icon-item-${id}`);
+    if (desc && icon) {
+      if (desc.classList.contains('hidden')) {
+        desc.classList.remove('hidden');
+        icon.style.transform = 'rotate(180deg)';
+      } else {
+        desc.classList.add('hidden');
+        icon.style.transform = 'rotate(0deg)';
+      }
+    }
+  }
+
   function renderCardapio() {
     const visiveis = combosCache.filter(c => c.visivel !== false);
     const el = document.getElementById('combos-container');
@@ -1345,6 +1361,7 @@
   function setCategoria(c) { activeCategory = c; renderFiltrosCategoria(); renderMarmitas(); }
   function filtrarMarmitas() { searchTerm = document.getElementById('busca-marmitas').value; renderMarmitas(); }
 
+  // Modificado: Agora inclui o sistema de acordeão para ver descrição dos pratos do combo fechado
   function mostrarComboFechado() {
     const el = document.getElementById('lista-itens-fechado');
     document.getElementById('combo-fechado-itens').classList.remove('hidden');
@@ -1367,12 +1384,20 @@
       <div class="mb-4">
         <p class="font-bold text-xs uppercase text-gray-400 mb-2">${CAT_ICONS[cat]||'📦 Outros'}</p>
         <div class="space-y-2">${porCat[cat].map(i => `
-          <div class="bg-cream dark:bg-darkbg rounded-xl overflow-hidden px-4 py-3 flex items-center justify-between text-charcoal dark:text-white">
-            <div class="flex items-center gap-3">
-              <span class="bg-forest text-white text-xs font-bold px-2 py-1 rounded-lg min-w-[32px] text-center">${i.quantidade}x</span>
-              <span class="text-sm font-medium">${CAT_EMOJI[i.cat] || '🍴'} ${i.nome}</span>
+          <div class="bg-cream dark:bg-darkbg rounded-xl overflow-hidden cursor-pointer hover:bg-sage/5 dark:hover:bg-gray-800 transition-colors border border-transparent dark:border-gray-800" onclick="toggleItemDesc(${i.id})">
+            <div class="px-4 py-3 flex items-center justify-between text-charcoal dark:text-white">
+              <div class="flex items-center gap-3">
+                <span class="bg-forest text-white text-xs font-bold px-2 py-1 rounded-lg min-w-[32px] text-center">${i.quantidade}x</span>
+                <span class="text-sm font-medium">${CAT_EMOJI[i.cat] || '🍴'} ${i.nome}</span>
+              </div>
+              <div class="flex items-center gap-2">
+                <span class="text-xs text-gray-400">${i.kcal} kcal</span>
+                <span id="icon-item-${i.id}" class="text-gray-400 transition-transform duration-200 text-xs ml-1">▼</span>
+              </div>
             </div>
-            <span class="text-xs text-gray-400">${i.kcal} kcal</span>
+            <div id="desc-item-${i.id}" class="hidden px-4 pb-3 pt-1 text-xs text-gray-500 dark:text-gray-400 border-t border-sage/10 dark:border-gray-700 mx-2">
+              ${i.desc}
+            </div>
           </div>`).join('')}
         </div>
       </div>`).join('')}`;
