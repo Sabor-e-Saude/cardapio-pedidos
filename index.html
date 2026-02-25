@@ -4,14 +4,20 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Sabor e Saúde - Cardápio de Marmitas Fit</title>
+  
+  <!-- Manifest do PWA gerado dinamicamente via JS -->
+  <link id="manifest-link" rel="manifest">
+  
   <script src="https://cdn.tailwindcss.com/3.4.17"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet">
   <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-database-compat.js"></script>
+  
   <script>
     tailwind.config = {
+      darkMode: 'class', // Habilita o dark mode baseado em classe
       theme: {
         extend: {
           colors: {
@@ -19,7 +25,10 @@
             sage:       '#8FAE8B',
             cream:      '#FDF8F3',
             terracotta: '#C4785A',
-            charcoal:   '#2A2A2A'
+            charcoal:   '#2A2A2A',
+            darkbg:     '#121212',
+            darkcard:   '#1E1E1E',
+            darkborder: '#2A2A2A'
           },
           animation: {
             'pop': 'pop 0.3s ease-out',
@@ -43,10 +52,16 @@
   <style>
     .font-display { font-family: 'Playfair Display', serif; }
     .font-body    { font-family: 'DM Sans', sans-serif; }
-    body          { background-color: #FDF8F3; }
-    .fade-in      { animation: fadeIn 0.3s ease-out; }
+    
+    /* Cores de Fundo Globais */
+    body { background-color: #FDF8F3; transition: background-color 0.3s, color 0.3s; }
+    html.dark body { background-color: #121212; color: #f3f4f6; }
+    
+    .fade-in { animation: fadeIn 0.3s ease-out; }
     @keyframes fadeIn { from { opacity:0; } to { opacity:1; } }
-    .modal-bg     { background: rgba(0,0,0,0.5); backdrop-filter: blur(2px); }
+    
+    .modal-bg { background: rgba(0,0,0,0.5); backdrop-filter: blur(2px); }
+    
     .loading-overlay {
       position:fixed; top:0; left:0; right:0; bottom:0;
       background: rgba(253,248,243,0.95);
@@ -54,53 +69,79 @@
       display:flex; align-items:center; justify-content:center;
       z-index:9999;
     }
+    html.dark .loading-overlay { background: rgba(18,18,18,0.95); }
+    
     input[type="number"].qty-input { -moz-appearance:textfield; appearance:textfield; }
     input[type="number"].qty-input::-webkit-inner-spin-button,
     input[type="number"].qty-input::-webkit-outer-spin-button { -webkit-appearance:none; margin:0; }
+    
     .table-row:hover { background-color: #f9f5f0; }
+    html.dark .table-row:hover { background-color: #2a2a2a; }
+    
     .sidebar-hidden { display: none !important; }
+    
+    /* Correção do Botão de Legumes/Vegetais */
     .vegetal-btn.selected {
       border-color: #2D5A3D !important;
       background-color: #2D5A3D !important;
-      color: white !important;
     }
+    html.dark .vegetal-btn.selected {
+      border-color: #8FAE8B !important;
+      background-color: #2D5A3D !important;
+    }
+    .vegetal-btn.selected p, .vegetal-btn.selected span {
+      color: #ffffff !important;
+    }
+    
+    /* Scrollbar Personalizada */
     ::-webkit-scrollbar { width: 6px; height: 6px; }
     ::-webkit-scrollbar-track { background: #FDF8F3; }
+    html.dark ::-webkit-scrollbar-track { background: #121212; }
     ::-webkit-scrollbar-thumb { background: #8FAE8B; border-radius: 10px; }
     ::-webkit-scrollbar-thumb:hover { background: #2D5A3D; }
+
+    /* Estilo do Dropdown de Status no Admin */
+    .status-select { 
+      appearance: none; 
+      background-image: url("data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%23007CB2%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22%2F%3E%3C%2Fsvg%3E"); 
+      background-repeat: no-repeat; 
+      background-position: right .7em top 50%; 
+      background-size: .65em auto; 
+      padding-right: 1.5rem; 
+    }
   </style>
 </head>
-<body class="h-full font-body text-charcoal">
+<body class="h-full font-body text-charcoal transition-colors duration-300">
 
 <!-- ==================== LOADING ==================== -->
 <div id="loading" class="loading-overlay" aria-live="polite">
   <div class="text-center">
     <div class="animate-spin rounded-full h-16 w-16 border-b-4 border-forest mx-auto mb-4"></div>
-    <p class="text-forest font-bold" id="loading-text">Carregando cardápio...</p>
+    <p class="text-forest dark:text-sage font-bold" id="loading-text">Carregando cardápio...</p>
   </div>
 </div>
 
 <!-- ==================== MODAL LOGIN ADMIN ==================== -->
 <div id="admin-modal" class="hidden fixed inset-0 z-[60] flex items-center justify-center p-4 modal-bg">
-  <div class="bg-white rounded-3xl p-8 w-full max-w-sm shadow-2xl">
-    <h2 class="font-display text-2xl text-forest mb-4">Acesso Administrativo</h2>
+  <div class="bg-white dark:bg-darkcard rounded-3xl p-8 w-full max-w-sm shadow-2xl border border-transparent dark:border-darkborder">
+    <h2 class="font-display text-2xl text-forest dark:text-sage mb-4">Acesso Administrativo</h2>
     <form onsubmit="handleLogin(event)" class="space-y-4">
       <div>
         <label class="block text-xs font-bold uppercase text-gray-400 mb-1">Usuário</label>
         <input id="login-username" type="text" autocomplete="username"
-               class="w-full px-4 py-2 border rounded-lg focus:outline-forest">
+               class="w-full px-4 py-2 border dark:border-darkborder dark:bg-darkbg dark:text-white rounded-lg focus:outline-forest">
       </div>
       <div>
         <label class="block text-xs font-bold uppercase text-gray-400 mb-1">Senha</label>
         <input id="login-password" type="password" autocomplete="current-password"
-               class="w-full px-4 py-2 border rounded-lg focus:outline-forest">
+               class="w-full px-4 py-2 border dark:border-darkborder dark:bg-darkbg dark:text-white rounded-lg focus:outline-forest">
       </div>
       <button type="submit"
               class="w-full bg-forest text-white py-3 rounded-xl font-bold hover:bg-forest/90 transition-all">
         Entrar no Painel
       </button>
       <button type="button" onclick="closeAdminModal()"
-              class="w-full text-gray-400 text-sm py-2">Cancelar</button>
+              class="w-full text-gray-400 dark:text-gray-500 text-sm py-2 hover:text-gray-600 dark:hover:text-gray-300 transition-colors">Cancelar</button>
       <p id="login-error" class="text-red-500 text-xs text-center hidden">Usuário ou senha incorretos</p>
     </form>
   </div>
@@ -108,19 +149,21 @@
 
 <!-- ==================== MODAL VISUALIZAR PEDIDO ==================== -->
 <div id="modal-pedido" class="hidden fixed inset-0 z-[60] flex items-center justify-center p-4 modal-bg">
-  <div class="bg-white rounded-3xl p-8 w-full max-w-lg shadow-2xl max-h-[90vh] overflow-y-auto">
+  <div class="bg-white dark:bg-darkcard rounded-3xl p-8 w-full max-w-lg shadow-2xl border border-transparent dark:border-darkborder max-h-[90vh] overflow-y-auto">
     <div class="flex justify-between items-center mb-6">
-      <h2 class="font-display text-2xl text-forest">Detalhes do Pedido</h2>
-      <button onclick="closeModalPedido()" class="text-gray-400 hover:text-gray-600 text-2xl">✕</button>
+      <h2 class="font-display text-2xl text-forest dark:text-sage">Detalhes do Pedido</h2>
+      <button onclick="closeModalPedido()" class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 text-2xl">✕</button>
     </div>
-    <div id="modal-pedido-content" class="space-y-4"></div>
+    <div id="modal-pedido-content" class="space-y-4 text-charcoal dark:text-gray-300">
+      <!-- Preenchido via JS -->
+    </div>
     <div class="flex gap-3 pt-6">
       <button id="btn-wpp-cliente" onclick="abrirWhatsAppCliente()"
               class="flex-1 bg-green-500 text-white py-3 rounded-xl font-bold hover:bg-green-600 transition-all">
         📱 Abrir WhatsApp
       </button>
       <button onclick="closeModalPedido()"
-              class="flex-1 border border-gray-300 py-3 rounded-xl font-bold hover:bg-gray-50 transition-all">
+              class="flex-1 border border-gray-300 dark:border-gray-600 py-3 rounded-xl font-bold hover:bg-gray-50 dark:hover:bg-gray-800 transition-all text-charcoal dark:text-gray-300">
         Fechar
       </button>
     </div>
@@ -129,35 +172,35 @@
 
 <!-- ==================== MODAL MARMITA ==================== -->
 <div id="modal-marmita" class="hidden fixed inset-0 z-[60] flex items-center justify-center p-4 modal-bg">
-  <div class="bg-white rounded-3xl p-8 w-full max-w-lg shadow-2xl max-h-[90vh] overflow-y-auto">
-    <h2 class="font-display text-2xl text-forest mb-6" id="modal-marmita-title">Novo Item</h2>
+  <div class="bg-white dark:bg-darkcard rounded-3xl p-8 w-full max-w-lg shadow-2xl border border-transparent dark:border-darkborder max-h-[90vh] overflow-y-auto">
+    <h2 class="font-display text-2xl text-forest dark:text-sage mb-6" id="modal-marmita-title">Novo Item</h2>
     <form onsubmit="salvarMarmita(event)" class="space-y-4">
       <input type="hidden" id="edit-marmita-id">
       <div>
         <label class="block text-xs font-bold uppercase text-gray-400 mb-1">Nome *</label>
         <input id="marmita-nome" type="text" required
-               class="w-full px-4 py-2 border rounded-lg focus:outline-forest">
+               class="w-full px-4 py-2 border dark:border-darkborder dark:bg-darkbg dark:text-white rounded-lg focus:outline-forest">
       </div>
       <div class="grid grid-cols-2 gap-4">
         <div>
           <label class="block text-xs font-bold uppercase text-gray-400 mb-1">Preço (R$) *</label>
           <input id="marmita-preco" type="number" step="0.01" required
-                 class="w-full px-4 py-2 border rounded-lg focus:outline-forest">
+                 class="w-full px-4 py-2 border dark:border-darkborder dark:bg-darkbg dark:text-white rounded-lg focus:outline-forest">
         </div>
         <div>
           <label class="block text-xs font-bold uppercase text-gray-400 mb-1">Calorias (kcal) *</label>
           <input id="marmita-kcal" type="number" required
-                 class="w-full px-4 py-2 border rounded-lg focus:outline-forest">
+                 class="w-full px-4 py-2 border dark:border-darkborder dark:bg-darkbg dark:text-white rounded-lg focus:outline-forest">
         </div>
       </div>
       <div>
         <label class="block text-xs font-bold uppercase text-gray-400 mb-1">Descrição *</label>
         <textarea id="marmita-desc" required
-                  class="w-full px-4 py-2 border rounded-lg focus:outline-forest h-20"></textarea>
+                  class="w-full px-4 py-2 border dark:border-darkborder dark:bg-darkbg dark:text-white rounded-lg focus:outline-forest h-20"></textarea>
       </div>
       <div>
         <label class="block text-xs font-bold uppercase text-gray-400 mb-1">Categoria *</label>
-        <select id="marmita-cat" required class="w-full px-4 py-2 border rounded-lg focus:outline-forest">
+        <select id="marmita-cat" required class="w-full px-4 py-2 border dark:border-darkborder dark:bg-darkbg dark:text-white rounded-lg focus:outline-forest">
           <option value="marmita">🍱 Marmita</option>
           <option value="sopa">🍲 Sopa</option>
           <option value="suco">🥤 Suco</option>
@@ -169,33 +212,26 @@
         </select>
       </div>
 
-      <!-- VISIBILIDADE -->
-      <div class="bg-sage/10 p-4 rounded-xl space-y-3">
+      <div class="bg-sage/10 dark:bg-sage/5 p-4 rounded-xl space-y-3">
         <label class="flex items-center gap-3 cursor-pointer">
-          <input type="checkbox" id="marmita-visivel" checked class="w-5 h-5 rounded">
+          <input type="checkbox" id="marmita-visivel" checked class="w-5 h-5 rounded text-forest">
           <div>
-            <p class="font-bold text-sm text-forest">👁️ Visível para Clientes</p>
+            <p class="font-bold text-sm text-forest dark:text-sage">👁️ Visível para Clientes</p>
             <p class="text-xs text-gray-500">Desmarque para ocultar do cardápio</p>
           </div>
         </label>
-        <label class="flex items-center gap-3 cursor-pointer border-t border-sage/20 pt-3">
-          <input type="checkbox" id="marmita-disponivel-combo" checked class="w-5 h-5 rounded">
+        <label class="flex items-center gap-3 cursor-pointer border-t border-sage/20 dark:border-darkborder pt-3">
+          <input type="checkbox" id="marmita-disponivel-combo" checked class="w-5 h-5 rounded text-forest">
           <div>
-            <p class="font-bold text-sm text-forest">📦 Disponível para seleção em Combos</p>
-            <p class="text-xs text-gray-500">Desmarque para não aparecer na escolha de itens do combo</p>
+            <p class="font-bold text-sm text-forest dark:text-sage">📦 Disponível em Combos</p>
+            <p class="text-xs text-gray-500">Aparecer na seleção de itens do combo</p>
           </div>
         </label>
       </div>
 
       <div class="flex gap-3 pt-2">
-        <button type="submit"
-                class="flex-1 bg-forest text-white py-3 rounded-xl font-bold hover:bg-forest/90 transition-all">
-          Salvar
-        </button>
-        <button type="button" onclick="closeModalMarmita()"
-                class="flex-1 border border-gray-300 py-3 rounded-xl font-bold hover:bg-gray-50 transition-all">
-          Cancelar
-        </button>
+        <button type="submit" class="flex-1 bg-forest text-white py-3 rounded-xl font-bold hover:bg-forest/90 transition-all">Salvar Item</button>
+        <button type="button" onclick="closeModalMarmita()" class="flex-1 border border-gray-300 dark:border-gray-600 dark:text-gray-300 py-3 rounded-xl font-bold hover:bg-gray-50 dark:hover:bg-gray-800 transition-all">Cancelar</button>
       </div>
     </form>
   </div>
@@ -203,32 +239,33 @@
 
 <!-- ==================== MODAL COMBO ==================== -->
 <div id="modal-combo" class="hidden fixed inset-0 z-[60] flex items-center justify-center p-4 modal-bg">
-  <div class="bg-white rounded-3xl p-8 w-full max-w-2xl shadow-2xl max-h-[90vh] overflow-y-auto">
-    <h2 class="font-display text-2xl text-forest mb-6" id="modal-combo-title">Novo Combo</h2>
+  <div class="bg-white dark:bg-darkcard rounded-3xl p-8 w-full max-w-2xl shadow-2xl border border-transparent dark:border-darkborder max-h-[90vh] overflow-y-auto">
+    <h2 class="font-display text-2xl text-forest dark:text-sage mb-6" id="modal-combo-title">Novo Combo</h2>
     <form onsubmit="salvarCombo(event)" class="space-y-4">
       <input type="hidden" id="edit-combo-id">
+      
       <div>
         <label class="block text-xs font-bold uppercase text-gray-400 mb-1">Nome do Combo *</label>
         <input id="combo-nome" type="text" required placeholder="Ex: Kit 10 Marmitas"
-               class="w-full px-4 py-2 border rounded-lg focus:outline-forest">
+               class="w-full px-4 py-2 border dark:border-darkborder dark:bg-darkbg dark:text-white rounded-lg focus:outline-forest">
       </div>
 
       <!-- TIPO -->
-      <div class="bg-cream p-4 rounded-xl border-2 border-sage/20">
+      <div class="bg-cream dark:bg-darkbg p-4 rounded-xl border-2 border-sage/20 dark:border-darkborder">
         <label class="block text-xs font-bold uppercase text-gray-400 mb-3">Tipo de Combo *</label>
         <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
-          <label class="flex items-start gap-3 p-4 border-2 border-sage/30 rounded-xl cursor-pointer hover:border-forest bg-white transition-all">
-            <input type="radio" name="tipo-combo" value="aberto" checked onchange="toggleTipoCombo()" class="mt-1">
+          <label class="flex items-start gap-3 p-4 border-2 border-sage/30 dark:border-darkborder rounded-xl cursor-pointer hover:border-forest bg-white dark:bg-darkcard transition-all">
+            <input type="radio" name="tipo-combo" value="aberto" checked onchange="toggleTipoCombo()" class="mt-1 text-forest">
             <div>
-              <p class="font-bold text-forest">🛒 Combo Aberto</p>
-              <p class="text-xs text-gray-500">Cliente escolhe os itens</p>
+              <p class="font-bold text-forest dark:text-sage">🛒 Combo Aberto</p>
+              <p class="text-xs text-gray-500">Cliente escolhe as marmitas</p>
             </div>
           </label>
-          <label class="flex items-start gap-3 p-4 border-2 border-sage/30 rounded-xl cursor-pointer hover:border-forest bg-white transition-all">
-            <input type="radio" name="tipo-combo" value="fechado" onchange="toggleTipoCombo()" class="mt-1">
+          <label class="flex items-start gap-3 p-4 border-2 border-sage/30 dark:border-darkborder rounded-xl cursor-pointer hover:border-forest bg-white dark:bg-darkcard transition-all">
+            <input type="radio" name="tipo-combo" value="fechado" onchange="toggleTipoCombo()" class="mt-1 text-forest">
             <div>
-              <p class="font-bold text-forest">📦 Combo Fechado</p>
-              <p class="text-xs text-gray-500">Itens pré-definidos</p>
+              <p class="font-bold text-forest dark:text-sage">📦 Combo Fechado</p>
+              <p class="text-xs text-gray-500">Você pré-define os itens</p>
             </div>
           </label>
         </div>
@@ -239,124 +276,148 @@
         <div class="grid grid-cols-3 gap-4">
           <div>
             <label class="block text-xs font-bold uppercase text-gray-400 mb-1">Qtd Itens *</label>
-            <input id="combo-qtd" type="number" min="1" required
-                   class="w-full px-4 py-2 border rounded-lg focus:outline-forest">
+            <input id="combo-qtd" type="number" min="1" required class="w-full px-4 py-2 border dark:border-darkborder dark:bg-darkbg dark:text-white rounded-lg focus:outline-forest">
           </div>
           <div>
-            <label class="block text-xs font-bold uppercase text-gray-400 mb-1">Preço (R$) *</label>
-            <input id="combo-preco" type="number" step="0.01" required
-                   class="w-full px-4 py-2 border rounded-lg focus:outline-forest">
+            <label class="block text-xs font-bold uppercase text-gray-400 mb-1">Preço Total (R$) *</label>
+            <input id="combo-preco" type="number" step="0.01" required class="w-full px-4 py-2 border dark:border-darkborder dark:bg-darkbg dark:text-white rounded-lg focus:outline-forest">
           </div>
           <div>
             <label class="block text-xs font-bold uppercase text-gray-400 mb-1" title="Cliente escolhe de N em N">Múltiplos</label>
-            <input id="combo-lote" type="number" min="1" value="1" required
-                   class="w-full px-4 py-2 border rounded-lg focus:outline-forest">
+            <input id="combo-lote" type="number" min="1" value="1" required class="w-full px-4 py-2 border dark:border-darkborder dark:bg-darkbg dark:text-white rounded-lg focus:outline-forest">
           </div>
         </div>
         
-        <div class="bg-white border-2 border-sage/20 rounded-xl p-4">
+        <div class="bg-white dark:bg-darkcard border-2 border-sage/20 dark:border-darkborder rounded-xl p-4">
           <div class="flex justify-between items-center mb-2">
-            <label class="block text-xs font-bold uppercase text-gray-400">Pratos Disponíveis no Combo</label>
+            <label class="block text-xs font-bold uppercase text-gray-400">Pratos Disponíveis neste Combo</label>
             <div class="flex gap-2">
-              <button type="button" onclick="marcarPratosCombo(true)" class="text-xs text-forest font-bold hover:underline">Todos</button>
+              <button type="button" onclick="marcarPratosCombo(true)" class="text-xs text-forest dark:text-sage font-bold hover:underline">Todos</button>
               <button type="button" onclick="marcarPratosCombo(false)" class="text-xs text-terracotta font-bold hover:underline">Nenhum</button>
             </div>
           </div>
-          <div id="checklist-pratos-abertos" class="max-h-48 overflow-y-auto space-y-1 border-t border-sage/10 pt-2">
-            <!-- Lista carregada via JS -->
+          <div id="checklist-pratos-abertos" class="max-h-48 overflow-y-auto space-y-1 border-t border-sage/10 dark:border-darkborder pt-2 text-charcoal dark:text-white">
+            <!-- Lista gerada via JS -->
           </div>
         </div>
       </div>
 
       <!-- CONFIG FECHADO -->
       <div id="config-fechado" class="hidden">
-        <label class="block text-xs font-bold uppercase text-gray-400 mb-3">Itens do Combo *</label>
-        <div class="bg-white border-2 border-sage/20 rounded-xl p-4 max-h-72 overflow-y-auto"
-             id="itens-combo-container"></div>
+        <label class="block text-xs font-bold uppercase text-gray-400 mb-3">Itens Inclusos no Combo *</label>
+        <div class="bg-white dark:bg-darkcard border-2 border-sage/20 dark:border-darkborder rounded-xl p-4 max-h-72 overflow-y-auto" id="itens-combo-container">
+          <!-- Lista gerada via JS -->
+        </div>
         <div class="mt-4">
-          <label class="block text-xs font-bold uppercase text-gray-400 mb-1">Preço do Combo (R$) *</label>
-          <input id="combo-preco-fechado" type="number" step="0.01"
-                 class="w-full px-4 py-2 border rounded-lg focus:outline-forest">
+          <label class="block text-xs font-bold uppercase text-gray-400 mb-1">Preço Final do Combo (R$) *</label>
+          <input id="combo-preco-fechado" type="number" step="0.01" class="w-full px-4 py-2 border dark:border-darkborder dark:bg-darkbg dark:text-white rounded-lg focus:outline-forest">
         </div>
       </div>
 
       <!-- LIMITE DE VEGETAIS -->
-      <div class="bg-green-50 border-2 border-green-100 p-4 rounded-xl">
+      <div class="bg-green-50 dark:bg-forest/10 border-2 border-green-100 dark:border-forest/20 p-4 rounded-xl">
         <label class="block text-xs font-bold uppercase text-gray-400 mb-2">🥦 Vegetais no Pedido</label>
-        <p class="text-xs text-gray-500 mb-3">Quantos vegetais o cliente poderá escolher ao montar este combo?</p>
+        <p class="text-xs text-gray-500 mb-3">Limites de escolha de vegetais adicionais para este combo.</p>
         <div class="grid grid-cols-2 gap-4">
           <div>
             <label class="block text-xs text-gray-500 mb-1">Quantidade mínima</label>
-            <input id="combo-vegetal-min" type="number" min="0" value="0"
-                   class="w-full px-4 py-2 border rounded-lg focus:outline-forest">
+            <input id="combo-vegetal-min" type="number" min="0" value="0" class="w-full px-4 py-2 border dark:border-darkborder dark:bg-darkbg dark:text-white rounded-lg focus:outline-forest">
           </div>
           <div>
             <label class="block text-xs text-gray-500 mb-1">Quantidade máxima</label>
-            <input id="combo-vegetal-max" type="number" min="0" value="0"
-                   placeholder="0 = sem vegetais"
-                   class="w-full px-4 py-2 border rounded-lg focus:outline-forest">
+            <input id="combo-vegetal-max" type="number" min="0" value="0" placeholder="0 = sem vegetais" class="w-full px-4 py-2 border dark:border-darkborder dark:bg-darkbg dark:text-white rounded-lg focus:outline-forest">
           </div>
         </div>
-        <p class="text-xs text-gray-400 mt-2">💡 Deixe máximo em 0 para não oferecer vegetais neste combo</p>
+        <p class="text-xs text-gray-400 mt-2">💡 Deixe máximo em 0 para não oferecer vegetais.</p>
       </div>
 
-      <div class="bg-sage/10 p-4 rounded-lg">
-        <p class="text-xs text-gray-600">💡 <span id="preco-unitario-preview">Configure o combo acima</span></p>
+      <div class="bg-sage/10 dark:bg-sage/5 p-4 rounded-lg">
+        <p class="text-xs text-gray-600 dark:text-gray-400">💡 <span id="preco-unitario-preview">Configure o combo acima</span></p>
       </div>
 
-      <!-- VISIBILIDADE -->
-      <div class="bg-sage/10 p-4 rounded-lg">
+      <div class="bg-sage/10 dark:bg-sage/5 p-4 rounded-lg">
         <label class="flex items-center gap-3 cursor-pointer">
-          <input type="checkbox" id="combo-visivel" checked class="w-5 h-5 rounded">
+          <input type="checkbox" id="combo-visivel" checked class="w-5 h-5 rounded text-forest">
           <div>
-            <p class="font-bold text-sm text-forest">👁️ Visível para Clientes</p>
+            <p class="font-bold text-sm text-forest dark:text-sage">👁️ Visível para Clientes</p>
             <p class="text-xs text-gray-500">Desmarque para ocultar este combo</p>
           </div>
         </label>
       </div>
 
       <div class="flex gap-3 pt-2">
-        <button type="submit"
-                class="flex-1 bg-forest text-white py-3 rounded-xl font-bold hover:bg-forest/90 transition-all">
-          Salvar Combo
-        </button>
-        <button type="button" onclick="closeModalCombo()"
-                class="flex-1 border border-gray-300 py-3 rounded-xl font-bold hover:bg-gray-50 transition-all">
-          Cancelar
-        </button>
+        <button type="submit" class="flex-1 bg-forest text-white py-3 rounded-xl font-bold hover:bg-forest/90 transition-all">Salvar Combo</button>
+        <button type="button" onclick="closeModalCombo()" class="flex-1 border border-gray-300 dark:border-gray-600 dark:text-gray-300 py-3 rounded-xl font-bold hover:bg-gray-50 dark:hover:bg-gray-800 transition-all">Cancelar</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- ==================== MODAL CUPOM ==================== -->
+<div id="modal-cupom" class="hidden fixed inset-0 z-[60] flex items-center justify-center p-4 modal-bg">
+  <div class="bg-white dark:bg-darkcard rounded-3xl p-8 w-full max-w-sm shadow-2xl border border-transparent dark:border-darkborder">
+    <h2 class="font-display text-2xl text-forest dark:text-sage mb-6" id="modal-cupom-title">Novo Cupom</h2>
+    <form onsubmit="salvarCupom(event)" class="space-y-4">
+      <input type="hidden" id="edit-cupom-id">
+      <div>
+        <label class="block text-xs font-bold uppercase text-gray-400 mb-1">Código do Cupom (Ex: BEMVINDO10) *</label>
+        <input id="cupom-codigo" type="text" required class="w-full px-4 py-2 border dark:border-darkborder dark:bg-darkbg dark:text-white rounded-lg focus:outline-forest uppercase">
+      </div>
+      <div>
+        <label class="block text-xs font-bold uppercase text-gray-400 mb-1">Desconto (%) *</label>
+        <input id="cupom-desconto" type="number" min="1" max="100" required class="w-full px-4 py-2 border dark:border-darkborder dark:bg-darkbg dark:text-white rounded-lg focus:outline-forest">
+      </div>
+      <div class="bg-sage/10 dark:bg-sage/5 p-4 rounded-xl">
+        <label class="flex items-center gap-3 cursor-pointer">
+          <input type="checkbox" id="cupom-ativo" checked class="w-5 h-5 rounded text-forest">
+          <div><p class="font-bold text-sm text-forest dark:text-sage">🟢 Cupom Ativo</p></div>
+        </label>
+      </div>
+      <div class="flex gap-3 pt-2">
+        <button type="submit" class="flex-1 bg-forest text-white py-3 rounded-xl font-bold hover:bg-forest/90 transition-all">Salvar</button>
+        <button type="button" onclick="closeModalCupom()" class="flex-1 border border-gray-300 dark:border-gray-600 dark:text-gray-300 py-3 rounded-xl font-bold hover:bg-gray-50 dark:hover:bg-gray-800 transition-all">Cancelar</button>
       </div>
     </form>
   </div>
 </div>
 
 <!-- ==================== APP PRINCIPAL ==================== -->
-<div id="main-app" class="min-h-screen flex flex-col">
+<div id="main-app" class="min-h-screen flex flex-col relative">
 
   <!-- HEADER -->
-  <header class="bg-forest text-cream px-6 py-4 flex justify-between items-center sticky top-0 z-40 shadow-md">
+  <header class="bg-forest dark:bg-darkcard text-cream dark:text-white px-6 py-4 flex justify-between items-center sticky top-0 z-40 shadow-md border-b border-transparent dark:border-darkborder transition-colors">
     <div class="flex items-center gap-3">
       <img id="logo-empresa"
            src="https://raw.githubusercontent.com/Sabor-e-Saude/cardapio-pedidos/refs/heads/main/logo.png"
-           alt="Logo Sabor e Saúde"
-           class="w-12 h-12 rounded-full object-cover border-2 border-sage/40">
+           alt="Logo"
+           class="w-10 h-10 md:w-12 md:h-12 rounded-full object-cover border-2 border-sage/40">
       <div>
-        <h1 class="font-display text-xl md:text-2xl">Sabor e Saúde</h1>
+        <h1 class="font-display text-lg md:text-2xl font-bold">Sabor e Saúde</h1>
       </div>
     </div>
     <div class="flex items-center gap-2">
-      <!-- BOTÃO MINIMIZAR SIDEBAR -->
+      <!-- Botão PWA Install (Oculto por padrão, ativado pelo JS) -->
+      <button id="btn-install-app" onclick="installPwaApp()" class="hidden text-xs bg-white text-forest font-bold px-3 py-2 rounded-lg hover:bg-gray-100 transition-all shadow-sm">
+        📱 Baixar App
+      </button>
+
+      <!-- Botão Dark Mode Toggle -->
+      <button onclick="toggleDarkMode()" class="text-lg md:text-xl p-2 rounded-full hover:bg-white/10 transition-all" aria-label="Alternar tema">
+        <span id="icon-theme">🌙</span>
+      </button>
+
       <button id="btn-toggle-sidebar" onclick="toggleSidebar()"
               class="hidden text-xs border border-sage/30 px-3 py-2 rounded-lg hover:bg-white/10 transition-all"
               title="Minimizar/expandir menu">
         ☰
       </button>
       <button id="btn-admin-view" onclick="openAdminModal()"
-              class="text-xs border border-sage/30 px-3 py-2 rounded-lg hover:bg-white/10 transition-all">
-        Acesso Admin
+              class="text-xs border border-sage/30 px-3 py-2 rounded-lg hover:bg-white/10 transition-all hidden md:block">
+        Admin
       </button>
       <button id="btn-voltar-combo" onclick="resetarSelecaoAtual()"
-              class="hidden text-xs bg-terracotta/30 px-3 py-2 rounded-lg hover:bg-terracotta/50 transition-all">
-        ⬅ Voltar
+              class="hidden text-xs bg-terracotta/30 px-3 py-2 rounded-lg hover:bg-terracotta/50 transition-all font-bold">
+        ⬅ Voltar ao Menu
       </button>
     </div>
   </header>
@@ -364,34 +425,21 @@
   <div class="flex flex-1 overflow-hidden">
 
     <!-- SIDEBAR ADMIN -->
-    <aside id="sidebar" class="w-64 bg-white border-r hidden overflow-y-auto flex-shrink-0 transition-all">
-      <div class="p-4 bg-gray-50 border-b flex justify-between items-center">
+    <aside id="sidebar" class="w-64 bg-white dark:bg-darkcard border-r dark:border-darkborder hidden overflow-y-auto flex-shrink-0 transition-all">
+      <div class="p-4 bg-gray-50 dark:bg-darkbg border-b dark:border-darkborder flex justify-between items-center">
         <p class="text-xs font-bold text-gray-400 uppercase tracking-tighter">Gerenciamento</p>
       </div>
-      <nav class="p-4 space-y-2">
-        <button onclick="showPage('dashboard')"
-                class="w-full text-left px-4 py-3 rounded-lg hover:bg-sage/10 transition-all">
-          📊 Dashboard
-        </button>
-        <button onclick="showPage('pedidos')"
-                class="w-full text-left px-4 py-3 rounded-lg hover:bg-sage/10 transition-all flex items-center justify-between">
+      <nav class="p-4 space-y-2 text-charcoal dark:text-gray-300">
+        <button onclick="showPage('dashboard')" class="w-full text-left px-4 py-3 rounded-lg hover:bg-sage/10 dark:hover:bg-gray-800 transition-all">📊 Dashboard</button>
+        <button onclick="showPage('pedidos')" class="w-full text-left px-4 py-3 rounded-lg hover:bg-sage/10 dark:hover:bg-gray-800 transition-all flex items-center justify-between">
           <span>📋 Pedidos</span>
-          <span id="badge-pedidos"
-                class="ml-2 bg-terracotta text-white text-xs px-2 py-0.5 rounded-full hidden"></span>
+          <span id="badge-pedidos" class="ml-2 bg-terracotta text-white text-xs px-2 py-0.5 rounded-full hidden"></span>
         </button>
-        <button onclick="showPage('combos')"
-                class="w-full text-left px-4 py-3 rounded-lg hover:bg-sage/10 transition-all">
-          📦 Gerenciar Combos
-        </button>
-        <button onclick="showPage('marmitas')"
-                class="w-full text-left px-4 py-3 rounded-lg hover:bg-sage/10 transition-all">
-          🍱 Gerenciar Cardápio
-        </button>
-        <hr class="my-4">
-        <button onclick="entrarComoCliente()"
-                class="w-full text-left px-4 py-3 rounded-lg text-terracotta hover:bg-terracotta/5 transition-all">
-          ⬅️ Ver como Cliente
-        </button>
+        <button onclick="showPage('combos')" class="w-full text-left px-4 py-3 rounded-lg hover:bg-sage/10 dark:hover:bg-gray-800 transition-all">📦 Combos</button>
+        <button onclick="showPage('marmitas')" class="w-full text-left px-4 py-3 rounded-lg hover:bg-sage/10 dark:hover:bg-gray-800 transition-all">🍱 Cardápio</button>
+        <button onclick="showPage('cupons')" class="w-full text-left px-4 py-3 rounded-lg hover:bg-sage/10 dark:hover:bg-gray-800 transition-all">🎟️ Cupons</button>
+        <hr class="my-4 dark:border-darkborder">
+        <button onclick="entrarComoCliente()" class="w-full text-left px-4 py-3 rounded-lg text-terracotta hover:bg-terracotta/5 transition-all">⬅️ Ver como Cliente</button>
       </nav>
     </aside>
 
@@ -401,202 +449,180 @@
       <!-- ===== PÁGINA CLIENTE: CARDÁPIO ===== -->
       <section id="page-cardapio" class="fade-in max-w-4xl mx-auto">
         
+        <!-- Banner de Repetir Último Pedido -->
+        <div id="banner-repetir-pedido" class="hidden mb-8 bg-forest text-white p-5 rounded-2xl shadow-lg border-2 border-sage/50 flex flex-col sm:flex-row justify-between items-center gap-4 animate-slide-in relative overflow-hidden">
+          <div class="absolute -right-4 -top-4 text-7xl opacity-10">🔄</div>
+          <div class="relative z-10 text-center sm:text-left">
+            <h3 class="font-display text-xl font-bold mb-1">Bem-vindo de volta! 💚</h3>
+            <p class="text-sm text-cream/90">Deseja repetir exatamente o seu último pedido com agilidade?</p>
+          </div>
+          <div class="flex gap-2 relative z-10 w-full sm:w-auto">
+            <button onclick="ignorarPedidoAnterior()" class="px-4 py-2 rounded-xl border border-white/30 hover:bg-white/10 transition-colors text-sm font-bold flex-1 sm:flex-none">Não</button>
+            <button onclick="repetirUltimoPedido()" class="px-5 py-2 rounded-xl bg-white text-forest font-bold hover:scale-105 transition-transform shadow-md flex-1 sm:flex-none">Sim, repetir!</button>
+          </div>
+        </div>
+
         <div id="home-combos">
           <div class="mb-8">
-            <h2 class="font-display text-3xl text-forest">Monte seu Kit 🍱</h2>
-            <p class="text-sage">Escolha um combo abaixo para começar sua seleção.</p>
+            <h2 class="font-display text-3xl text-forest dark:text-sage">Monte seu Kit 🍱</h2>
+            <p class="text-sage dark:text-gray-400">Escolha um combo abaixo para começar sua seleção.</p>
           </div>
 
-          <!-- GRID DE COMBOS -->
-          <div id="combos-container" class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-10"></div>
+          <div id="combos-container" class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-10">
+            <!-- Renderizado via JS -->
+          </div>
 
-          <!-- BOTÃO DIETA DIFERENCIADA -->
           <div class="mb-10">
             <button onclick="abrirCotacaoEspecial()"
-                    class="w-full bg-white border-2 border-dashed border-sage/40 rounded-3xl p-5
-                           flex items-center gap-4 hover:border-forest hover:bg-sage/5 transition-all group text-left active:scale-[0.98]">
-              <div class="w-12 h-12 bg-forest/10 rounded-2xl flex items-center justify-center shrink-0 group-hover:bg-forest/20 transition-all">
+                    class="w-full bg-white dark:bg-darkcard border-2 border-dashed border-sage/40 dark:border-gray-700 rounded-3xl p-5
+                           flex items-center gap-4 hover:border-forest dark:hover:border-sage hover:bg-sage/5 transition-all group text-left active:scale-[0.98]">
+              <div class="w-12 h-12 bg-forest/10 dark:bg-gray-800 rounded-2xl flex items-center justify-center shrink-0 group-hover:bg-forest/20 transition-all">
                 <span class="text-2xl">🥗</span>
               </div>
               <div>
-                <p class="font-bold text-forest">Tenho uma dieta diferenciada</p>
-                <p class="text-xs text-gray-400 mt-0.5">Restrições alimentares, dieta prescrita ou necessidade especial? Fale conosco para uma cotação personalizada.</p>
+                <p class="font-bold text-forest dark:text-sage">Tenho uma dieta diferenciada</p>
+                <p class="text-xs text-gray-500 dark:text-gray-400 mt-0.5">Restrições, dieta prescrita ou necessidade especial? Cotação personalizada.</p>
               </div>
-              <span class="ml-auto text-gray-300 group-hover:text-forest transition-all text-xl shrink-0">→</span>
+              <span class="ml-auto text-gray-300 dark:text-gray-600 group-hover:text-forest dark:group-hover:text-sage transition-all text-xl shrink-0">→</span>
             </button>
           </div>
         </div>
 
         <!-- SEÇÃO MARMITAS (Montagem) -->
-        <section id="marmitas-section" class="hidden fade-in border-t border-sage/20 pt-8">
-
+        <section id="marmitas-section" class="hidden fade-in border-t border-sage/20 dark:border-darkborder pt-8">
+          
           <!-- BARRA DE PROGRESSO -->
-          <div class="bg-forest text-white p-6 rounded-2xl mb-8 shadow-xl">
+          <div class="bg-forest dark:bg-darkcard dark:border dark:border-gray-800 text-white p-6 rounded-2xl mb-8 shadow-xl">
             <div class="flex justify-between items-center">
               <div>
                 <p class="text-xs opacity-70 uppercase font-bold">Progresso do Kit</p>
-                <p class="text-lg font-bold" id="combo-name-display">Carregando...</p>
+                <p class="text-lg font-bold text-white dark:text-sage" id="combo-name-display">Carregando...</p>
                 <p class="text-xs opacity-70 mt-1" id="combo-tipo-badge"></p>
               </div>
               <div class="text-right" id="progress-counter">
                 <p class="text-xs opacity-60 uppercase mb-1">🍱 Marmitas</p>
-                <div class="flex items-baseline gap-1" aria-live="polite">
+                <div class="flex items-baseline gap-1">
                   <span class="text-3xl font-display font-bold" id="current-marmitas">0</span>
                   <span class="text-xl opacity-50">/</span>
                   <span class="text-xl opacity-50" id="max-marmitas">10</span>
                 </div>
               </div>
             </div>
-
-            <!-- Barra de progresso visual -->
-            <div id="progress-bar-container" class="mt-4" aria-hidden="true">
-              <div class="w-full bg-white/20 rounded-full h-2">
-                <div id="progress-bar" class="bg-white h-2 rounded-full transition-all duration-300" style="width: 0%"></div>
+            <div id="progress-bar-container" class="mt-4">
+              <div class="w-full bg-white/20 dark:bg-gray-700 rounded-full h-2">
+                <div id="progress-bar" class="bg-white dark:bg-sage h-2 rounded-full transition-all duration-300" style="width: 0%"></div>
               </div>
             </div>
           </div>
 
-          <!-- COMBO FECHADO: ITENS INCLUSOS -->
-          <div id="combo-fechado-itens" class="hidden mb-8 bg-white rounded-2xl p-6 shadow-sm border border-sage/20">
-            <h3 class="text-xl font-bold text-forest mb-4">📦 Itens inclusos neste combo:</h3>
+          <!-- COMBO FECHADO -->
+          <div id="combo-fechado-itens" class="hidden mb-8 bg-white dark:bg-darkcard rounded-2xl p-6 shadow-sm border border-sage/20 dark:border-darkborder">
+            <h3 class="text-xl font-bold text-forest dark:text-sage mb-4">📦 Itens inclusos:</h3>
             <div id="lista-itens-fechado" class="space-y-2"></div>
           </div>
 
-          <!-- COMBO ABERTO: SELEÇÃO COM BUSCA E FILTRO -->
+          <!-- COMBO ABERTO -->
           <div id="selecao-marmitas-container">
-            <h3 class="text-xl font-bold text-forest mb-4">Selecione suas refeições:</h3>
+            <h3 class="text-xl font-bold text-forest dark:text-sage mb-4">Selecione suas refeições:</h3>
             
-            <!-- MELHORIA: BUSCA E FILTROS HORIZONTAIS -->
-            <div class="bg-white p-4 rounded-2xl shadow-sm border border-sage/20 mb-6 sticky top-20 z-30">
+            <!-- Busca e Filtros -->
+            <div class="bg-white dark:bg-darkcard p-4 rounded-2xl shadow-sm border border-sage/20 dark:border-darkborder mb-6 sticky top-20 z-30">
               <div class="relative mb-3">
-                <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-gray-400" aria-hidden="true">🔍</span>
+                <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-gray-400">🔍</span>
                 <input type="search" id="busca-marmitas" placeholder="Buscar por nome do prato ou ingrediente..." 
-                       class="w-full pl-10 pr-4 py-3 bg-cream/50 border border-sage/30 rounded-xl focus:outline-forest text-sm transition-all"
-                       oninput="filtrarMarmitas()" aria-label="Buscar pratos">
+                       class="w-full pl-10 pr-4 py-3 bg-cream/50 dark:bg-darkbg dark:text-white border border-sage/30 dark:border-gray-700 rounded-xl focus:outline-forest text-sm"
+                       oninput="filtrarMarmitas()">
               </div>
-              <div class="flex gap-2 overflow-x-auto pb-2 -mx-2 px-2 snap-x" id="filtros-categoria" aria-label="Filtros de categoria">
-                <!-- Botões de filtro gerados via JS -->
+              <div class="flex gap-2 overflow-x-auto pb-2 -mx-2 px-2 snap-x" id="filtros-categoria">
+                <!-- Gerado via JS -->
               </div>
             </div>
 
-            <div id="marmitas-container" class="grid grid-cols-1 gap-3 mb-8" aria-live="polite"></div>
+            <div id="marmitas-container" class="grid grid-cols-1 gap-3 mb-8">
+              <!-- Gerado via JS -->
+            </div>
           </div>
 
-          <!-- SELEÇÃO DE VEGETAIS -->
+          <!-- VEGETAIS -->
           <div id="secao-vegetais" class="hidden mb-8 fade-in">
-            <div class="bg-white rounded-3xl p-6 shadow-sm border-2 border-green-100">
+            <div class="bg-white dark:bg-darkcard rounded-3xl p-6 shadow-sm border-2 border-green-100 dark:border-darkborder">
               <div class="flex justify-between items-center mb-2">
-                <h3 class="font-display text-xl text-forest">🥦 Escolha seus Vegetais</h3>
-                <div class="flex items-center gap-1 bg-green-50 px-3 py-1 rounded-full" aria-live="polite">
-                  <span class="text-sm font-bold text-green-700" id="vegetal-counter">0</span>
+                <h3 class="font-display text-xl text-forest dark:text-sage">🥦 Seus Legumes e Vegetais</h3>
+                <div class="flex items-center gap-1 bg-green-50 dark:bg-gray-800 px-3 py-1 rounded-full">
+                  <span class="text-sm font-bold text-green-700 dark:text-green-400" id="vegetal-counter">0</span>
                   <span class="text-sm text-gray-400" id="vegetal-counter-max"></span>
                 </div>
               </div>
-              <div class="bg-green-50 rounded-xl px-4 py-3 mb-5">
-                <p class="text-sm text-green-700 font-medium" id="vegetal-instrucao"></p>
-                <p class="text-xs text-green-600 mt-1">
-                  💡 Os vegetais são <strong>adicionais</strong> ao seu kit — não contam no limite de marmitas
+              <div class="bg-green-50 dark:bg-gray-800 rounded-xl px-4 py-3 mb-5">
+                <p class="text-sm text-green-700 dark:text-green-400 font-medium" id="vegetal-instrucao"></p>
+                <p class="text-xs text-green-600 dark:text-green-500 mt-1">
+                  💡 Os vegetais são adicionais ao seu kit — não contam no limite de marmitas
                 </p>
               </div>
               <div id="vegetais-container" class="grid grid-cols-2 sm:grid-cols-3 gap-2"></div>
             </div>
           </div>
 
-          <!-- PREFERÊNCIAS DO PEDIDO -->
-          <div class="bg-white rounded-3xl p-6 shadow-sm border border-sage/20 mb-8">
-            <h3 class="font-display text-2xl text-forest mb-6">Preferências deste Combo</h3>
+          <!-- PREFERÊNCIAS -->
+          <div class="bg-white dark:bg-darkcard rounded-3xl p-6 shadow-sm border border-sage/20 dark:border-darkborder mb-8">
+            <h3 class="font-display text-2xl text-forest dark:text-sage mb-6">Preferências deste Combo</h3>
             <div class="mb-6">
-              <label class="block text-xs font-bold uppercase text-gray-400 mb-2 ml-1">
-                Preferência de Tempero
-              </label>
+              <label class="block text-xs font-bold uppercase text-gray-400 mb-2 ml-1">Tempero</label>
               <div class="flex gap-2">
-                <button type="button" onclick="setSpiceLevel(1)"
-                        class="spice-btn flex-1 py-3 border border-sage/20 rounded-xl bg-white hover:border-forest transition-all" aria-pressed="false">
-                  🌿 Suave
-                </button>
-                <button type="button" onclick="setSpiceLevel(2)"
-                        class="spice-btn flex-1 py-3 border-2 border-forest bg-forest/5 rounded-xl font-bold" aria-pressed="true">
-                  🌶️ Médio
-                </button>
-                <button type="button" onclick="setSpiceLevel(3)"
-                        class="spice-btn flex-1 py-3 border border-sage/20 rounded-xl bg-white hover:border-forest transition-all" aria-pressed="false">
-                  🔥 Picante
-                </button>
+                <button type="button" onclick="setSpiceLevel(1)" class="spice-btn flex-1 py-3 border border-sage/20 dark:border-gray-700 rounded-xl bg-white dark:bg-darkbg hover:border-forest transition-all">🌿 Suave</button>
+                <button type="button" onclick="setSpiceLevel(2)" class="spice-btn flex-1 py-3 border-2 border-forest bg-forest/5 dark:bg-forest/20 rounded-xl font-bold">🌶️ Médio</button>
+                <button type="button" onclick="setSpiceLevel(3)" class="spice-btn flex-1 py-3 border border-sage/20 dark:border-gray-700 rounded-xl bg-white dark:bg-darkbg hover:border-forest transition-all">🔥 Picante</button>
               </div>
             </div>
             <div>
-              <label class="block text-xs font-bold uppercase text-gray-400 mb-1 ml-1">
-                Observações Adicionais
-              </label>
-              <textarea id="observations"
-                        placeholder="Ex: Sem cebola, restrições alimentares, preferências especiais..."
-                        class="w-full px-4 py-3 bg-cream/50 border border-sage/20 rounded-xl focus:outline-forest h-24"></textarea>
+              <label class="block text-xs font-bold uppercase text-gray-400 mb-1 ml-1">Observações</label>
+              <textarea id="observations" placeholder="Ex: Sem cebola, restrições alimentares..." class="w-full px-4 py-3 bg-cream/50 dark:bg-darkbg dark:text-white border border-sage/20 dark:border-gray-700 rounded-xl focus:outline-forest h-24"></textarea>
             </div>
           </div>
 
-          <!-- MELHORIA: BARRA FIXA DE ADICIONAR AO CARRINHO -->
-          <div class="fixed bottom-0 left-0 right-0 bg-white border-t p-4 md:p-6 flex flex-col md:flex-row justify-between items-center shadow-[0_-10px_40px_rgba(0,0,0,0.1)] z-40">
+          <!-- BARRA FIXA ADC CARRINHO -->
+          <div class="fixed bottom-0 left-0 right-0 bg-white dark:bg-darkcard border-t dark:border-darkborder p-4 md:p-6 flex flex-col md:flex-row justify-between items-center shadow-[0_-10px_40px_rgba(0,0,0,0.1)] z-40">
             <div class="text-center md:text-left mb-4 md:mb-0">
               <p class="text-xs text-gray-400 uppercase font-bold">Subtotal do Combo</p>
               <p id="total-price" class="text-3xl font-display text-terracotta">R$ 0,00</p>
             </div>
-            <button onclick="adicionarAoCarrinho()"
-                    class="w-full md:w-auto bg-forest text-white px-12 py-4 rounded-2xl font-bold shadow-lg hover:scale-105 active:scale-95 transition-all flex items-center justify-center gap-2 text-lg">
+            <button onclick="adicionarAoCarrinho()" class="w-full md:w-auto bg-forest text-white px-12 py-4 rounded-2xl font-bold shadow-lg hover:scale-105 active:scale-95 transition-all text-lg">
               🛒 Adicionar ao Carrinho
             </button>
           </div>
-
         </section>
       </section>
 
       <!-- ===== DASHBOARD ADMIN ===== -->
       <section id="page-dashboard" class="hidden">
-        <h2 class="text-2xl font-bold mb-6 font-display text-forest">Painel Administrativo</h2>
+        <h2 class="text-2xl font-bold mb-6 font-display text-forest dark:text-sage">Painel Administrativo</h2>
         <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
-          <div class="bg-white p-6 rounded-2xl shadow-sm border border-sage/20">
+          <div class="bg-white dark:bg-darkcard p-6 rounded-2xl shadow-sm border border-sage/20 dark:border-darkborder">
             <p class="text-gray-400 text-sm mb-1">Total de Combos</p>
-            <p class="text-3xl font-bold text-forest" id="stat-combos">0</p>
+            <p class="text-3xl font-bold text-forest dark:text-sage" id="stat-combos">0</p>
             <p class="text-xs text-sage mt-1" id="stat-combos-visiveis"></p>
           </div>
-          <div class="bg-white p-6 rounded-2xl shadow-sm border border-sage/20">
+          <div class="bg-white dark:bg-darkcard p-6 rounded-2xl shadow-sm border border-sage/20 dark:border-darkborder">
             <p class="text-gray-400 text-sm mb-1">Itens no Cardápio</p>
-            <p class="text-3xl font-bold text-forest" id="stat-marmitas">0</p>
+            <p class="text-3xl font-bold text-forest dark:text-sage" id="stat-marmitas">0</p>
             <p class="text-xs text-sage mt-1" id="stat-marmitas-visiveis"></p>
           </div>
-          <div class="bg-white p-6 rounded-2xl shadow-sm border border-sage/20">
+          <div class="bg-white dark:bg-darkcard p-6 rounded-2xl shadow-sm border border-sage/20 dark:border-darkborder">
             <p class="text-gray-400 text-sm mb-1">Total de Pedidos</p>
             <p class="text-3xl font-bold text-terracotta" id="stat-total-pedidos">0</p>
-            <p class="text-xs text-sage mt-1">histórico completo</p>
           </div>
-          <div class="bg-white p-6 rounded-2xl shadow-sm border border-sage/20">
+          <div class="bg-white dark:bg-darkcard p-6 rounded-2xl shadow-sm border border-sage/20 dark:border-darkborder">
             <p class="text-gray-400 text-sm mb-1">Faturamento Total</p>
-            <p class="text-3xl font-bold text-forest" id="stat-faturamento">R$ 0</p>
-            <p class="text-xs text-sage mt-1">todos os pedidos</p>
+            <p class="text-3xl font-bold text-forest dark:text-sage" id="stat-faturamento">R$ 0</p>
           </div>
         </div>
-        <div class="bg-white p-6 rounded-2xl shadow-sm border border-sage/20">
-          <h3 class="font-bold text-lg mb-4">Ações Rápidas</h3>
+        <div class="bg-white dark:bg-darkcard p-6 rounded-2xl shadow-sm border border-sage/20 dark:border-darkborder">
+          <h3 class="font-bold text-lg mb-4 text-charcoal dark:text-white">Ações Rápidas</h3>
           <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
-            <button onclick="showPage('pedidos')"
-                    class="border-2 border-terracotta text-terracotta px-4 py-3 rounded-xl font-bold
-                           hover:bg-terracotta hover:text-white transition-all text-sm">
-              📋 Ver Pedidos
-            </button>
-            <button onclick="exportarBancoDados()"
-                    class="border-2 border-forest text-forest px-4 py-3 rounded-xl font-bold
-                           hover:bg-forest hover:text-white transition-all text-sm">
-              ⬇️ Exportar Dados
-            </button>
-            <button onclick="showPage('combos')"
-                    class="border-2 border-forest text-forest px-4 py-3 rounded-xl font-bold
-                           hover:bg-forest hover:text-white transition-all text-sm">
-              📦 Combos
-            </button>
-            <button onclick="showPage('marmitas')"
-                    class="border-2 border-forest text-forest px-4 py-3 rounded-xl font-bold
-                           hover:bg-forest hover:text-white transition-all text-sm">
-              🍱 Cardápio
-            </button>
+            <button onclick="showPage('pedidos')" class="border-2 border-terracotta text-terracotta px-4 py-3 rounded-xl font-bold hover:bg-terracotta hover:text-white transition-all text-sm">📋 Ver Pedidos</button>
+            <button onclick="showPage('combos')" class="border-2 border-forest dark:border-sage dark:text-sage text-forest px-4 py-3 rounded-xl font-bold hover:bg-forest hover:text-white transition-all text-sm">📦 Combos</button>
+            <button onclick="showPage('marmitas')" class="border-2 border-forest dark:border-sage dark:text-sage text-forest px-4 py-3 rounded-xl font-bold hover:bg-forest hover:text-white transition-all text-sm">🍱 Cardápio</button>
+            <button onclick="showPage('cupons')" class="border-2 border-forest dark:border-sage dark:text-sage text-forest px-4 py-3 rounded-xl font-bold hover:bg-forest hover:text-white transition-all text-sm">🎟️ Cupons</button>
           </div>
         </div>
       </section>
@@ -604,183 +630,196 @@
       <!-- ===== PÁGINA PEDIDOS ===== -->
       <section id="page-pedidos" class="hidden">
         <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4">
-          <h2 class="text-2xl font-bold font-display text-forest">📋 Pedidos Recebidos</h2>
-          <button onclick="exportarBancoDados()"
-                  class="bg-forest text-white px-5 py-3 rounded-xl font-bold hover:scale-105 transition-all text-sm">
-            ⬇️ Exportar Banco de Dados
+          <h2 class="text-2xl font-bold font-display text-forest dark:text-sage">📋 Gestão de Pedidos</h2>
+          <button onclick="exportarBancoDados()" class="bg-forest text-white px-5 py-3 rounded-xl font-bold hover:scale-105 transition-all text-sm">
+            ⬇️ Exportar CSV/JSON
           </button>
         </div>
 
-        <!-- FILTRO POR DATA -->
-        <div class="bg-white p-5 rounded-2xl shadow-sm border border-sage/20 mb-6">
+        <div class="bg-white dark:bg-darkcard p-5 rounded-2xl shadow-sm border border-sage/20 dark:border-darkborder mb-6">
           <p class="text-xs font-bold uppercase text-gray-400 mb-3">Filtrar por Período</p>
           <div class="flex flex-col md:flex-row gap-3 items-end">
-            <div class="flex-1">
+            <div class="flex-1 w-full">
               <label class="block text-xs text-gray-500 mb-1">Data inicial</label>
-              <input type="date" id="filtro-data-inicio"
-                     class="w-full px-4 py-2 border border-sage/30 rounded-xl focus:outline-forest">
+              <input type="date" id="filtro-data-inicio" class="w-full px-4 py-2 border border-sage/30 dark:border-gray-700 dark:bg-darkbg dark:text-white rounded-xl focus:outline-forest">
             </div>
-            <div class="flex-1">
+            <div class="flex-1 w-full">
               <label class="block text-xs text-gray-500 mb-1">Data final</label>
-              <input type="date" id="filtro-data-fim"
-                     class="w-full px-4 py-2 border border-sage/30 rounded-xl focus:outline-forest">
+              <input type="date" id="filtro-data-fim" class="w-full px-4 py-2 border border-sage/30 dark:border-gray-700 dark:bg-darkbg dark:text-white rounded-xl focus:outline-forest">
             </div>
-            <button onclick="aplicarFiltroData()"
-                    class="bg-forest text-white px-6 py-2 rounded-xl font-bold hover:bg-forest/90 transition-all whitespace-nowrap">
-              Filtrar
-            </button>
-            <button onclick="limparFiltro()"
-                    class="border border-gray-300 text-gray-500 px-6 py-2 rounded-xl font-bold hover:bg-gray-50 transition-all whitespace-nowrap">
-              Ver Todos
-            </button>
+            <div class="flex gap-2 w-full md:w-auto">
+              <button onclick="aplicarFiltroData()" class="flex-1 bg-forest text-white px-6 py-2 rounded-xl font-bold hover:bg-forest/90 transition-all">Filtrar</button>
+              <button onclick="limparFiltro()" class="flex-1 border border-gray-300 dark:border-gray-700 text-gray-500 dark:text-gray-300 px-6 py-2 rounded-xl font-bold hover:bg-gray-50 dark:hover:bg-gray-800 transition-all">Ver Todos</button>
+            </div>
           </div>
         </div>
 
-        <!-- CARDS FATURAMENTO -->
-        <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
-          <div class="bg-white p-5 rounded-2xl shadow-sm border border-sage/20">
-            <p class="text-gray-400 text-xs mb-1">Pedidos no Período</p>
-            <p class="text-3xl font-bold text-forest" id="periodo-qtd-pedidos">0</p>
-          </div>
-          <div class="bg-white p-5 rounded-2xl shadow-sm border border-sage/20">
-            <p class="text-gray-400 text-xs mb-1">Faturamento no Período</p>
-            <p class="text-2xl font-bold text-terracotta" id="periodo-faturamento">R$ 0,00</p>
-          </div>
-          <div class="bg-white p-5 rounded-2xl shadow-sm border border-sage/20">
-            <p class="text-gray-400 text-xs mb-1">Ticket Médio</p>
-            <p class="text-2xl font-bold text-forest" id="periodo-ticket-medio">R$ 0,00</p>
-          </div>
-          <div class="bg-white p-5 rounded-2xl shadow-sm border border-sage/20">
-            <p class="text-gray-400 text-xs mb-1">Total de Itens</p>
-            <p class="text-3xl font-bold text-forest" id="periodo-total-itens">0</p>
-          </div>
-        </div>
-
-        <!-- TABELA DE PEDIDOS -->
-        <div class="bg-white rounded-2xl shadow-sm border border-sage/20 mb-6 overflow-hidden">
-          <div class="p-5 border-b border-sage/10 flex justify-between items-center">
-            <p class="font-bold text-forest">Lista de Pedidos</p>
+        <div class="bg-white dark:bg-darkcard rounded-2xl shadow-sm border border-sage/20 dark:border-darkborder mb-6 overflow-hidden">
+          <div class="p-5 border-b border-sage/10 dark:border-darkborder flex justify-between items-center">
+            <p class="font-bold text-forest dark:text-sage">Lista de Pedidos</p>
             <p class="text-xs text-gray-400" id="pedidos-periodo-label">Todos os pedidos</p>
           </div>
-          <div class="overflow-x-auto">
-            <table class="w-full text-sm">
-              <thead class="bg-gray-50 text-gray-400 uppercase text-xs">
+          <div class="overflow-x-auto min-h-[300px]">
+            <table class="w-full text-sm text-left">
+              <thead class="bg-gray-50 dark:bg-gray-800 text-gray-400 uppercase text-xs">
                 <tr>
-                  <th class="px-4 py-3 text-left">Data/Hora</th>
-                  <th class="px-4 py-3 text-left">Cliente</th>
-                  <th class="px-4 py-3 text-left">WhatsApp</th>
-                  <th class="px-4 py-3 text-left">Cidade</th>
-                  <th class="px-4 py-3 text-left">Combo</th>
+                  <th class="px-4 py-3">Data/Hora</th>
+                  <th class="px-4 py-3">Cliente</th>
+                  <th class="px-4 py-3">Status</th>
                   <th class="px-4 py-3 text-right">Total</th>
                   <th class="px-4 py-3 text-center">Ações</th>
                 </tr>
               </thead>
-              <tbody id="tabela-pedidos" class="divide-y divide-gray-50"></tbody>
+              <tbody id="tabela-pedidos" class="divide-y divide-gray-50 dark:divide-gray-800 text-charcoal dark:text-gray-300">
+                <!-- Preenchido via JS -->
+              </tbody>
             </table>
           </div>
-          <div id="pedidos-vazio" class="hidden p-12 text-center text-gray-400">
-            <p class="text-4xl mb-3">📭</p>
-            <p class="font-bold">Nenhum pedido encontrado</p>
-            <p class="text-xs mt-1">Ajuste o período ou aguarde novos pedidos</p>
-          </div>
-        </div>
-
-        <!-- RANKINGS -->
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-          <div class="bg-white rounded-2xl shadow-sm border border-sage/20 overflow-hidden">
-            <div class="p-5 border-b border-sage/10">
-              <p class="font-bold text-forest">📦 Faturamento por Combo</p>
-              <p class="text-xs text-gray-400 mt-1">Combos mais vendidos no período</p>
-            </div>
-            <div id="ranking-combos" class="p-4 space-y-3"></div>
-          </div>
-          <div class="bg-white rounded-2xl shadow-sm border border-sage/20 overflow-hidden">
-            <div class="p-5 border-b border-sage/10">
-              <p class="font-bold text-forest">🍱 Itens mais pedidos</p>
-              <p class="text-xs text-gray-400 mt-1">Top 10 itens no período</p>
-            </div>
-            <div id="ranking-itens" class="p-4 space-y-3"></div>
-          </div>
         </div>
       </section>
 
-      <!-- ===== GERENCIAR COMBOS ===== -->
+      <!-- ===== ADMIN: COMBOS E MARMITAS ===== -->
       <section id="page-combos" class="hidden">
         <div class="flex justify-between items-center mb-6">
-          <h2 class="text-2xl font-bold font-display text-forest">Gerenciar Combos</h2>
-          <button onclick="abrirModalCombo()"
-                  class="bg-forest text-white px-6 py-3 rounded-xl font-bold hover:scale-105 transition-all">
-            + Novo Combo
-          </button>
+          <h2 class="text-2xl font-bold font-display text-forest dark:text-sage">Gerenciar Combos</h2>
+          <button onclick="abrirModalCombo()" class="bg-forest text-white px-6 py-3 rounded-xl font-bold hover:scale-105 transition-all">+ Novo Combo</button>
         </div>
-        <div id="combos-admin-list" class="space-y-3"></div>
+        <div id="combos-admin-list" class="space-y-4"></div>
       </section>
 
-      <!-- ===== GERENCIAR CARDÁPIO ===== -->
       <section id="page-marmitas" class="hidden">
         <div class="flex justify-between items-center mb-6">
-          <h2 class="text-2xl font-bold font-display text-forest">Gerenciar Cardápio</h2>
-          <button onclick="abrirModalMarmita()"
-                  class="bg-forest text-white px-6 py-3 rounded-xl font-bold hover:scale-105 transition-all">
-            + Novo Item
-          </button>
+          <h2 class="text-2xl font-bold font-display text-forest dark:text-sage">Gerenciar Cardápio</h2>
+          <button onclick="abrirModalMarmita()" class="bg-forest text-white px-6 py-3 rounded-xl font-bold hover:scale-105 transition-all">+ Novo Item</button>
         </div>
         <div id="marmitas-admin-list" class="grid grid-cols-1 md:grid-cols-2 gap-4"></div>
+      </section>
+
+      <!-- ===== ADMIN: CUPONS ===== -->
+      <section id="page-cupons" class="hidden">
+        <div class="flex justify-between items-center mb-6">
+          <h2 class="text-2xl font-bold font-display text-forest dark:text-sage">🎟️ Gerenciar Cupons</h2>
+          <button onclick="abrirModalCupom()" class="bg-forest text-white px-6 py-3 rounded-xl font-bold hover:scale-105 transition-all">+ Novo Cupom</button>
+        </div>
+        <div class="bg-white dark:bg-darkcard rounded-2xl shadow-sm border border-sage/20 dark:border-darkborder p-4">
+          <div id="cupons-admin-list" class="space-y-3 text-charcoal dark:text-white">
+            <!-- Preenchido via JS -->
+          </div>
+        </div>
       </section>
 
     </main>
   </div>
 </div>
 
-<!-- ==================== MELHORIA: BOTÃO FLUTUANTE CARRINHO ==================== -->
-<button id="btn-floating-cart" onclick="toggleCart()" class="hidden fixed bottom-6 right-6 md:bottom-28 md:right-10 bg-terracotta text-white p-4 rounded-full shadow-2xl hover:bg-terracotta/90 transition-all z-50 flex items-center justify-center gap-2 group active:scale-95" aria-label="Abrir Carrinho de Compras">
+<!-- ==================== BOTÃO FLUTUANTE CARRINHO ==================== -->
+<button id="btn-floating-cart" onclick="toggleCart()" class="hidden fixed bottom-6 right-6 md:bottom-28 md:right-10 bg-terracotta text-white p-4 rounded-full shadow-2xl hover:bg-terracotta/90 transition-all z-50 flex items-center justify-center gap-2 group active:scale-95">
   <span class="text-2xl group-hover:scale-110 transition-transform">🛒</span>
   <span id="cart-badge-floating" class="bg-white text-terracotta text-sm font-bold w-6 h-6 flex items-center justify-center rounded-full shadow-inner">0</span>
 </button>
 
-<!-- ==================== MELHORIA: GAVETA DO CARRINHO ==================== -->
-<div id="cart-sidebar-container" class="fixed inset-0 z-[100] hidden" aria-modal="true" role="dialog">
-  <div id="cart-backdrop" class="absolute inset-0 modal-bg opacity-0 transition-opacity duration-300 cursor-pointer" onclick="toggleCart()" aria-label="Fechar Carrinho"></div>
-  <div id="cart-panel" class="absolute inset-y-0 right-0 max-w-md w-full bg-white shadow-2xl transform translate-x-full transition-transform duration-300 flex flex-col">
-    <div class="p-6 border-b border-sage/20 flex justify-between items-center bg-cream">
-      <h2 class="font-display text-2xl text-forest flex items-center gap-2">🛒 Seu Carrinho</h2>
-      <button onclick="toggleCart()" class="text-gray-400 hover:text-terracotta text-2xl p-2 transition-colors" aria-label="Fechar Gaveta">✕</button>
+<!-- ==================== GAVETA DO CARRINHO ==================== -->
+<div id="cart-sidebar-container" class="fixed inset-0 z-[100] hidden">
+  <div id="cart-backdrop" class="absolute inset-0 modal-bg opacity-0 transition-opacity duration-300 cursor-pointer" onclick="toggleCart()"></div>
+  <div id="cart-panel" class="absolute inset-y-0 right-0 max-w-md w-full bg-white dark:bg-darkbg shadow-2xl transform translate-x-full transition-transform duration-300 flex flex-col">
+    <div class="p-6 border-b border-sage/20 dark:border-darkborder flex justify-between items-center bg-cream dark:bg-darkcard">
+      <h2 class="font-display text-2xl text-forest dark:text-sage">🛒 Seu Carrinho</h2>
+      <div class="flex items-center gap-4">
+        <button onclick="esvaziarCarrinho()" class="text-xs bg-red-50 text-red-500 hover:bg-red-100 dark:bg-red-900/20 dark:text-red-400 font-bold px-3 py-2 rounded-lg transition-colors flex items-center gap-1 shadow-sm">
+          🗑️ Esvaziar
+        </button>
+        <button onclick="toggleCart()" class="text-gray-400 hover:text-terracotta dark:hover:text-terracotta text-2xl p-2 transition-colors">✕</button>
+      </div>
     </div>
     
-    <div class="flex-1 overflow-y-auto p-6 bg-gray-50" id="cart-items-container">
-      <!-- Itens renderizados aqui -->
+    <div class="flex-1 overflow-y-auto p-6 bg-gray-50 dark:bg-darkbg" id="cart-items-container">
+      <!-- Preenchido via JS -->
     </div>
 
-    <!-- DADOS PARA ENTREGA AGORA NO CARRINHO -->
-    <div class="p-6 border-t border-sage/20 bg-white shadow-[0_-4px_20px_rgba(0,0,0,0.05)]" id="cart-checkout-form">
-      <h3 class="font-bold text-forest mb-4">📍 Dados para Entrega</h3>
+    <!-- Cupom de Desconto e Checkout -->
+    <div class="p-6 border-t border-sage/20 dark:border-darkborder bg-white dark:bg-darkcard shadow-[0_-4px_20px_rgba(0,0,0,0.05)] text-charcoal dark:text-gray-200">
+      
+      <!-- Box de Cupom (Inserir) -->
+      <div id="box-cupom-input" class="mb-4 bg-gray-50 dark:bg-gray-800 p-3 rounded-xl border border-gray-200 dark:border-gray-700 flex gap-2">
+        <input type="text" id="input-cupom" placeholder="Tem cupom de desconto?" class="flex-1 px-3 py-2 bg-white dark:bg-darkbg border border-gray-200 dark:border-gray-700 rounded-lg text-sm uppercase focus:outline-forest dark:text-white">
+        <button onclick="aplicarCupomCliente()" class="bg-gray-800 dark:bg-sage text-white px-4 py-2 rounded-lg text-sm font-bold hover:bg-gray-700 dark:hover:bg-sage/80 transition-colors">Aplicar</button>
+      </div>
+
+      <!-- Box de Cupom (Aplicado/Remover) -->
+      <div id="box-cupom-applied" class="hidden mb-4 bg-green-50 dark:bg-green-900/20 p-3 rounded-xl border border-green-200 dark:border-green-800 flex justify-between items-center">
+        <span id="msg-cupom" class="text-xs font-bold text-green-700 dark:text-green-400"></span>
+        <button onclick="removerCupom()" class="text-xs font-bold text-red-500 hover:text-red-700 bg-white dark:bg-darkbg px-2 py-1 rounded shadow-sm">✕ Remover</button>
+      </div>
+
+      <h3 class="font-bold text-forest dark:text-sage mb-3">📍 Dados para Entrega</h3>
       <div class="space-y-3 mb-6">
-        <input id="cliente-nome" type="text" placeholder="Seu Nome Completo *" class="w-full px-4 py-3 border border-sage/30 rounded-xl focus:outline-forest text-sm bg-gray-50">
-        <input id="cliente-tel" type="tel" placeholder="WhatsApp * (Ex: 47999999999)" class="w-full px-4 py-3 border border-sage/30 rounded-xl focus:outline-forest text-sm bg-gray-50">
-        <input id="cliente-endereco" type="text" placeholder="Endereço (Rua, Nº, Bairro, Ref) *" class="w-full px-4 py-3 border border-sage/30 rounded-xl focus:outline-forest text-sm bg-gray-50">
-        <input id="cliente-cidade" type="text" placeholder="Cidade *" class="w-full px-4 py-3 border border-sage/30 rounded-xl focus:outline-forest text-sm bg-gray-50">
+        <input id="cliente-nome" type="text" placeholder="Seu Nome Completo *" class="w-full px-4 py-3 border border-sage/30 dark:border-gray-700 rounded-xl focus:outline-forest text-sm bg-gray-50 dark:bg-darkbg dark:text-white">
+        <input id="cliente-tel" type="tel" placeholder="WhatsApp * (Ex: 47999999999)" class="w-full px-4 py-3 border border-sage/30 dark:border-gray-700 rounded-xl focus:outline-forest text-sm bg-gray-50 dark:bg-darkbg dark:text-white">
+        <input id="cliente-endereco" type="text" placeholder="Endereço (Rua, Nº, Bairro, Ref) *" class="w-full px-4 py-3 border border-sage/30 dark:border-gray-700 rounded-xl focus:outline-forest text-sm bg-gray-50 dark:bg-darkbg dark:text-white">
+        <input id="cliente-cidade" type="text" placeholder="Cidade *" class="w-full px-4 py-3 border border-sage/30 dark:border-gray-700 rounded-xl focus:outline-forest text-sm bg-gray-50 dark:bg-darkbg dark:text-white">
       </div>
 
       <div class="flex justify-between items-end mb-4">
-        <span class="text-gray-500 font-bold uppercase text-xs">Total a Pagar</span>
-        <span id="cart-total-price" class="font-display text-3xl text-terracotta font-bold">R$ 0,00</span>
+        <span class="text-gray-500 dark:text-gray-400 font-bold uppercase text-xs">Total a Pagar</span>
+        <div class="text-right">
+          <span id="cart-total-old" class="text-sm line-through text-gray-400 hidden block"></span>
+          <span id="cart-total-price" class="font-display text-3xl text-terracotta font-bold">R$ 0,00</span>
+        </div>
       </div>
-      <button onclick="finalizarPedidoFinal()" id="btn-finalizar-whatsapp" class="w-full bg-forest text-white py-4 rounded-xl font-bold hover:bg-forest/90 active:scale-95 transition-all shadow-lg flex justify-center items-center gap-2 text-lg">
-        📱 Enviar Pedido Completo
+      <button onclick="finalizarPedidoFinal()" class="w-full bg-forest text-white py-4 rounded-xl font-bold hover:bg-forest/90 active:scale-95 transition-all shadow-lg flex justify-center items-center gap-2 text-lg">
+        📱 Enviar Pedido
       </button>
     </div>
   </div>
 </div>
 
 <!-- ==================== TOAST ==================== -->
-<div id="toast"
-     class="hidden fixed bottom-24 left-1/2 -translate-x-1/2 bg-charcoal text-white
-            px-8 py-4 rounded-2xl shadow-2xl z-[120] font-bold text-center max-w-sm">
-</div>
+<div id="toast" class="hidden fixed bottom-24 left-1/2 -translate-x-1/2 bg-charcoal dark:bg-white dark:text-charcoal text-white px-8 py-4 rounded-2xl shadow-2xl z-[120] font-bold text-center max-w-sm"></div>
 
 <script>
   // ============================================================
-  // FIREBASE CONFIG — substitua pelos seus dados
+  // PWA (PROGRESSIVE WEB APP) - INJEÇÃO VIA BLOB
+  // ============================================================
+  const manifestData = {
+    name: "Sabor e Saúde",
+    short_name: "Sabor&Saúde",
+    start_url: ".",
+    display: "standalone",
+    background_color: "#FDF8F3",
+    theme_color: "#2D5A3D",
+    icons: [{
+      src: "https://raw.githubusercontent.com/Sabor-e-Saude/cardapio-pedidos/refs/heads/main/logo.png",
+      sizes: "192x192", type: "image/png", purpose: "any maskable"
+    }]
+  };
+  const manifestBlob = new Blob([JSON.stringify(manifestData)], {type: 'application/json'});
+  document.getElementById('manifest-link').href = URL.createObjectURL(manifestBlob);
+
+  const swCode = `self.addEventListener('fetch', function(event) {});`;
+  const swBlob = new Blob([swCode], {type: 'application/javascript'});
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register(URL.createObjectURL(swBlob));
+  }
+
+  let deferredPrompt;
+  window.addEventListener('beforeinstallprompt', (e) => {
+    e.preventDefault();
+    deferredPrompt = e;
+    document.getElementById('btn-install-app').classList.remove('hidden');
+  });
+  
+  function installPwaApp() {
+    if (deferredPrompt) {
+      deferredPrompt.prompt();
+      deferredPrompt.userChoice.then(() => {
+        deferredPrompt = null;
+        document.getElementById('btn-install-app').classList.add('hidden');
+      });
+    }
+  }
+
+  // ============================================================
+  // FIREBASE CONFIG
   // ============================================================
   const firebaseConfig = {
     apiKey: "AIzaSyBL0z6PwA6Ik_U671G7HJZLsHT9udCT7YI",
@@ -789,15 +828,11 @@
     projectId: "sabor-e-saude-a233e",
     storageBucket: "sabor-e-saude-a233e.firebasestorage.app",
     messagingSenderId: "283293618461",
-    appId: "1:283293618461:web:1db0ad8b6db9f145d791f4",
-    measurementId: "G-R6LW9FKEQF"
+    appId: "1:283293618461:web:1db0ad8b6db9f145d791f4"
   };
 
   const WHATSAPP_RESTAURANTE = "5547996988109";
 
-  // ============================================================
-  // INICIALIZAÇÃO FIREBASE
-  // ============================================================
   let database;
   let firebaseInitialized = false;
   try {
@@ -805,7 +840,7 @@
     database = firebase.database();
     firebaseInitialized = true;
   } catch(e) {
-    console.warn("Firebase não configurado. Usando localStorage.");
+    console.warn("Firebase offline. Usando localStorage.");
   }
 
   // ============================================================
@@ -818,322 +853,381 @@
   let vegetaisSelecionados = [];
   let spiceLevel       = 2;
   let maxMarmitas      = 0;
+  
   let marmitasCache    = [];
   let combosCache      = [];
   let pedidosCache     = [];
+  let cuponsCache      = [];
+  
   let pedidoAtualModal = null;
-
-  // ESTADO EXTRA: MELHORIAS (Filtros e Carrinho)
   let activeCategory   = 'todas';
   let searchTerm       = '';
   let carrinhoCompras  = [];
+  let cupomAplicado    = null; // Obj: {codigo: 'X', desconto: 10}
 
-  const CAT_ICONS = {
-    marmita:    '🍱 Marmitas',
-    sopa:       '🍲 Sopas',
-    suco:       '🥤 Sucos',
-    sobremesa:  '🍰 Sobremesas',
-    proteico:   '💪 Proteicos',
-    'low-carb': '🥗 Low Carb',
-    vegano:     '🌱 Veganos',
-    vegetal:    '🥦 Vegetais'
+  const STATUS_CORES = {
+    'novo':      { label: '🔴 Novo',         bg: 'bg-red-100 text-red-700',      sel: '#fee2e2' },
+    'preparo':   { label: '🟡 Em Preparo',   bg: 'bg-yellow-100 text-yellow-700',sel: '#fef3c7' },
+    'entrega':   { label: '🔵 Saiu Entrega', bg: 'bg-blue-100 text-blue-700',    sel: '#dbeafe' },
+    'concluido': { label: '🟢 Concluído',    bg: 'bg-green-100 text-green-700',  sel: '#dcfce3' }
   };
 
+  const CAT_ICONS = {
+    marmita: '🍱 Marmitas', sopa: '🍲 Sopas', suco: '🥤 Sucos', 
+    sobremesa: '🍰 Sobremesas', proteico: '💪 Proteicos', 
+    'low-carb': '🥗 Low Carb', vegano: '🌱 Veganos', vegetal: '🥦 Vegetais'
+  };
   const CAT_EMOJI = {
-    marmita:'🍱', sopa:'🍲', suco:'🥤', sobremesa:'🍰',
+    marmita:'🍱', sopa:'🍲', suco:'🥤', sobremesa:'🍰', 
     proteico:'💪', 'low-carb':'🥗', vegano:'🌱', vegetal:'🥦'
   };
 
   // ============================================================
-  // FIREBASE HELPERS
+  // HELPERS STORAGE & DB
   // ============================================================
   async function fbGet(path) {
     if (!firebaseInitialized) return null;
     const snap = await database.ref(path).once('value');
     return snap.val();
   }
+  
   async function fbSet(path, value) {
     if (!firebaseInitialized) return;
     await database.ref(path).set(value);
   }
+  
   async function fbRemove(path) {
     if (!firebaseInitialized) return;
     await database.ref(path).remove();
   }
-  function lsGet(key)       { return JSON.parse(localStorage.getItem(key) || '[]'); }
-  function lsSet(key, data) { localStorage.setItem(key, JSON.stringify(data)); }
-
-  // ============================================================
-  // CRUD: MARMITAS
-  // ============================================================
-  async function getMarmitas() {
-    if (!firebaseInitialized) return lsGet('marmitas_fit_data');
-    const d = await fbGet('marmitas');
-    return d ? Object.values(d) : [];
+  
+  function lsGet(key) {
+    return JSON.parse(localStorage.getItem(key) || 'null');
   }
-  async function saveMarmita(m) {
-    if (!firebaseInitialized) {
-      let list = lsGet('marmitas_fit_data');
-      const i  = list.findIndex(x => x.id === m.id);
-      i !== -1 ? list[i] = m : list.push(m);
-      lsSet('marmitas_fit_data', list);
-    } else {
-      await fbSet(`marmitas/${m.id}`, m);
-    }
-  }
-  async function deleteMarmita(id) {
-    if (!firebaseInitialized) {
-      lsSet('marmitas_fit_data', lsGet('marmitas_fit_data').filter(m => m.id !== id));
-    } else {
-      await fbRemove(`marmitas/${id}`);
-    }
+  
+  function lsSet(key, data) {
+    localStorage.setItem(key, JSON.stringify(data));
   }
 
   // ============================================================
-  // CRUD: COMBOS
+  // DARK MODE & REPETIR PEDIDO LOGIC
   // ============================================================
-  async function getCombos() {
-    if (!firebaseInitialized) return lsGet('combos_fit_data');
-    const d = await fbGet('combos');
-    return d ? Object.values(d) : [];
+  function toggleDarkMode() {
+    document.documentElement.classList.toggle('dark');
+    const isDark = document.documentElement.classList.contains('dark');
+    lsSet('theme_dark', isDark);
+    document.getElementById('icon-theme').textContent = isDark ? '☀️' : '🌙';
   }
-  async function saveCombo(c) {
-    if (!firebaseInitialized) {
-      let list = lsGet('combos_fit_data');
-      const i  = list.findIndex(x => x.id === c.id);
-      i !== -1 ? list[i] = c : list.push(c);
-      lsSet('combos_fit_data', list);
-    } else {
-      await fbSet(`combos/${c.id}`, c);
+
+  function initClientExtras() {
+    if (lsGet('theme_dark') === true) {
+      document.documentElement.classList.add('dark');
+      document.getElementById('icon-theme').textContent = '☀️';
     }
-  }
-  async function deleteCombo(id) {
-    if (!firebaseInitialized) {
-      lsSet('combos_fit_data', lsGet('combos_fit_data').filter(c => c.id !== id));
-    } else {
-      await fbRemove(`combos/${id}`);
+    
+    const ultimo = lsGet('ultimo_pedido');
+    if (ultimo && carrinhoCompras.length === 0) {
+      document.getElementById('banner-repetir-pedido').classList.remove('hidden');
     }
   }
 
+  function repetirUltimoPedido() {
+    const ultimo = lsGet('ultimo_pedido');
+    if (ultimo) {
+      carrinhoCompras = ultimo;
+      atualizarBadgeCarrinho();
+      document.getElementById('banner-repetir-pedido').classList.add('hidden');
+      toggleCart();
+      showToast('🎉 Pedido carregado! Verifique seus dados e envie.');
+    }
+  }
+
+  function ignorarPedidoAnterior() {
+    document.getElementById('banner-repetir-pedido').classList.add('hidden');
+  }
+
   // ============================================================
-  // CRUD: PEDIDOS
+  // CRUD CORE
   // ============================================================
-  async function getPedidos() {
-    if (!firebaseInitialized) return lsGet('pedidos_fit_data');
-    const d = await fbGet('pedidos');
+  async function getDados(tipo) {
+    if (!firebaseInitialized) return lsGet(`${tipo}_fit_data`) || [];
+    const d = await fbGet(tipo); 
     return d ? Object.values(d) : [];
   }
-  async function savePedido(pedido) {
+  
+  async function saveDado(tipo, obj) {
     if (!firebaseInitialized) {
-      let list = lsGet('pedidos_fit_data');
-      list.push(pedido);
-      lsSet('pedidos_fit_data', list);
+      let list = lsGet(`${tipo}_fit_data`) || [];
+      const i = list.findIndex(x => x.id === obj.id);
+      if (i !== -1) { list[i] = obj; } else { list.push(obj); }
+      lsSet(`${tipo}_fit_data`, list);
     } else {
-      await fbSet(`pedidos/${pedido.id}`, pedido);
+      await fbSet(`${tipo}/${obj.id}`, obj);
     }
-    pedidosCache = await getPedidos();
   }
+  
+  async function delDado(tipo, id) {
+    if (!firebaseInitialized) {
+      lsSet(`${tipo}_fit_data`, (lsGet(`${tipo}_fit_data`)||[]).filter(x => x.id !== id));
+    } else {
+      await fbRemove(`${tipo}/${id}`);
+    }
+  }
+
+  async function getMarmitas() { return await getDados('marmitas'); }
+  async function saveMarmita(m) { await saveDado('marmitas', m); }
+  async function deleteMarmita(id) { await delDado('marmitas', id); }
+  
+  async function getCombos() { return await getDados('combos'); }
+  async function saveCombo(c) { await saveDado('combos', c); }
+  async function deleteCombo(id) { await delDado('combos', id); }
+  
+  async function getCupons() { return await getDados('cupons'); }
+  async function saveCupom(c) { await saveDado('cupons', c); }
+  async function deleteCupom(id) { await delDado('cupons', id); }
+
+  async function getPedidos() { return await getDados('pedidos'); }
+  async function savePedido(p) { 
+    await saveDado('pedidos', p); 
+    pedidosCache = await getPedidos(); 
+  }
+  
+  async function atualizarStatusPedido(id, novoStatus) {
+    const p = pedidosCache.find(x => x.id === id);
+    if (!p) return;
+    p.status = novoStatus;
+    await savePedido(p);
+    showToast('✅ Status Atualizado!');
+    renderPedidos(pedidosCache);
+  }
+
   async function excluirPedido(id) {
-    if (!confirm('Excluir este pedido do banco de dados?')) return;
-    showLoading(true, "Excluindo pedido...");
-    if (!firebaseInitialized) {
-      lsSet('pedidos_fit_data', lsGet('pedidos_fit_data').filter(p => p.id !== id));
-    } else {
-      await fbRemove(`pedidos/${id}`);
-    }
+    if (!confirm('Excluir este pedido permanentemente?')) return;
+    showLoading(true, "Excluindo...");
+    await delDado('pedidos', id);
     pedidosCache = await getPedidos();
     showLoading(false);
     showToast('✅ Pedido excluído!');
-    aplicarFiltroData();
+    aplicarFiltroData(); 
     atualizarDashboard();
   }
 
   // ============================================================
-  // INICIALIZAÇÃO DO APP
+  // INICIALIZAÇÃO
   // ============================================================
   async function initData() {
-    showLoading(true, "A preparar cardápio...");
+    showLoading(true, "Preparando cardápio...");
 
     marmitasCache = await getMarmitas();
     combosCache   = await getCombos();
     pedidosCache  = await getPedidos();
+    cuponsCache   = await getCupons();
 
     if (marmitasCache.length === 0) {
       const iniciais = [
-        { id:1, nome:'Frango com Batata Doce',    preco:22.00, kcal:350, desc:'Frango grelhado e purê de batata doce',    cat:'marmita', visivel:true, dispCombo:true },
-        { id:2, nome:'Patinho com Arroz Integral', preco:25.00, kcal:400, desc:'Carne moída magra com legumes salteados', cat:'marmita', visivel:true, dispCombo:true },
-        { id:3, nome:'Tilápia com Ervas',          preco:28.00, kcal:300, desc:'Peixe assado com ervas e vagem',          cat:'marmita', visivel:true, dispCombo:true },
-        { id:4, nome:'Strogonoff de Frango Fit',   preco:24.00, kcal:380, desc:'Com arroz integral e batata palha',       cat:'marmita', visivel:true, dispCombo:true },
-        { id:5, nome:'Sopa de Legumes',            preco:15.00, kcal:180, desc:'Sopa cremosa com legumes frescos',        cat:'sopa',    visivel:true, dispCombo:true },
-        { id:6, nome:'Suco Detox Verde',           preco:8.00,  kcal:80,  desc:'Couve, limão e gengibre',                 cat:'suco',    visivel:true, dispCombo:false },
-        { id:7, nome:'Brócolis',                   preco:0,     kcal:35,  desc:'Brócolis cozido no vapor',                cat:'vegetal', visivel:true, dispCombo:true },
-        { id:8, nome:'Abobrinha',                  preco:0,     kcal:20,  desc:'Abobrinha grelhada',                      cat:'vegetal', visivel:true, dispCombo:true },
-        { id:9, nome:'Cenoura',                    preco:0,     kcal:40,  desc:'Cenoura cozida',                          cat:'vegetal', visivel:true, dispCombo:true }
+        { id:1, nome:'Frango com Batata Doce', preco:22.00, kcal:350, desc:'Grelhado', cat:'marmita', visivel:true, dispCombo:true },
+        { id:2, nome:'Suco Verde', preco:8.00, kcal:80, desc:'Detox', cat:'suco', visivel:true, dispCombo:false }
       ];
       for (const m of iniciais) await saveMarmita(m);
       marmitasCache = iniciais;
     }
 
     if (combosCache.length === 0) {
-      const iniciais = [
-        { id:1, nome:'Kit 10 Marmitas', qtd:10, preco_base:210.00, tipo:'aberto', visivel:true, itens:{}, vegetal_min:1, vegetal_max:3 },
-        { id:2, nome:'Kit 20 Marmitas', qtd:20, preco_base:400.00, tipo:'aberto', visivel:true, itens:{}, vegetal_min:1, vegetal_max:3 }
-      ];
-      for (const c of iniciais) await saveCombo(c);
-      combosCache = iniciais;
+      await saveCombo({ id:1, nome:'Kit 10 Marmitas', qtd:10, preco_base:210.00, tipo:'aberto', visivel:true, itens:{}, vegetal_min:0, vegetal_max:0 });
+      combosCache = await getCombos();
     }
 
-    // Listeners tempo real Firebase
     if (firebaseInitialized) {
-      database.ref('marmitas').on('value', snap => {
-        const d = snap.val();
-        marmitasCache = d ? Object.values(d) : [];
-        renderCardapio();
-        if (isAdmin) { renderMarmitasAdmin(); atualizarDashboard(); }
+      database.ref('marmitas').on('value', snap => { 
+        marmitasCache = snap.val() ? Object.values(snap.val()) : []; 
+        renderCardapio(); 
+        if(isAdmin) renderMarmitasAdmin(); 
       });
-      database.ref('combos').on('value', snap => {
-        const d = snap.val();
-        combosCache = d ? Object.values(d) : [];
-        renderCardapio();
-        if (isAdmin) { renderCombosAdmin(); atualizarDashboard(); }
+      database.ref('combos').on('value', snap => { 
+        combosCache = snap.val() ? Object.values(snap.val()) : []; 
+        renderCardapio(); 
+        if(isAdmin) renderCombosAdmin(); 
       });
-      database.ref('pedidos').on('value', snap => {
-        const d = snap.val();
-        pedidosCache = d ? Object.values(d) : [];
-        atualizarBadgePedidos();
-        if (isAdmin) { atualizarDashboard(); aplicarFiltroData(); }
+      database.ref('cupons').on('value', snap => { 
+        cuponsCache = snap.val() ? Object.values(snap.val()) : []; 
+        if(isAdmin) renderCuponsAdmin(); 
+      });
+      database.ref('pedidos').on('value', snap => { 
+        pedidosCache = snap.val() ? Object.values(snap.val()) : []; 
+        atualizarBadgePedidos(); 
+        if(isAdmin) aplicarFiltroData(); 
       });
     }
 
-    // Datas padrão filtro (mês atual)
-    const hoje       = new Date();
-    const primeiroDia = new Date(hoje.getFullYear(), hoje.getMonth(), 1);
-    document.getElementById('filtro-data-inicio').value = primeiroDia.toISOString().split('T')[0];
-    document.getElementById('filtro-data-fim').value    = hoje.toISOString().split('T')[0];
+    const hoje = new Date();
+    document.getElementById('filtro-data-inicio').value = new Date(hoje.getFullYear(), hoje.getMonth(), 1).toISOString().split('T')[0];
+    document.getElementById('filtro-data-fim').value = hoje.toISOString().split('T')[0];
 
-    // Recupera Carrinho do LocalStorage
     const cartSalvo = lsGet('current_cart');
-    if (cartSalvo && cartSalvo.length) {
-      carrinhoCompras = cartSalvo;
-      atualizarBadgeCarrinho();
+    if (cartSalvo && cartSalvo.length) { 
+      carrinhoCompras = cartSalvo; 
+      atualizarBadgeCarrinho(); 
     }
 
+    initClientExtras();
     renderCardapio();
     showLoading(false);
-    if (!firebaseInitialized) showToast('⚠️ Modo offline – configure o Firebase');
   }
 
   // ============================================================
-  // NAVEGAÇÃO
+  // ADMIN & NAVEGAÇÃO
   // ============================================================
   function showPage(pageId) {
     document.querySelectorAll('main > section').forEach(s => s.classList.add('hidden'));
-    const p = document.getElementById(`page-${pageId}`);
-    if (!p) return;
-    p.classList.remove('hidden');
-    if (pageId === 'dashboard') atualizarDashboard();
-    if (pageId === 'combos')    renderCombosAdmin();
-    if (pageId === 'marmitas')  renderMarmitasAdmin();
-    if (pageId === 'pedidos')   aplicarFiltroData();
+    document.getElementById(`page-${pageId}`).classList.remove('hidden');
+    if(pageId === 'dashboard') atualizarDashboard();
+    if(pageId === 'combos') renderCombosAdmin();
+    if(pageId === 'marmitas') renderMarmitasAdmin();
+    if(pageId === 'pedidos') aplicarFiltroData();
+    if(pageId === 'cupons') renderCuponsAdmin();
   }
-
-  // ============================================================
-  // SIDEBAR TOGGLE
-  // ============================================================
-  function toggleSidebar() {
-    const sb  = document.getElementById('sidebar');
-    const btn = document.getElementById('btn-toggle-sidebar');
-    sidebarVisible = !sidebarVisible;
-    if (sidebarVisible) {
-      sb.classList.remove('hidden');
-      btn.textContent = '☰';
-      btn.title = 'Minimizar menu';
-    } else {
-      sb.classList.add('hidden');
-      btn.textContent = '☰';
-      btn.title = 'Expandir menu';
-    }
+  
+  function toggleSidebar() { 
+    sidebarVisible = !sidebarVisible; 
+    document.getElementById('sidebar').classList.toggle('hidden', !sidebarVisible); 
   }
-
-  // ============================================================
-  // ADMIN: LOGIN
-  // ============================================================
-  function openAdminModal()  { document.getElementById('admin-modal').classList.remove('hidden'); }
-  function closeAdminModal() {
-    document.getElementById('admin-modal').classList.add('hidden');
-    document.getElementById('login-error').classList.add('hidden');
-  }
-
+  function openAdminModal() { document.getElementById('admin-modal').classList.remove('hidden'); }
+  function closeAdminModal() { document.getElementById('admin-modal').classList.add('hidden'); document.getElementById('login-error').classList.add('hidden'); }
+  
   function handleLogin(e) {
     e.preventDefault();
-    const u = document.getElementById('login-username').value.trim();
+    const u = document.getElementById('login-username').value;
     const p = document.getElementById('login-password').value;
+    
     if (u === 'admin' && p === 'admin123') {
-      isAdmin = true;
+      isAdmin = true; 
       closeAdminModal();
       document.getElementById('sidebar').classList.remove('hidden');
       document.getElementById('btn-toggle-sidebar').classList.remove('hidden');
       document.getElementById('btn-admin-view').classList.add('hidden');
-      showPage('dashboard');
-      atualizarBadgePedidos();
-      showToast('✅ Login realizado com sucesso!');
+      showPage('dashboard'); 
+      atualizarBadgePedidos(); 
+      showToast('✅ Login realizado!');
     } else {
       document.getElementById('login-error').classList.remove('hidden');
     }
   }
-
+  
   function entrarComoCliente() {
-    isAdmin = false;
-    sidebarVisible = true;
+    isAdmin = false; sidebarVisible = true;
     document.getElementById('sidebar').classList.add('hidden');
     document.getElementById('btn-toggle-sidebar').classList.add('hidden');
     document.getElementById('btn-admin-view').classList.remove('hidden');
     showPage('cardapio');
   }
-
+  
   function atualizarBadgePedidos() {
-    const badge = document.getElementById('badge-pedidos');
-    if (pedidosCache.length > 0) {
-      badge.textContent = pedidosCache.length;
-      badge.classList.remove('hidden');
+    const b = document.getElementById('badge-pedidos');
+    const novos = pedidosCache.filter(p => !p.status || p.status === 'novo').length;
+    b.textContent = novos; b.classList.toggle('hidden', novos === 0);
+  }
+  
+  function atualizarDashboard() {
+    document.getElementById('stat-combos').textContent = combosCache.length;
+    document.getElementById('stat-marmitas').textContent = marmitasCache.length;
+    document.getElementById('stat-total-pedidos').textContent = pedidosCache.length;
+    document.getElementById('stat-faturamento').textContent = `R$ ${pedidosCache.reduce((a,p) => a + (p.total||0), 0).toFixed(2)}`;
+  }
+
+  // ============================================================
+  // CUPONS ADMIN
+  // ============================================================
+  function renderCuponsAdmin() {
+    const el = document.getElementById('cupons-admin-list');
+    if (!cuponsCache.length) { 
+      el.innerHTML = '<p class="text-gray-400 py-4">Nenhum cupom cadastrado.</p>'; 
+      return; 
+    }
+    el.innerHTML = cuponsCache.map(c => `
+      <div class="flex justify-between items-center p-4 border border-sage/20 dark:border-gray-700 rounded-xl mb-2">
+        <div>
+          <span class="font-bold text-lg text-forest dark:text-sage mr-2">${c.codigo}</span>
+          <span class="bg-terracotta text-white text-xs px-2 py-1 rounded-full font-bold">-${c.desconto}%</span>
+          ${!c.ativo ? '<span class="text-xs text-red-500 ml-2">Inativo</span>' : ''}
+        </div>
+        <div>
+          <button onclick="editarCupom('${c.id}')" class="text-blue-500 mr-2 hover:underline text-sm font-bold">Editar</button>
+          <button onclick="removerCupomAdmin('${c.id}')" class="text-red-500 hover:underline text-sm font-bold">Excluir</button>
+        </div>
+      </div>
+    `).join('');
+  }
+  
+  function abrirModalCupom(id = null) {
+    document.getElementById('edit-cupom-id').value = id || '';
+    if (id) {
+      const c = cuponsCache.find(x => x.id == id);
+      document.getElementById('cupom-codigo').value = c.codigo;
+      document.getElementById('cupom-desconto').value = c.desconto;
+      document.getElementById('cupom-ativo').checked = c.ativo;
     } else {
-      badge.classList.add('hidden');
+      document.getElementById('cupom-codigo').value = '';
+      document.getElementById('cupom-desconto').value = '';
+      document.getElementById('cupom-ativo').checked = true;
+    }
+    document.getElementById('modal-cupom').classList.remove('hidden');
+  }
+  
+  function closeModalCupom() { document.getElementById('modal-cupom').classList.add('hidden'); }
+  function editarCupom(id) { abrirModalCupom(id); }
+  
+  async function salvarCupom(e) {
+    e.preventDefault();
+    const id = document.getElementById('edit-cupom-id').value || Date.now().toString();
+    await saveCupom({
+      id: id,
+      codigo: document.getElementById('cupom-codigo').value.toUpperCase().trim(),
+      desconto: parseInt(document.getElementById('cupom-desconto').value),
+      ativo: document.getElementById('cupom-ativo').checked
+    });
+    closeModalCupom(); showToast('🎟️ Cupom salvo com sucesso!'); 
+    if(!firebaseInitialized) renderCuponsAdmin();
+  }
+  
+  async function removerCupomAdmin(id) {
+    if(confirm('Tem certeza que deseja excluir este cupom?')) { 
+      await deleteCupom(id); showToast('🗑️ Cupom removido'); 
+      if(!firebaseInitialized) renderCuponsAdmin(); 
     }
   }
 
   // ============================================================
-  // DASHBOARD
+  // CARDÁPIO E MONTAGEM (CLIENTE)
   // ============================================================
-  function atualizarDashboard() {
-    const mv  = marmitasCache.filter(m => m.visivel).length;
-    const cv  = combosCache.filter(c => c.visivel !== false).length;
-    const fat = pedidosCache.reduce((a, p) => a + (p.total || 0), 0);
-    document.getElementById('stat-combos').textContent            = combosCache.length;
-    document.getElementById('stat-combos-visiveis').textContent   = `${cv} visíveis`;
-    document.getElementById('stat-marmitas').textContent          = marmitasCache.length;
-    document.getElementById('stat-marmitas-visiveis').textContent = `${mv} visíveis`;
-    document.getElementById('stat-total-pedidos').textContent     = pedidosCache.length;
-    document.getElementById('stat-faturamento').textContent       = `R$ ${fat.toFixed(2)}`;
+  function toggleComboDesc(id) {
+    const short = document.getElementById(`combo-desc-short-${id}`);
+    const full = document.getElementById(`combo-desc-full-${id}`);
+    const btn = document.getElementById(`combo-btn-${id}`);
+    
+    if (full.classList.contains('hidden')) {
+      full.classList.remove('hidden');
+      short.classList.add('hidden');
+      btn.innerHTML = 'Ver menos itens ⬆️';
+    } else {
+      full.classList.add('hidden');
+      short.classList.remove('hidden');
+      btn.innerHTML = 'Ver todos os itens ⬇️';
+    }
   }
 
-  // ============================================================
-  // CARDÁPIO CLIENTE
-  // ============================================================
   function renderCardapio() {
     const visiveis = combosCache.filter(c => c.visivel !== false);
     const el = document.getElementById('combos-container');
-    if (!visiveis.length) {
-      el.innerHTML = '<p class="text-gray-400 col-span-full text-center py-8">Nenhum combo disponível.</p>';
-      return;
+    
+    if (!visiveis.length) { 
+      el.innerHTML = '<p class="text-gray-400 py-8">Nenhum combo disponível no momento.</p>'; 
+      return; 
     }
+    
     el.innerHTML = visiveis.map(c => {
-      const badge = c.tipo === 'fechado'
-        ? '<span class="text-xs bg-terracotta/20 text-terracotta px-2 py-1 rounded-full font-bold">📦 Fechado</span>'
-        : '<span class="text-xs bg-sage/20 text-sage px-2 py-1 rounded-full font-bold">🛒 Aberto</span>';
-
-      const vegInfo = (c.vegetal_max > 0)
-        ? `<p class="text-xs text-green-600 mt-1">🥦 Inclui até ${c.vegetal_max} vegetal(is)</p>` : '';
-
+      const isFechado = c.tipo === 'fechado';
+      const badge = `<span class="text-xs px-2 py-1 rounded-full font-bold ${isFechado ? 'bg-terracotta/20 text-terracotta' : 'bg-sage/20 text-sage'}">${isFechado ? '📦 Fechado' : '🛒 Aberto'}</span>`;
+      
       let infoExtra = '';
       if (c.tipo === 'fechado') {
         let totalItens = 0;
@@ -1145,50 +1239,58 @@
             nomes.push(`${qtd}x ${m.nome}`);
           }
         });
-        const previa = nomes.slice(0, 3).join(', ') + (nomes.length > 3 ? ` +${nomes.length - 3} mais` : '');
+        
+        const previa = nomes.slice(0, 3).join(', ') + (nomes.length > 3 ? ' ...' : '');
+        
         infoExtra = `
-          <div class="mt-3 bg-cream rounded-xl p-3">
-            <p class="text-xs font-bold text-forest mb-1">📋 ${totalItens} itens inclusos</p>
-            <p class="text-xs text-gray-400 leading-relaxed">${previa}</p>
+          <div class="mt-3 bg-cream dark:bg-darkbg rounded-xl p-3 border border-sage/10 dark:border-gray-800" onclick="event.stopPropagation()">
+            <p class="text-xs font-bold text-forest dark:text-sage mb-1">📋 ${totalItens} itens inclusos</p>
+            <div id="combo-desc-short-${c.id}">
+              <p class="text-xs text-gray-500 dark:text-gray-400 leading-relaxed">${previa}</p>
+            </div>
+            <div id="combo-desc-full-${c.id}" class="hidden space-y-1 mt-2">
+              ${nomes.map(n => `<p class="text-xs text-gray-500 dark:text-gray-400">✅ ${n}</p>`).join('')}
+            </div>
+            ${nomes.length > 3 ? `<button onclick="event.stopPropagation(); toggleComboDesc(${c.id})" id="combo-btn-${c.id}" class="text-xs text-terracotta mt-2 font-bold hover:underline inline-block bg-white dark:bg-darkcard px-2 py-1 rounded shadow-sm">Ver todos os itens ⬇️</button>` : ''}
           </div>`;
       } else {
         infoExtra = `<p class="text-xs text-gray-400 mt-2">💡 Cada item sai por <span class="font-bold text-sage">R$ ${(c.preco_base / c.qtd).toFixed(2)}</span></p>`;
       }
 
       return `
-        <article onclick="selecionarCombo(${c.id})"
-                class="bg-white p-6 rounded-3xl border-2 border-transparent hover:border-forest shadow-sm text-left transition-all hover:-translate-y-1 cursor-pointer">
+        <article onclick="selecionarCombo(${c.id})" class="bg-white dark:bg-darkcard p-6 rounded-3xl border-2 border-transparent dark:border-darkborder hover:border-forest dark:hover:border-sage shadow-sm text-left transition-all hover:-translate-y-1 cursor-pointer group">
           <div class="flex justify-between items-start mb-2">
-            <h3 class="text-forest font-bold text-xl">${c.nome}</h3>
+            <h3 class="text-forest dark:text-sage font-bold text-xl group-hover:text-terracotta transition-colors">${c.nome}</h3>
             ${badge}
           </div>
           <div class="mt-3">
             <span class="text-3xl font-display font-bold text-terracotta">R$ ${c.preco_base.toFixed(2)}</span>
           </div>
-          ${infoExtra}${vegInfo}
+          ${infoExtra}
         </article>`;
     }).join('');
   }
 
   function selecionarCombo(id) {
     currentCombo = combosCache.find(c => c.id === id);
-    if (!currentCombo) { showToast('❌ Combo não encontrado'); return; }
-
-    maxMarmitas        = currentCombo.qtd;
-    quantities         = {};
-    vegetaisSelecionados = [];
-    searchTerm = '';
-    activeCategory = 'todas';
+    if (!currentCombo) return;
+    
+    maxMarmitas = currentCombo.qtd; 
+    quantities = {}; 
+    vegetaisSelecionados = []; 
+    searchTerm = ''; 
+    activeCategory = 'todas'; 
     setSpiceLevel(2);
-    document.getElementById('observations').value = '';
-
+    
     document.getElementById('home-combos').classList.add('hidden');
     document.getElementById('btn-voltar-combo').classList.remove('hidden');
+    document.getElementById('banner-repetir-pedido').classList.add('hidden');
     document.getElementById('marmitas-section').classList.remove('hidden');
+    
     document.getElementById('combo-name-display').textContent = currentCombo.nome;
-    document.getElementById('max-marmitas').textContent       = maxMarmitas;
-    document.getElementById('current-marmitas').textContent   = '0';
-    document.getElementById('combo-tipo-badge').textContent   = currentCombo.tipo === 'fechado' ? '📦 Combo Fechado' : '🛒 Você escolhe os itens';
+    document.getElementById('max-marmitas').textContent = maxMarmitas;
+    document.getElementById('current-marmitas').textContent = '0';
+    document.getElementById('combo-tipo-badge').textContent = currentCombo.tipo === 'fechado' ? '📦 Fechado' : '🛒 Monte seu Kit';
 
     if (currentCombo.tipo === 'fechado') {
       mostrarComboFechado();
@@ -1198,17 +1300,13 @@
       document.getElementById('combo-fechado-itens').classList.add('hidden');
       document.getElementById('selecao-marmitas-container').classList.remove('hidden');
       document.getElementById('progress-counter').classList.remove('hidden');
-      
-      document.getElementById('busca-marmitas').value = '';
-      renderFiltrosCategoria();
+      renderFiltrosCategoria(); 
       renderMarmitas();
-      
-      const bar = document.getElementById('progress-bar');
-      if (bar) bar.style.width = '0%';
+      document.getElementById('progress-bar').style.width = '0%';
     }
-
-    renderVegetais();
-    atualizarTotal();
+    
+    renderVegetais(); 
+    document.getElementById('total-price').textContent = `R$ ${currentCombo.preco_base.toFixed(2)}`;
     setTimeout(() => window.scrollTo({ top: 0, behavior: 'smooth' }), 100);
   }
 
@@ -1216,158 +1314,73 @@
     document.getElementById('marmitas-section').classList.add('hidden');
     document.getElementById('home-combos').classList.remove('hidden');
     document.getElementById('btn-voltar-combo').classList.add('hidden');
-    currentCombo = null;
+    currentCombo = null; 
     window.scrollTo({ top: 0, behavior: 'smooth' });
+    initClientExtras();
   }
 
-  // ============================================================
-  // MELHORIA: BUSCA E FILTROS 
-  // ============================================================
   function renderFiltrosCategoria() {
     const el = document.getElementById('filtros-categoria');
-    const categoriasPresentes = new Set();
+    const presentes = new Set();
     
     marmitasCache.forEach(m => {
-      if (m.visivel && m.cat !== 'vegetal' && m.dispCombo !== false) {
-        if (!currentCombo?.itens_disponiveis || currentCombo.itens_disponiveis.includes(m.id)) {
-          categoriasPresentes.add(m.cat);
+      if(m.visivel && m.cat !== 'vegetal' && m.dispCombo !== false) {
+        if(!currentCombo?.itens_disponiveis || currentCombo.itens_disponiveis.includes(m.id)) {
+          presentes.add(m.cat);
         }
       }
     });
-
-    let html = `<button onclick="setCategoria('todas')" class="px-5 py-2 rounded-full whitespace-nowrap text-sm font-bold transition-all border-2 active:scale-95 ${activeCategory === 'todas' ? 'bg-forest text-white border-forest' : 'bg-white text-gray-500 border-sage/30 hover:border-forest'}">🍽️ Todos</button>`;
     
-    categoriasPresentes.forEach(cat => {
-      const isAtivo = activeCategory === cat;
+    let html = `<button onclick="setCategoria('todas')" class="px-5 py-2 rounded-full whitespace-nowrap text-sm font-bold transition-all border-2 active:scale-95 ${activeCategory === 'todas' ? 'bg-forest text-white border-forest' : 'bg-white dark:bg-darkbg text-gray-500 border-sage/30 hover:border-forest'}">🍽️ Todos</button>`;
+    
+    presentes.forEach(cat => {
+      const isA = activeCategory === cat;
       const icone = CAT_EMOJI[cat] || '📦';
       const nomeFormatado = cat.charAt(0).toUpperCase() + cat.slice(1);
-      html += `<button onclick="setCategoria('${cat}')" class="px-5 py-2 rounded-full whitespace-nowrap text-sm font-bold transition-all border-2 active:scale-95 ${isAtivo ? 'bg-forest text-white border-forest' : 'bg-white text-gray-500 border-sage/30 hover:border-forest'}">${icone} ${nomeFormatado}</button>`;
+      html += `<button onclick="setCategoria('${cat}')" class="px-5 py-2 rounded-full whitespace-nowrap text-sm font-bold transition-all border-2 active:scale-95 ${isA ? 'bg-forest text-white border-forest' : 'bg-white dark:bg-darkbg text-gray-500 border-sage/30 hover:border-forest'}">${icone} ${nomeFormatado}</button>`;
     });
-
     el.innerHTML = html;
   }
-
-  function setCategoria(cat) {
-    activeCategory = cat;
-    renderFiltrosCategoria();
-    renderMarmitas();
-  }
-
-  function filtrarMarmitas() {
-    searchTerm = document.getElementById('busca-marmitas').value;
-    renderMarmitas();
-  }
-
-  // ============================================================
-  // VEGETAIS
-  // ============================================================
-  function renderVegetais() {
-    const secao  = document.getElementById('secao-vegetais');
-    const vegMax = currentCombo?.vegetal_max || 0;
-    const vegMin = currentCombo?.vegetal_min || 0;
-
-    if (!vegMax) { secao.classList.add('hidden'); return; }
-
-    const vegetais = marmitasCache.filter(m => m.cat === 'vegetal' && m.visivel);
-    if (!vegetais.length) { secao.classList.add('hidden'); return; }
-
-    secao.classList.remove('hidden');
-
-    document.getElementById('vegetal-counter').textContent     = '0';
-    document.getElementById('vegetal-counter-max').textContent = ` / ${vegMax}`;
-    document.getElementById('vegetal-instrucao').textContent   =
-      vegMin > 0
-        ? `Escolha de ${vegMin} a ${vegMax} vegetal(is) — eles são adicionais ao seu kit`
-        : `Escolha até ${vegMax} vegetal(is) para acompanhar seu kit (opcional)`;
-
-    const container = document.getElementById('vegetais-container');
-    container.innerHTML = vegetais.map(v => `
-      <button type="button"
-              id="vegetal-btn-${v.id}"
-              onclick="toggleVegetal(${v.id})"
-              class="vegetal-btn flex items-center gap-2 px-4 py-3 border-2 border-sage/30
-                     rounded-xl bg-white text-left text-sm font-medium hover:border-forest
-                     transition-all w-full active:scale-95">
-        <span class="text-xl">🥦</span>
-        <div>
-          <p class="font-medium text-forest">${v.nome}</p>
-          <p class="text-xs text-gray-400">${v.kcal} kcal</p>
-        </div>
-      </button>`).join('');
-  }
-
-  function toggleVegetal(id) {
-    const vegMax = currentCombo?.vegetal_max || 0;
-    const idx    = vegetaisSelecionados.indexOf(id);
-    const btn    = document.getElementById(`vegetal-btn-${id}`);
-
-    if (idx === -1) {
-      if (vegetaisSelecionados.length >= vegMax) {
-        showToast(`⚠️ Máximo de ${vegMax} vegetal(is) para este combo`);
-        return;
-      }
-      vegetaisSelecionados.push(id);
-      btn.classList.add('selected');
-    } else {
-      vegetaisSelecionados.splice(idx, 1);
-      btn.classList.remove('selected');
-    }
-    document.getElementById('vegetal-counter').textContent = vegetaisSelecionados.length;
-  }
+  
+  function setCategoria(c) { activeCategory = c; renderFiltrosCategoria(); renderMarmitas(); }
+  function filtrarMarmitas() { searchTerm = document.getElementById('busca-marmitas').value; renderMarmitas(); }
 
   function mostrarComboFechado() {
     const el = document.getElementById('lista-itens-fechado');
     document.getElementById('combo-fechado-itens').classList.remove('hidden');
-
+    
     const porCat = {};
     Object.entries(currentCombo.itens || {}).forEach(([itemId, qtd]) => {
-      const m = marmitasCache.find(x => x.id === parseInt(itemId));
-      if (m && qtd > 0) {
-        if (!porCat[m.cat]) porCat[m.cat] = [];
-        porCat[m.cat].push({ ...m, quantidade: qtd });
+      const m = marmitasCache.find(x => x.id == itemId);
+      if (m && qtd > 0) { 
+        if (!porCat[m.cat]) porCat[m.cat] = []; 
+        porCat[m.cat].push({ ...m, quantidade: qtd }); 
       }
     });
-
+    
     let totalGeral = 0;
     Object.values(porCat).forEach(arr => arr.forEach(i => totalGeral += i.quantidade));
 
     el.innerHTML = `
       <p class="text-xs text-gray-400 mb-4">Total: <span class="font-bold text-forest">${totalGeral} itens</span> inclusos neste combo</p>
       ${Object.keys(porCat).map(cat => `
-        <div class="mb-4">
-          <p class="font-bold text-xs uppercase text-gray-400 mb-2">${CAT_ICONS[cat] || '📦 Outros'}</p>
-          <div class="space-y-2">
-            ${porCat[cat].map(item => `
-              <div class="bg-cream rounded-xl overflow-hidden">
-                <button type="button"
-                        onclick="toggleDescItem(this)"
-                        class="w-full flex items-center justify-between px-4 py-3 text-left hover:bg-sage/10 transition-all focus:outline-forest">
-                  <div class="flex items-center gap-3">
-                    <span class="bg-forest text-white text-xs font-bold px-2 py-1 rounded-lg min-w-[32px] text-center">${item.quantidade}x</span>
-                    <span class="font-medium text-charcoal text-sm">${CAT_EMOJI[item.cat] || '🍴'} ${item.nome}</span>
-                    <span class="text-xs text-gray-400">${item.kcal} kcal</span>
-                  </div>
-                  <span class="text-gray-400 text-xs ml-2 shrink-0">▼</span>
-                </button>
-                <div class="desc-item hidden px-4 pb-3">
-                  <p class="text-xs text-gray-500 leading-relaxed border-t border-sage/20 pt-2">${item.desc}</p>
-                </div>
-              </div>`).join('')}
-          </div>
-        </div>`).join('')}`;
-  }
-
-  function toggleDescItem(btn) {
-    const desc = btn.nextElementSibling;
-    const arrow = btn.querySelector('span:last-child');
-    const aberto = !desc.classList.contains('hidden');
-    desc.classList.toggle('hidden', aberto);
-    arrow.textContent = aberto ? '▼' : '▲';
+      <div class="mb-4">
+        <p class="font-bold text-xs uppercase text-gray-400 mb-2">${CAT_ICONS[cat]||'📦 Outros'}</p>
+        <div class="space-y-2">${porCat[cat].map(i => `
+          <div class="bg-cream dark:bg-darkbg rounded-xl overflow-hidden px-4 py-3 flex items-center justify-between text-charcoal dark:text-white">
+            <div class="flex items-center gap-3">
+              <span class="bg-forest text-white text-xs font-bold px-2 py-1 rounded-lg min-w-[32px] text-center">${i.quantidade}x</span>
+              <span class="text-sm font-medium">${CAT_EMOJI[i.cat] || '🍴'} ${i.nome}</span>
+            </div>
+            <span class="text-xs text-gray-400">${i.kcal} kcal</span>
+          </div>`).join('')}
+        </div>
+      </div>`).join('')}`;
   }
 
   function renderMarmitas() {
     const lote = currentCombo?.lote_selecao || 1;
-
+    
     const disponiveis = marmitasCache.filter(m => {
       if (!m.visivel || m.cat === 'vegetal' || m.dispCombo === false) return false;
       if (currentCombo?.itens_disponiveis && currentCombo.itens_disponiveis.length > 0) {
@@ -1379,20 +1392,20 @@
     });
 
     const el = document.getElementById('marmitas-container');
-    if (!disponiveis.length) {
-      el.innerHTML = `<div class="text-center py-12 bg-white rounded-3xl border border-sage/20 shadow-sm"><p class="text-4xl mb-4" aria-hidden="true">🔍</p><p class="text-gray-500 font-bold text-lg">Nenhum prato encontrado.</p><button onclick="setCategoria('todas'); document.getElementById('busca-marmitas').value=''; filtrarMarmitas();" class="mt-4 bg-sage/10 text-forest px-6 py-2 rounded-full font-bold hover:bg-sage/20 transition-all">Limpar filtros</button></div>`;
-      return;
+    if (!disponiveis.length) { 
+      el.innerHTML = `<div class="text-center py-12 bg-white dark:bg-darkcard rounded-3xl border border-sage/20 dark:border-darkborder shadow-sm"><p class="text-4xl mb-4" aria-hidden="true">🔍</p><p class="text-gray-500 font-bold text-lg">Nenhum prato encontrado.</p><button onclick="setCategoria('todas'); document.getElementById('busca-marmitas').value=''; filtrarMarmitas();" class="mt-4 bg-sage/10 text-forest px-6 py-2 rounded-full font-bold hover:bg-sage/20 transition-all">Limpar filtros</button></div>`;
+      return; 
     }
-
-    const porCat = {};
-    disponiveis.forEach(m => {
-      if (!porCat[m.cat]) porCat[m.cat] = [];
-      porCat[m.cat].push(m);
+    
+    const porCat = {}; 
+    disponiveis.forEach(m => { 
+      if (!porCat[m.cat]) porCat[m.cat] = []; 
+      porCat[m.cat].push(m); 
     });
-
+    
     el.innerHTML = Object.keys(porCat).map(cat => `
       <div class="mb-6">
-        <p class="text-xs font-bold uppercase text-gray-400 mb-3 ml-1">${CAT_ICONS[cat] || '🍴 Outros'}</p>
+        <p class="text-xs font-bold uppercase text-gray-400 mb-3 ml-1">${CAT_ICONS[cat]||'🍴 Outros'}</p>
         ${porCat[cat].map(m => {
           let nomeExibicao = m.nome;
           if (searchTerm) {
@@ -1400,119 +1413,168 @@
             nomeExibicao = m.nome.replace(regex, '<mark class="bg-yellow-200 text-charcoal rounded px-1">$1</mark>');
           }
           return `
-            <article class="bg-white p-4 rounded-2xl flex flex-col sm:flex-row justify-between sm:items-center shadow-sm border border-gray-100 hover:border-sage/50 transition-all mb-2 focus-within:ring-2 focus-within:ring-forest">
-              <div class="flex-1 pr-4 mb-3 sm:mb-0">
-                <h4 class="font-bold text-forest text-lg">${CAT_EMOJI[m.cat]||'🍴'} ${nomeExibicao}</h4>
-                <p class="text-xs text-gray-400 leading-tight mt-1">${m.desc} • <span class="text-sage font-bold">${m.kcal} kcal</span></p>
-              </div>
-              <div class="flex items-center gap-3 bg-cream p-1.5 rounded-xl shrink-0 self-start sm:self-auto border border-sage/10">
-                <button type="button" onclick="updateQty(${m.id},-1)" aria-label="Remover" class="w-10 h-10 rounded-lg bg-white shadow-sm font-bold text-lg hover:bg-red-50 text-red-500 transition-all active:scale-90 flex items-center justify-center">−${lote}</button>
-                <span id="qty-${m.id}" class="font-bold w-6 text-center text-lg" aria-live="polite">${quantities[m.id] || 0}</span>
-                <button type="button" onclick="updateQty(${m.id},1)" aria-label="Adicionar" class="w-10 h-10 rounded-lg bg-forest text-white shadow-sm font-bold text-lg hover:bg-forest/90 transition-all active:scale-90 flex items-center justify-center">+${lote}</button>
-              </div>
-            </article>`
+          <article class="bg-white dark:bg-darkcard p-4 rounded-2xl flex flex-col sm:flex-row justify-between sm:items-center shadow-sm border border-gray-100 dark:border-darkborder hover:border-sage/50 transition-all mb-2 focus-within:ring-2 focus-within:ring-forest">
+            <div class="flex-1 pr-4 mb-3 sm:mb-0">
+              <h4 class="font-bold text-forest dark:text-sage text-lg">${CAT_EMOJI[m.cat]||'🍴'} ${nomeExibicao}</h4>
+              <p class="text-xs text-gray-400 leading-tight mt-1">${m.desc} • <span class="text-sage font-bold">${m.kcal} kcal</span></p>
+            </div>
+            <div class="flex items-center gap-3 bg-cream dark:bg-darkbg p-1.5 rounded-xl border border-sage/10 dark:border-gray-800 shrink-0 self-start sm:self-auto">
+              <button type="button" onclick="updateQty(${m.id}, -1)" class="w-10 h-10 rounded-lg bg-white dark:bg-gray-800 font-bold text-lg text-red-500 shadow-sm active:scale-90 flex items-center justify-center">−${lote}</button>
+              <span id="qty-${m.id}" class="font-bold w-6 text-center text-lg dark:text-white">${quantities[m.id]||0}</span>
+              <button type="button" onclick="updateQty(${m.id}, 1)" class="w-10 h-10 rounded-lg bg-forest text-white shadow-sm font-bold text-lg active:scale-90 flex items-center justify-center">+${lote}</button>
+            </div>
+          </article>`
         }).join('')}
       </div>`).join('');
   }
 
   function updateQty(id, delta) {
-    const lote = currentCombo?.lote_selecao || 1;
+    const lote = currentCombo?.lote_selecao || 1; 
     const total = Object.values(quantities).reduce((a,b) => a+b, 0);
     
     if (delta > 0 && total + lote > maxMarmitas) {
-      showToast(`⚠️ Kit completo! Máximo de ${maxMarmitas} marmitas`);
-      return;
+      return showToast(`⚠️ Kit completo! Máximo de ${maxMarmitas} marmitas`);
     }
     
-    const atual = quantities[id] || 0;
-    let novoValor = atual + (delta * lote);
-    if (novoValor < 0) novoValor = 0;
+    quantities[id] = Math.max(0, (quantities[id] || 0) + (delta * lote));
     
-    quantities[id] = novoValor;
-    const el = document.getElementById(`qty-${id}`);
-    if (el) el.textContent = quantities[id];
-
-    const novoTotal = Object.values(quantities).reduce((a,b) => a+b, 0);
-    document.getElementById('current-marmitas').textContent = novoTotal;
-
-    const pct = Math.min(100, Math.round((novoTotal / maxMarmitas) * 100));
-    const bar  = document.getElementById('progress-bar');
-    if (bar) bar.style.width = pct + '%';
-
-    if (novoTotal === maxMarmitas) {
-      showToast('🎉 Kit completo configurado!');
-      const vegMax = currentCombo?.vegetal_max || 0;
-      if (vegMax > 0) {
-        setTimeout(() => {
-          document.getElementById('secao-vegetais').scrollIntoView({behavior: 'smooth', block: 'start'});
-        }, 700);
-      } else {
-        setTimeout(() => {
+    const elQty = document.getElementById(`qty-${id}`);
+    if (elQty) elQty.textContent = quantities[id];
+    
+    const nTotal = Object.values(quantities).reduce((a,b) => a+b, 0);
+    document.getElementById('current-marmitas').textContent = nTotal;
+    
+    const pct = Math.min(100, Math.round((nTotal/maxMarmitas) * 100));
+    document.getElementById('progress-bar').style.width = pct + '%';
+    
+    if (nTotal === maxMarmitas) { 
+      showToast('🎉 Kit completo configurado!'); 
+      setTimeout(() => {
+        if (currentCombo.vegetal_max > 0) {
+          document.getElementById('secao-vegetais').scrollIntoView({behavior:'smooth', block:'start'});
+        } else {
           window.scrollTo({top: document.body.scrollHeight, behavior: 'smooth'});
-        }, 700);
-      }
+        }
+      }, 700); 
     }
-
-    atualizarTotal();
   }
 
-  function atualizarTotal() {
-    if (currentCombo)
-      document.getElementById('total-price').textContent = `R$ ${currentCombo.preco_base.toFixed(2)}`;
+  function setSpiceLevel(l) { 
+    spiceLevel = l; 
+    document.querySelectorAll('.spice-btn').forEach((b, i) => { 
+      const a = i === l-1; 
+      b.classList.toggle('border-forest', a); 
+      b.classList.toggle('border-2', a); 
+      b.classList.toggle('bg-forest/5', a); 
+      b.classList.toggle('dark:bg-forest/20', a); 
+      b.classList.toggle('font-bold', a); 
+      b.classList.toggle('bg-white', !a); 
+      b.classList.toggle('dark:bg-darkbg', !a); 
+      b.setAttribute('aria-pressed', a);
+    }); 
   }
 
-  function setSpiceLevel(l) {
-    spiceLevel = l;
-    document.querySelectorAll('.spice-btn').forEach((btn, i) => {
-      const active = i === l - 1;
-      btn.classList.toggle('border-2',       active);
-      btn.classList.toggle('border-forest',  active);
-      btn.classList.toggle('bg-forest/5',    active);
-      btn.classList.toggle('font-bold',      active);
-      btn.classList.toggle('border-sage/20', !active);
-      btn.classList.toggle('bg-white',       !active);
-      btn.setAttribute('aria-pressed', active);
-    });
-  }
+  function renderVegetais() {
+    const s = document.getElementById('secao-vegetais'); 
+    const vMax = currentCombo?.vegetal_max || 0;
+    const vMin = currentCombo?.vegetal_min || 0;
+    
+    if (!vMax) { 
+      s.classList.add('hidden'); 
+      return; 
+    }
+    
+    const veg = marmitasCache.filter(m => m.cat === 'vegetal' && m.visivel); 
+    if (!veg.length) { 
+      s.classList.add('hidden'); 
+      return; 
+    }
+    
+    s.classList.remove('hidden'); 
+    document.getElementById('vegetal-counter').textContent = '0'; 
+    document.getElementById('vegetal-counter-max').textContent = ` / ${vMax}`;
+    
+    document.getElementById('vegetal-instrucao').textContent = vMin > 0
+        ? `Escolha de ${vMin} a ${vMax} vegetal(is) adicionais.`
+        : `Escolha até ${vMax} vegetal(is) adicionais.`;
 
+    document.getElementById('vegetais-container').innerHTML = veg.map(v => `
+      <button type="button" id="veg-btn-${v.id}" onclick="toggleVegetal(${v.id})" class="vegetal-btn flex items-center gap-2 px-4 py-3 border-2 border-sage/30 dark:border-gray-700 rounded-xl bg-white dark:bg-darkbg text-left hover:border-forest transition-all active:scale-95 w-full">
+        <span class="text-xl">🥦</span>
+        <div>
+          <p class="font-medium text-forest dark:text-sage">${v.nome}</p>
+          <p class="text-xs text-gray-400">${v.kcal} kcal</p>
+        </div>
+      </button>`).join('');
+  }
+  
+  function toggleVegetal(id) {
+    const vMax = currentCombo?.vegetal_max || 0; 
+    const idx = vegetaisSelecionados.indexOf(id); 
+    const btn = document.getElementById(`veg-btn-${id}`);
+    
+    if (idx === -1) { 
+      if (vegetaisSelecionados.length >= vMax) {
+        return showToast('⚠️ Máximo de vegetais atingido'); 
+      }
+      vegetaisSelecionados.push(id); 
+      btn.classList.add('selected'); 
+    } else { 
+      vegetaisSelecionados.splice(idx,1); 
+      btn.classList.remove('selected'); 
+    }
+    document.getElementById('vegetal-counter').textContent = vegetaisSelecionados.length;
+  }
 
   // ============================================================
-  // MELHORIA: CARRINHO DE COMPRAS E CHECKOUT FINAL
+  // CARRINHO E CHECKOUT FINAL
   // ============================================================
   function atualizarBadgeCarrinho() {
-    const btn = document.getElementById('btn-floating-cart');
+    const b = document.getElementById('btn-floating-cart');
     const badge = document.getElementById('cart-badge-floating');
     
-    if (carrinhoCompras.length > 0) {
-      btn.classList.remove('hidden');
-      badge.textContent = carrinhoCompras.length;
-      btn.classList.remove('animate-pop');
-      void btn.offsetWidth;
-      btn.classList.add('animate-pop');
-    } else {
-      btn.classList.add('hidden');
+    if (carrinhoCompras.length > 0) { 
+      b.classList.remove('hidden'); 
+      badge.textContent = carrinhoCompras.length; 
+      b.classList.remove('animate-pop');
+      void b.offsetWidth;
+      b.classList.add('animate-pop');
+    } else { 
+      b.classList.add('hidden'); 
       const container = document.getElementById('cart-sidebar-container');
-      if (!container.classList.contains('hidden')) toggleCart();
+      if (!container.classList.contains('hidden')) toggleCart(); 
     }
     lsSet('current_cart', carrinhoCompras);
   }
-
+  
   function toggleCart() {
-    const container = document.getElementById('cart-sidebar-container');
-    const panel = document.getElementById('cart-panel');
-    const backdrop = document.getElementById('cart-backdrop');
+    const c = document.getElementById('cart-sidebar-container');
+    const p = document.getElementById('cart-panel');
+    const bd = document.getElementById('cart-backdrop');
     
-    if (container.classList.contains('hidden')) {
-      renderItensCarrinho();
-      container.classList.remove('hidden');
-      setTimeout(() => { backdrop.classList.remove('opacity-0'); panel.classList.remove('translate-x-full'); }, 10);
-    } else {
-      backdrop.classList.add('opacity-0'); panel.classList.add('translate-x-full');
-      setTimeout(() => container.classList.add('hidden'), 300);
+    if (c.classList.contains('hidden')) { 
+      renderItensCarrinho(); 
+      c.classList.remove('hidden'); 
+      setTimeout(() => {
+        bd.classList.remove('opacity-0'); 
+        p.classList.remove('translate-x-full');
+      }, 10); 
+    } else { 
+      bd.classList.add('opacity-0'); 
+      p.classList.add('translate-x-full'); 
+      setTimeout(() => c.classList.add('hidden'), 300); 
     }
   }
 
-  // Antigo finalizarPedido agora adiciona ao carrinho
+  function esvaziarCarrinho() {
+    if (!confirm('Deseja realmente remover todos os itens do carrinho?')) return;
+    carrinhoCompras = [];
+    removerCupom(false); // Remove cupom se houver sem exibir toast
+    atualizarBadgeCarrinho();
+    renderItensCarrinho();
+    showToast('🗑️ Carrinho esvaziado.');
+  }
+  
   function adicionarAoCarrinho() {
     if (currentCombo.tipo !== 'fechado') {
       const total = Object.values(quantities).reduce((a,b) => a+b, 0);
@@ -1521,7 +1583,9 @@
     }
 
     const vegMin = currentCombo?.vegetal_min || 0;
-    if (vegMin > 0 && vegetaisSelecionados.length < vegMin) return showToast(`⚠️ Selecione pelo menos ${vegMin} vegetal(is)`);
+    if (vegMin > 0 && vegetaisSelecionados.length < vegMin) {
+      return showToast(`⚠️ Selecione pelo menos ${vegMin} vegetal(is)`);
+    }
 
     const temperos = ['🌿 Suave','🌶️ Médio','🔥 Picante'];
     const tempEscolhido = temperos[spiceLevel - 1];
@@ -1541,30 +1605,78 @@
     };
 
     carrinhoCompras.push(itemCarrinho);
-    showToast(`✅ ${currentCombo.nome} no Carrinho!`);
-    atualizarBadgeCarrinho();
+    showToast(`✅ ${currentCombo.nome} no Carrinho!`); 
+    atualizarBadgeCarrinho(); 
     resetarSelecaoAtual();
   }
+  
+  function removerDoCarrinho(idUnico) { 
+    carrinhoCompras = carrinhoCompras.filter(i => i.idUnico !== idUnico); 
+    atualizarBadgeCarrinho(); 
+    renderItensCarrinho(); 
+  }
 
-  function removerDoCarrinho(idUnico) {
-    carrinhoCompras = carrinhoCompras.filter(i => i.idUnico !== idUnico);
-    atualizarBadgeCarrinho();
-    renderItensCarrinho();
+  function aplicarCupomCliente() {
+    const code = document.getElementById('input-cupom').value.toUpperCase().trim();
+    const msg = document.getElementById('msg-cupom');
+    
+    if (!code) return;
+    
+    const c = cuponsCache.find(x => x.codigo === code && x.ativo);
+    
+    if (c) { 
+      cupomAplicado = { codigo: c.codigo, desconto: c.desconto }; 
+      msg.textContent = `🎟️ Cupom de ${c.desconto}% aplicado!`; 
+      
+      document.getElementById('box-cupom-input').classList.add('hidden');
+      document.getElementById('box-cupom-applied').classList.remove('hidden');
+      
+      showToast('🎟️ Cupom Aplicado!');
+    } else { 
+      showToast('❌ Cupom inválido ou inativo.');
+    }
+    calcularTotalCarrinho();
+  }
+
+  function removerCupom(toast = true) {
+    cupomAplicado = null;
+    document.getElementById('input-cupom').value = '';
+    
+    document.getElementById('box-cupom-input').classList.remove('hidden');
+    document.getElementById('box-cupom-applied').classList.add('hidden');
+    
+    calcularTotalCarrinho();
+    if(toast) showToast('🗑️ Cupom removido.');
+  }
+
+  function calcularTotalCarrinho() {
+    let total = carrinhoCompras.reduce((a, b) => a + b.precoBase, 0);
+    const pOld = document.getElementById('cart-total-old'); 
+    const pNew = document.getElementById('cart-total-price');
+    
+    if (cupomAplicado && total > 0) {
+      const desc = total * (cupomAplicado.desconto / 100);
+      pOld.textContent = `R$ ${total.toFixed(2)}`; 
+      pOld.classList.remove('hidden');
+      total = total - desc;
+    } else { 
+      pOld.classList.add('hidden'); 
+    }
+    
+    pNew.textContent = `R$ ${total.toFixed(2)}`;
+    return total;
   }
 
   function renderItensCarrinho() {
-    const container = document.getElementById('cart-items-container');
-    const totalPriceEl = document.getElementById('cart-total-price');
-    let total = 0;
-
-    if (carrinhoCompras.length === 0) {
-      container.innerHTML = `<div class="text-center py-12 opacity-50"><p class="text-5xl mb-4" aria-hidden="true">🛒</p><p class="font-bold">O seu carrinho está vazio</p></div>`;
-      totalPriceEl.textContent = 'R$ 0,00';
-      return;
+    const c = document.getElementById('cart-items-container');
+    
+    if (!carrinhoCompras.length) { 
+      c.innerHTML = '<div class="text-center py-12 opacity-50"><p class="text-5xl mb-4">🛒</p><p class="font-bold">Carrinho Vazio</p></div>'; 
+      calcularTotalCarrinho(); 
+      return; 
     }
-
-    container.innerHTML = carrinhoCompras.map((item, index) => {
-      total += item.precoBase;
+    
+    c.innerHTML = carrinhoCompras.map((item, index) => {
       let resumo = '';
       if (item.comboTipo === 'fechado') {
         resumo = 'Itens pré-definidos do combo';
@@ -1579,613 +1691,237 @@
       let vegResumo = '';
       if (item.vegetais && item.vegetais.length > 0) {
         const vegNomes = item.vegetais.map(vId => marmitasCache.find(x => x.id === vId)?.nome).filter(Boolean);
-        vegResumo = `<p class="text-xs text-green-700 bg-green-50 inline-block px-2 py-1 rounded font-bold mt-2">🥦 ${vegNomes.join(', ')}</p>`;
+        vegResumo = `<p class="text-[11px] text-green-700 dark:text-green-400 bg-green-50 dark:bg-green-900/30 inline-block px-2 py-1 rounded font-bold mt-2">🥦 ${vegNomes.join(', ')}</p>`;
       }
 
       return `
-        <article class="bg-white p-5 rounded-2xl shadow-sm border border-sage/20 mb-3 relative group">
-          <button onclick="removerDoCarrinho('${item.idUnico}')" class="absolute top-4 right-4 text-gray-300 hover:text-red-500 transition-colors bg-white rounded-full p-1" aria-label="Remover do carrinho">✕</button>
+        <article class="bg-white dark:bg-darkcard p-4 rounded-xl shadow-sm border border-sage/20 dark:border-darkborder mb-3 relative group">
+          <button onclick="removerDoCarrinho('${item.idUnico}')" class="absolute top-3 right-3 text-gray-300 hover:text-red-500 transition-colors bg-white dark:bg-darkcard rounded-full p-1 font-bold">✕</button>
           <div class="pr-8">
-            <h4 class="font-bold text-forest text-lg leading-tight mb-1">${index + 1}. ${item.comboNome}</h4>
+            <h4 class="font-bold text-forest dark:text-sage text-md leading-tight mb-1">${index + 1}. ${item.comboNome}</h4>
             <span class="text-lg font-display text-terracotta font-bold block mb-2">R$ ${item.precoBase.toFixed(2)}</span>
-            <p class="text-xs text-gray-500 line-clamp-2 leading-relaxed">${resumo}</p>
+            <p class="text-xs text-gray-500 dark:text-gray-400 line-clamp-2 leading-relaxed">${resumo}</p>
             ${vegResumo}
-            <div class="mt-3 pt-3 border-t border-sage/10 flex flex-wrap gap-2">
-              <span class="text-[10px] uppercase font-bold bg-sage/10 text-sage px-2 py-1 rounded">${item.comboTipo === 'fechado' ? '📦 Fechado' : '🛒 Personalizado'}</span>
-              <span class="text-[10px] uppercase font-bold bg-gray-100 text-gray-600 px-2 py-1 rounded">${item.tempero}</span>
+            <div class="mt-3 pt-3 border-t border-sage/10 dark:border-darkborder flex flex-wrap gap-2">
+              <span class="text-[10px] uppercase font-bold bg-sage/10 dark:bg-sage/20 text-sage px-2 py-1 rounded">${item.comboTipo === 'fechado' ? '📦 Fechado' : '🛒 Personalizado'}</span>
+              <span class="text-[10px] uppercase font-bold bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300 px-2 py-1 rounded">${item.tempero}</span>
             </div>
           </div>
-        </article>
-      `;
+        </article>`;
     }).join('');
-
-    totalPriceEl.textContent = `R$ ${total.toFixed(2)}`;
+    
+    calcularTotalCarrinho();
   }
 
-  // Novo envio final (loopa pelo carrinho)
   async function finalizarPedidoFinal() {
-    const nome     = document.getElementById('cliente-nome').value.trim();
+    const nome     = document.getElementById('cliente-nome').value.trim(); 
     const tel      = document.getElementById('cliente-tel').value.trim();
-    const endereco = document.getElementById('cliente-endereco').value.trim();
+    const endereco = document.getElementById('cliente-endereco').value.trim(); 
     const cidade   = document.getElementById('cliente-cidade').value.trim();
+    
+    if (!nome || !tel || !endereco || !cidade) return showToast('❌ Preencha todos os dados de entrega');
+    if (carrinhoCompras.length === 0) return showToast('❌ Seu carrinho está vazio!');
 
-    if (!nome || !tel || !endereco || !cidade) return showToast('❌ Preencha todos os dados de entrega por favor.');
-    if (carrinhoCompras.length === 0) return showToast('❌ Carrinho vazio!');
+    showLoading(true, "Gerando pedido...");
+    
+    // Salvar no Histórico Local
+    lsSet('ultimo_pedido', carrinhoCompras);
 
-    showLoading(true, "A gerar pedido...");
-
-    let msgWhatsApp = `*📦 NOVO PEDIDO - SABOR E SAÚDE*\n━━━━━━━━━━━━━━━━━━━━\n*CLIENTE:* ${nome}\n*TEL:* ${tel}\n*ENDEREÇO:* ${endereco}, ${cidade}\n━━━━━━━━━━━━━━━━━━━━\n*🛒 ITENS DO PEDIDO:*\n\n`;
-    let totalGeralPreco = 0;
-    let totalGeralItensFisicos = 0;
+    const totalFinal = calcularTotalCarrinho();
+    
+    // Montagem do WhatsApp
+    let msgWpp = `*📦 NOVO PEDIDO - SABOR E SAÚDE*\n━━━━━━━━━━━━━━━━━━━━\n*CLIENTE:* ${nome}\n*TEL:* ${tel}\n*ENDEREÇO:* ${endereco}, ${cidade}\n━━━━━━━━━━━━━━━━━━━━\n*🛒 ITENS DO PEDIDO:*\n\n`;
+    
+    let totalItensFisicos = 0; 
     let itensDetalhesConsolidado = {};
     let comboNomesConsolidado = [];
+    
+    carrinhoCompras.forEach((cItem, index) => {
+      comboNomesConsolidado.push(cItem.comboNome);
 
-    carrinhoCompras.forEach((itemCart, index) => {
-      totalGeralPreco += itemCart.precoBase;
-      comboNomesConsolidado.push(itemCart.comboNome);
-
-      msgWhatsApp += `*${index + 1}. ${itemCart.comboNome}* (${itemCart.comboTipo === 'fechado' ? 'Fechado' : 'Personalizado'})\n`;
-      msgWhatsApp += `Tempero: ${itemCart.tempero}\n`;
-      if (itemCart.observacoes) msgWhatsApp += `Obs: ${itemCart.observacoes}\n`;
-
-      if (itemCart.comboTipo === 'fechado') {
-        Object.entries(itemCart.itensFechado || {}).forEach(([itemId, qtd]) => {
-          const m = marmitasCache.find(x => x.id === parseInt(itemId));
-          if (m && qtd > 0) {
-            msgWhatsApp += `• ${qtd}x ${m.nome}\n`;
-            itensDetalhesConsolidado[m.nome] = (itensDetalhesConsolidado[m.nome] || 0) + qtd;
-            totalGeralItensFisicos += qtd;
-          }
-        });
-      } else {
-        Object.entries(itemCart.quantidades).forEach(([itemId, qtd]) => {
-          const m = marmitasCache.find(x => x.id == itemId);
-          if (m && qtd > 0) {
-            msgWhatsApp += `• ${qtd}x ${m.nome}\n`;
-            itensDetalhesConsolidado[m.nome] = (itensDetalhesConsolidado[m.nome] || 0) + qtd;
-            totalGeralItensFisicos += qtd;
-          }
-        });
-      }
-
-      if (itemCart.vegetais && itemCart.vegetais.length > 0) {
-        const vegNomes = itemCart.vegetais.map(vId => marmitasCache.find(x => x.id === vId)?.nome).filter(Boolean);
-        msgWhatsApp += `🥦 Vegetais: ${vegNomes.join(', ')}\n`;
+      msgWpp += `*${index + 1}. ${cItem.comboNome}* (${cItem.comboTipo === 'fechado' ? 'Fechado' : 'Personalizado'})\n`;
+      msgWpp += `Tempero: ${cItem.tempero}\n`;
+      if (cItem.observacoes) msgWpp += `Obs: ${cItem.observacoes}\n`;
+      
+      let objItens = cItem.comboTipo === 'fechado' ? cItem.itensFechado : cItem.quantidades;
+      
+      Object.entries(objItens || {}).forEach(([itemId, qtd]) => {
+        const m = marmitasCache.find(x => x.id == itemId);
+        if (m && qtd > 0) { 
+          msgWpp += `• ${qtd}x ${m.nome}\n`; 
+          itensDetalhesConsolidado[m.nome] = (itensDetalhesConsolidado[m.nome] || 0) + qtd; 
+          totalItensFisicos += qtd; 
+        }
+      });
+      
+      if (cItem.vegetais && cItem.vegetais.length > 0) {
+        const vegNomes = cItem.vegetais.map(vId => marmitasCache.find(x => x.id === vId)?.nome).filter(Boolean);
+        msgWpp += `🥦 Vegetais: ${vegNomes.join(', ')}\n`;
         vegNomes.forEach(v => {
           const chave = `Vegetal_${v.replace(/[\.\#\$\/\[\]]/g, '_')}`;
           itensDetalhesConsolidado[chave] = (itensDetalhesConsolidado[chave] || 0) + 1;
         });
       }
-      msgWhatsApp += `\n`;
+      msgWpp += '\n';
     });
 
-    msgWhatsApp += `━━━━━━━━━━━━━━━━━━━━\n*💰 TOTAL A PAGAR:* R$ ${totalGeralPreco.toFixed(2)}`;
+    if (cupomAplicado) {
+      msgWpp += `*🎟️ CUPOM APLICADO:* ${cupomAplicado.codigo} (-${cupomAplicado.desconto}%)\n`;
+    }
+    
+    msgWpp += `━━━━━━━━━━━━━━━━━━━━\n*💰 TOTAL A PAGAR:* R$ ${totalFinal.toFixed(2)}`;
 
+    // Criar Objeto Pedido Firebase
     const pedidoFirebase = {
-      id:               'pedido_' + Date.now(),
-      timestamp:        new Date().toISOString(),
-      cliente_nome:     nome,
-      cliente_tel:      tel,
-      cliente_endereco: endereco,
+      id:               'pedido_' + Date.now(), 
+      timestamp:        new Date().toISOString(), 
+      status:           'novo',
+      cliente_nome:     nome, 
+      cliente_tel:      tel, 
+      cliente_endereco: endereco, 
       cliente_cidade:   cidade,
-      observacoes:      "Ver detalhes nas informações do Carrinho",
-      combo_nome:       comboNomesConsolidado.length > 1 ? `Múltiplos Combos (${carrinhoCompras.length})` : comboNomesConsolidado[0],
+      observacoes:      "Ver detalhes nas informações do Carrinho", 
+      combo_nome:       comboNomesConsolidado.length > 1 ? `Múltiplos Combos (${carrinhoCompras.length})` : comboNomesConsolidado[0], 
       combo_tipo:       'carrinho',
-      tempero:          'Variado',
-      vegetais:         [],
-      itens_detalhes:   itensDetalhesConsolidado,
-      qtd_itens:        totalGeralItensFisicos,
-      total:            totalGeralPreco
+      tempero:          'Variado', 
+      vegetais:         [], 
+      itens_detalhes:   itensDetalhesConsolidado, 
+      qtd_itens:        totalItensFisicos, 
+      total:            totalFinal
     };
 
     await savePedido(pedidoFirebase);
+
+    // Resetar o estado atual
+    carrinhoCompras = []; 
+    removerCupom(false); // Remove sem toast
     
-    carrinhoCompras = [];
-    atualizarBadgeCarrinho();
-    ['cliente-nome','cliente-tel','cliente-endereco','cliente-cidade'].forEach(id => { document.getElementById(id).value = ''; });
+    atualizarBadgeCarrinho(); 
+    toggleCart(); 
+    showLoading(false); 
+    showToast('✅ Redirecionando para o WhatsApp...');
     
-    showLoading(false);
-    toggleCart();
-    showToast('✅ Pedido Gerado! A redirecionar para WhatsApp...');
-    
-    const msgEncoded = encodeURIComponent(msgWhatsApp);
+    const msgEncoded = encodeURIComponent(msgWpp);
     setTimeout(() => window.open(`https://wa.me/${WHATSAPP_RESTAURANTE}?text=${msgEncoded}`, '_blank'), 800);
   }
 
-
-  function resetarAposEnvio() {
-    currentCombo         = null;
-    quantities           = {};
-    vegetaisSelecionados = [];
-    spiceLevel           = 2;
-    document.getElementById('marmitas-section').classList.add('hidden');
-    document.getElementById('secao-vegetais').classList.add('hidden');
-    setSpiceLevel(2);
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-  }
-
-  function resetarPedido() {
-    if (!confirm('Resetar seu pedido atual e voltar ao início?')) return;
-    resetarAposEnvio();
-    resetarSelecaoAtual();
-    showToast('🔄 Voltando ao início!');
-  }
-
   // ============================================================
-  // PEDIDOS: FILTRO E RENDERIZAÇÃO
+  // GESTÃO DE PEDIDOS (ADMIN)
   // ============================================================
   function aplicarFiltroData() {
-    const inicio = document.getElementById('filtro-data-inicio').value;
-    const fim    = document.getElementById('filtro-data-fim').value;
+    const inicio = document.getElementById('filtro-data-inicio').value; 
+    const fim = document.getElementById('filtro-data-fim').value;
     let filtrados = [...pedidosCache];
-
+    
     if (inicio && fim) {
-      const dtInicio = new Date(inicio + 'T00:00:00');
-      const dtFim    = new Date(fim    + 'T23:59:59');
-      filtrados = filtrados.filter(p => {
-        const dt = new Date(p.timestamp);
-        return dt >= dtInicio && dt <= dtFim;
+      const dtInicio = new Date(inicio + 'T00:00:00'); 
+      const dtFim = new Date(fim + 'T23:59:59');
+      filtrados = filtrados.filter(p => { 
+        const dt = new Date(p.timestamp); 
+        return dt >= dtInicio && dt <= dtFim; 
       });
-      document.getElementById('pedidos-periodo-label').textContent =
-        `${formatarData(inicio)} até ${formatarData(fim)}`;
+      document.getElementById('pedidos-periodo-label').textContent = `${formatarData(inicio)} até ${formatarData(fim)}`;
     } else {
       document.getElementById('pedidos-periodo-label').textContent = 'Todos os pedidos';
     }
-
+    
     renderPedidos(filtrados);
-    renderFaturamentoPorCombo(filtrados);
-    renderFaturamentoPorItem(filtrados);
-    atualizarCardsFaturamento(filtrados);
   }
-
-  function limparFiltro() {
-    document.getElementById('filtro-data-inicio').value = '';
-    document.getElementById('filtro-data-fim').value    = '';
-    aplicarFiltroData();
-  }
-
-  function atualizarCardsFaturamento(lista) {
-    const total      = lista.reduce((a, p) => a + (p.total || 0), 0);
-    const totalItens = lista.reduce((a, p) => a + (p.qtd_itens || 0), 0);
-    const ticket     = lista.length ? total / lista.length : 0;
-    document.getElementById('periodo-qtd-pedidos').textContent  = lista.length;
-    document.getElementById('periodo-faturamento').textContent  = `R$ ${total.toFixed(2)}`;
-    document.getElementById('periodo-ticket-medio').textContent = `R$ ${ticket.toFixed(2)}`;
-    document.getElementById('periodo-total-itens').textContent  = totalItens;
+  
+  function limparFiltro() { 
+    document.getElementById('filtro-data-inicio').value = ''; 
+    document.getElementById('filtro-data-fim').value = ''; 
+    aplicarFiltroData(); 
   }
 
   function renderPedidos(lista) {
-    const tbody    = document.getElementById('tabela-pedidos');
-    const vazio    = document.getElementById('pedidos-vazio');
+    const tbody = document.getElementById('tabela-pedidos');
     const ordenados = [...lista].sort((a,b) => new Date(b.timestamp) - new Date(a.timestamp));
-
-    if (!ordenados.length) {
-      tbody.innerHTML = '';
-      vazio.classList.remove('hidden');
-      return;
+    
+    if (!ordenados.length) { 
+      tbody.innerHTML = `<tr><td colspan="5" class="text-center py-8 text-gray-400">Nenhum pedido encontrado.</td></tr>`; 
+      return; 
     }
-    vazio.classList.add('hidden');
-
+    
     tbody.innerHTML = ordenados.map(p => {
-      const dt  = new Date(p.timestamp);
-      const tel = p.cliente_tel ? p.cliente_tel.replace(/\D/g,'') : '';
-      const btnWpp = tel
-        ? `<button onclick="abrirWhatsAppCliente('${tel}','${p.cliente_nome}')"
-                   class="text-green-600 hover:text-green-800 font-bold" title="WhatsApp">📱</button>`
-        : `<span class="text-gray-300" title="Sem telefone">📵</span>`;
+      const dt = new Date(p.timestamp);
+      const st = STATUS_CORES[p.status] || STATUS_CORES['novo'];
+      
+      const selectStatus = `
+        <select onchange="atualizarStatusPedido('${p.id}', this.value)" style="background-color: ${st.sel};" class="status-select text-xs font-bold px-3 py-1.5 rounded-full border-0 outline-none cursor-pointer text-charcoal shadow-sm">
+          ${Object.keys(STATUS_CORES).map(k => `<option value="${k}" ${p.status === k ? 'selected' : ''}>${STATUS_CORES[k].label}</option>`).join('')}
+        </select>
+      `;
+
       return `
-        <tr class="table-row border-b border-gray-50">
-          <td class="px-4 py-3 text-xs text-gray-500 whitespace-nowrap">
+        <tr class="table-row border-b border-gray-50 dark:border-gray-800 transition-colors">
+          <td class="px-4 py-3 text-xs opacity-70">
             ${dt.toLocaleDateString('pt-BR')}<br>
-            <span class="text-gray-400">${dt.toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'})}</span>
+            <span class="text-[10px] uppercase font-bold text-gray-400">${dt.toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'})}</span>
           </td>
-          <td class="px-4 py-3 font-medium">${p.cliente_nome}</td>
-          <td class="px-4 py-3 text-xs text-gray-500">${p.cliente_tel || '—'}</td>
-          <td class="px-4 py-3 text-xs text-gray-500">${p.cliente_cidade || '—'}</td>
-          <td class="px-4 py-3 text-xs">
-            <span class="bg-sage/10 text-forest px-2 py-1 rounded-full font-bold">${p.combo_nome}</span>
+          <td class="px-4 py-3 font-bold text-forest dark:text-sage">
+            ${p.cliente_nome}<br>
+            <span class="text-xs opacity-60 font-normal text-charcoal dark:text-gray-400">${p.combo_nome}</span>
+          </td>
+          <td class="px-4 py-3">
+            ${selectStatus}
           </td>
           <td class="px-4 py-3 text-right font-bold text-terracotta whitespace-nowrap">
-            R$ ${(p.total||0).toFixed(2)}
+            R$ ${(p.total || 0).toFixed(2)}
           </td>
           <td class="px-4 py-3 text-center">
-            <div class="flex items-center justify-center gap-2">
-              ${btnWpp}
-              <button onclick="verPedido('${p.id}')"
-                      class="text-blue-500 hover:text-blue-700 font-bold" title="Ver detalhes">🔍</button>
-              <button onclick="excluirPedido('${p.id}')"
-                      class="text-red-400 hover:text-red-600 font-bold" title="Excluir">🗑️</button>
-            </div>
+             <button onclick="verPedido('${p.id}')" class="text-blue-500 hover:text-blue-700 mr-2 text-lg transition-transform hover:scale-110" title="Ver Detalhes">🔍</button>
+             <button onclick="excluirPedido('${p.id}')" class="text-red-400 hover:text-red-600 text-lg transition-transform hover:scale-110" title="Excluir">🗑️</button>
           </td>
         </tr>`;
     }).join('');
   }
 
-  function renderFaturamentoPorCombo(lista) {
-    const el   = document.getElementById('ranking-combos');
-    const mapa = {};
-    lista.forEach(p => {
-      const k = p.combo_nome || 'Desconhecido';
-      if (!mapa[k]) mapa[k] = { qtd: 0, total: 0 };
-      mapa[k].qtd++;
-      mapa[k].total += p.total || 0;
-    });
-    const ranking = Object.entries(mapa).sort((a,b) => b[1].total - a[1].total);
-    if (!ranking.length) {
-      el.innerHTML = '<p class="text-gray-400 text-sm text-center py-4">Sem dados no período</p>';
-      return;
-    }
-    const maxVal = ranking[0][1].total || 1;
-    el.innerHTML = ranking.map(([nome, dados]) => {
-      const pct = Math.round((dados.total / maxVal) * 100);
-      return `
-        <div>
-          <div class="flex justify-between items-center mb-1">
-            <span class="text-sm font-bold text-forest truncate max-w-[60%]">${nome}</span>
-            <div class="text-right">
-              <span class="text-sm font-bold text-terracotta">R$ ${dados.total.toFixed(2)}</span>
-              <span class="text-xs text-gray-400 ml-2">${dados.qtd} pedido${dados.qtd>1?'s':''}</span>
-            </div>
-          </div>
-          <div class="w-full bg-gray-100 rounded-full h-2">
-            <div class="bg-terracotta h-2 rounded-full" style="width:${pct}%"></div>
-          </div>
-        </div>`;
-    }).join('');
-  }
-
-  function renderFaturamentoPorItem(lista) {
-    const el   = document.getElementById('ranking-itens');
-    const mapa = {};
-    lista.forEach(p => {
-      Object.entries(p.itens_detalhes || {}).forEach(([nome, qtd]) => {
-        if (!mapa[nome]) mapa[nome] = 0;
-        mapa[nome] += qtd;
-      });
-    });
-    const ranking = Object.entries(mapa).sort((a,b) => b[1]-a[1]).slice(0,10);
-    if (!ranking.length) {
-      el.innerHTML = '<p class="text-gray-400 text-sm text-center py-4">Sem dados no período</p>';
-      return;
-    }
-    const maxQtd = ranking[0][1] || 1;
-    el.innerHTML = ranking.map(([nome, qtd]) => {
-      const pct = Math.round((qtd / maxQtd) * 100);
-      return `
-        <div>
-          <div class="flex justify-between items-center mb-1">
-            <span class="text-sm font-bold text-forest truncate max-w-[70%]">${nome}</span>
-            <span class="text-sm font-bold text-sage">${qtd}x</span>
-          </div>
-          <div class="w-full bg-gray-100 rounded-full h-2">
-            <div class="bg-sage h-2 rounded-full" style="width:${pct}%"></div>
-          </div>
-        </div>`;
-    }).join('');
-  }
-
   // ============================================================
-  // MODAL VISUALIZAR PEDIDO
+  // ADMIN: COMBOS COMPLETOS
   // ============================================================
-  function verPedido(id) {
-    pedidoAtualModal = pedidosCache.find(p => p.id === id);
-    if (!pedidoAtualModal) return;
-    const p  = pedidoAtualModal;
-    const dt = new Date(p.timestamp);
-    const tel = p.cliente_tel ? p.cliente_tel.replace(/\D/g,'') : '';
-    document.getElementById('btn-wpp-cliente').style.display = tel ? '' : 'none';
-
-    const itensHtml = Object.entries(p.itens_detalhes || {}).map(([nome, qtd]) =>
-      `<li class="flex justify-between text-sm py-1 border-b border-gray-50">
-         <span>${nome}</span>
-         <span class="font-bold text-forest">${qtd}x</span>
-       </li>`
-    ).join('');
-
-    const vegetaisHtml = (p.vegetais && p.vegetais.length)
-      ? `<div class="bg-green-50 border border-green-100 rounded-xl p-4">
-           <p class="text-xs text-gray-400 uppercase font-bold mb-2">🥦 Vegetais Selecionados</p>
-           <p class="text-sm font-medium text-green-700">${p.vegetais.join(', ')}</p>
-         </div>` : '';
-
-    document.getElementById('modal-pedido-content').innerHTML = `
-      <div class="bg-cream rounded-xl p-4 space-y-2">
-        <div class="flex justify-between">
-          <span class="text-xs text-gray-400 uppercase font-bold">Data/Hora</span>
-          <span class="text-sm font-bold">${dt.toLocaleDateString('pt-BR')} ${dt.toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'})}</span>
-        </div>
-        <div class="flex justify-between">
-          <span class="text-xs text-gray-400 uppercase font-bold">Cliente</span>
-          <span class="text-sm font-bold">${p.cliente_nome}</span>
-        </div>
-        <div class="flex justify-between">
-          <span class="text-xs text-gray-400 uppercase font-bold">WhatsApp</span>
-          <span class="text-sm">${p.cliente_tel || '—'}</span>
-        </div>
-        <div class="flex justify-between">
-          <span class="text-xs text-gray-400 uppercase font-bold">Endereço</span>
-          <span class="text-sm text-right max-w-[60%]">${p.cliente_endereco || '—'}, ${p.cliente_cidade || ''}</span>
-        </div>
-      </div>
-      <div class="bg-cream rounded-xl p-4 space-y-2">
-        <div class="flex justify-between">
-          <span class="text-xs text-gray-400 uppercase font-bold">Combo</span>
-          <span class="text-sm font-bold text-forest">${p.combo_nome}</span>
-        </div>
-        <div class="flex justify-between">
-          <span class="text-xs text-gray-400 uppercase font-bold">Tipo</span>
-          <span class="text-sm">${p.combo_tipo === 'fechado' ? '📦 Fechado' : '🛒 Aberto/Carrinho'}</span>
-        </div>
-        <div class="flex justify-between">
-          <span class="text-xs text-gray-400 uppercase font-bold">Tempero</span>
-          <span class="text-sm">${p.tempero || '—'}</span>
-        </div>
-        ${p.observacoes ? `
-        <div class="flex justify-between">
-          <span class="text-xs text-gray-400 uppercase font-bold">Obs</span>
-          <span class="text-sm text-right max-w-[60%]">${p.observacoes}</span>
-        </div>` : ''}
-      </div>
-      ${vegetaisHtml}
-      <div class="bg-white border border-sage/20 rounded-xl p-4">
-        <p class="text-xs text-gray-400 uppercase font-bold mb-3">Itens do Pedido</p>
-        <ul class="space-y-1">${itensHtml || '<li class="text-sm text-gray-400">Combo fechado</li>'}</ul>
-      </div>
-      <div class="flex justify-between items-center bg-forest text-white rounded-xl p-4">
-        <span class="font-bold uppercase text-sm">Total do Pedido</span>
-        <span class="text-2xl font-display font-bold">R$ ${(p.total||0).toFixed(2)}</span>
-      </div>`;
-
-    document.getElementById('modal-pedido').classList.remove('hidden');
-  }
-
-  function closeModalPedido() {
-    document.getElementById('modal-pedido').classList.add('hidden');
-    pedidoAtualModal = null;
-  }
-
-  function abrirWhatsAppCliente(tel, nome) {
-    let numero = tel, nomeCliente = nome;
-    if (!tel && pedidoAtualModal) {
-      numero      = pedidoAtualModal.cliente_tel.replace(/\D/g,'');
-      nomeCliente = pedidoAtualModal.cliente_nome;
-    }
-    if (!numero) { showToast('❌ Cliente sem número cadastrado'); return; }
-    if (!numero.startsWith('55')) numero = '55' + numero;
-    const msg = encodeURIComponent(`Olá ${nomeCliente}! 😊 Aqui é do *Sabor e Saúde*. Tudo bem?`);
-    window.open(`https://wa.me/${numero}?text=${msg}`, '_blank');
-  }
-
-  // ============================================================
-  // EXPORTAR BANCO DE DADOS
-  // ============================================================
-  async function exportarBancoDados() {
-    showToast('⏳ Preparando exportação...');
-    const marmitas = await getMarmitas();
-    const combos   = await getCombos();
-    const pedidos  = await getPedidos();
-
-    const jsonCompleto = { exportado_em: new Date().toLocaleString('pt-BR'), marmitas, combos, pedidos };
-    const blobJson  = new Blob([JSON.stringify(jsonCompleto, null, 2)], { type: 'application/json' });
-    const linkJson  = document.createElement('a');
-    linkJson.href   = URL.createObjectURL(blobJson);
-    linkJson.download = `saboresaude_backup_${dataHoje()}.json`;
-    linkJson.click();
-
-    if (pedidos.length) {
-      const cab   = ['ID','Data','Hora','Cliente','WhatsApp','Endereço','Cidade','Combo','Tipo','Tempero','Vegetais','Total (R$)','Qtd Itens','Itens','Observações'];
-      const linhas = pedidos
-        .sort((a,b) => new Date(b.timestamp) - new Date(a.timestamp))
-        .map(p => {
-          const dt    = new Date(p.timestamp);
-          const itens = Object.entries(p.itens_detalhes || {}).map(([n,q]) => `${q}x ${n}`).join(' | ');
-          return [
-            p.id,
-            dt.toLocaleDateString('pt-BR'),
-            dt.toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'}),
-            p.cliente_nome,
-            p.cliente_tel || '',
-            (p.cliente_endereco || '').replace(/\n/g,' '),
-            p.cliente_cidade || '',
-            p.combo_nome,
-            p.combo_tipo === 'fechado' ? 'Fechado' : 'Aberto',
-            p.tempero || '',
-            (p.vegetais || []).join(' | '),
-            (p.total || 0).toFixed(2),
-            p.qtd_itens || 0,
-            itens,
-            (p.observacoes || '').replace(/\n/g,' ')
-          ].map(v => `"${v}"`).join(',');
-        });
-      const csvContent = '\uFEFF' + [cab.join(','), ...linhas].join('\n');
-      const blobCsv    = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
-      const linkCsv    = document.createElement('a');
-      linkCsv.href     = URL.createObjectURL(blobCsv);
-      linkCsv.download = `saboresaude_pedidos_${dataHoje()}.csv`;
-      setTimeout(() => linkCsv.click(), 500);
-    }
-    setTimeout(() => showToast('✅ Arquivos exportados!'), 800);
-  }
-
-  function dataHoje()        { return new Date().toISOString().split('T')[0]; }
-  function formatarData(str) { if (!str) return ''; const [y,m,d]=str.split('-'); return `${d}/${m}/${y}`; }
-
-  // ============================================================
-  // ADMIN: MARMITAS
-  // ============================================================
-  function renderMarmitasAdmin() {
-    const el = document.getElementById('marmitas-admin-list');
-    if (!marmitasCache.length) {
-      el.innerHTML = '<p class="text-gray-400 text-center py-8 col-span-full">Nenhum item cadastrado.</p>';
-      return;
-    }
-    el.innerHTML = marmitasCache.map(m => {
-      const vBadge    = m.visivel
-        ? '<span class="text-xs bg-green-100 text-green-700 px-2 py-1 rounded-full">👁️ Visível</span>'
-        : '<span class="text-xs bg-gray-100 text-gray-500 px-2 py-1 rounded-full">👻 Oculto</span>';
-      const cBadge    = m.dispCombo !== false
-        ? '<span class="text-xs bg-blue-100 text-blue-600 px-2 py-1 rounded-full">📦 No combo</span>'
-        : '<span class="text-xs bg-orange-100 text-orange-500 px-2 py-1 rounded-full">🚫 Fora do combo</span>';
-      const btnToggle = m.visivel
-        ? `<button onclick="toggleMarmita(${m.id},false)"
-                   class="text-xs bg-yellow-50 text-yellow-700 px-3 py-2 rounded-lg font-bold hover:bg-yellow-100 transition-all">
-             👻 Ocultar</button>`
-        : `<button onclick="toggleMarmita(${m.id},true)"
-                   class="text-xs bg-green-50 text-green-700 px-3 py-2 rounded-lg font-bold hover:bg-green-100 transition-all">
-             👁️ Exibir</button>`;
-      return `
-        <div class="bg-white p-5 rounded-2xl shadow-sm border border-sage/20 ${!m.visivel?'opacity-60':''}">
-          <div class="flex justify-between items-start mb-3">
-            <div class="flex-1">
-              <h3 class="font-bold text-lg text-forest">${m.nome}</h3>
-              <div class="flex gap-2 mt-2 flex-wrap">
-                <span class="text-xs text-gray-400 uppercase bg-gray-50 px-2 py-1 rounded">${m.cat}</span>
-                ${vBadge} ${cBadge}
-              </div>
-            </div>
-            <span class="text-2xl font-bold text-terracotta ml-4">R$ ${m.preco.toFixed(2)}</span>
-          </div>
-          <p class="text-sm text-gray-600 mb-3">${m.desc}</p>
-          <div class="flex items-center justify-between flex-wrap gap-2">
-            <span class="text-xs bg-sage/10 px-3 py-1 rounded-full font-bold text-sage">${m.kcal} kcal</span>
-            <div class="flex gap-2 flex-wrap">
-              ${btnToggle}
-              <button onclick="editarMarmita(${m.id})"
-                      class="text-xs bg-blue-50 text-blue-600 px-3 py-2 rounded-lg font-bold hover:bg-blue-100 transition-all">
-                ✏️ Editar</button>
-              <button onclick="excluirMarmitaAdmin(${m.id})"
-                      class="text-xs bg-red-50 text-red-600 px-3 py-2 rounded-lg font-bold hover:bg-red-100 transition-all">
-                🗑️ Excluir</button>
-            </div>
-          </div>
-        </div>`;
-    }).join('');
-  }
-
-  async function toggleMarmita(id, estado) {
-    const m = marmitasCache.find(x => x.id === id);
-    if (!m) return;
-    m.visivel = estado;
-    await saveMarmita(m);
-    showToast(`✅ Item ${estado ? 'visível' : 'oculto'}!`);
-    if (!firebaseInitialized) { renderMarmitasAdmin(); renderCardapio(); }
-  }
-
-  function abrirModalMarmita(id = null) {
-    document.getElementById('modal-marmita-title').textContent = id ? 'Editar Item' : 'Novo Item';
-    document.getElementById('edit-marmita-id').value = id || '';
-    if (id) {
-      const m = marmitasCache.find(x => x.id === id);
-      if (m) {
-        document.getElementById('marmita-nome').value             = m.nome;
-        document.getElementById('marmita-preco').value            = m.preco;
-        document.getElementById('marmita-kcal').value             = m.kcal;
-        document.getElementById('marmita-desc').value             = m.desc;
-        document.getElementById('marmita-cat').value              = m.cat;
-        document.getElementById('marmita-visivel').checked        = m.visivel !== false;
-        document.getElementById('marmita-disponivel-combo').checked = m.dispCombo !== false;
-      }
-    } else {
-      ['marmita-nome','marmita-preco','marmita-kcal','marmita-desc'].forEach(f => {
-        document.getElementById(f).value = '';
-      });
-      document.getElementById('marmita-cat').value                = 'marmita';
-      document.getElementById('marmita-visivel').checked          = true;
-      document.getElementById('marmita-disponivel-combo').checked = true;
-    }
-    document.getElementById('modal-marmita').classList.remove('hidden');
-  }
-
-  function closeModalMarmita() { document.getElementById('modal-marmita').classList.add('hidden'); }
-  function editarMarmita(id)   { abrirModalMarmita(id); }
-
-  async function salvarMarmita(e) {
-    e.preventDefault();
-    const id = document.getElementById('edit-marmita-id').value;
-    const marmita = {
-      id:        id ? parseInt(id) : (marmitasCache.length ? Math.max(...marmitasCache.map(m=>m.id))+1 : 1),
-      nome:      document.getElementById('marmita-nome').value.trim(),
-      preco:     parseFloat(document.getElementById('marmita-preco').value),
-      kcal:      parseInt(document.getElementById('marmita-kcal').value),
-      desc:      document.getElementById('marmita-desc').value.trim(),
-      cat:       document.getElementById('marmita-cat').value,
-      visivel:   document.getElementById('marmita-visivel').checked,
-      dispCombo: document.getElementById('marmita-disponivel-combo').checked
-    };
-    await saveMarmita(marmita);
-    showToast(id ? '✅ Item atualizado!' : '✅ Item criado!');
-    closeModalMarmita();
-    if (!firebaseInitialized) { renderMarmitasAdmin(); renderCardapio(); }
-  }
-
-  async function excluirMarmitaAdmin(id) {
-    if (!confirm('Excluir este item do cardápio?')) return;
-    await deleteMarmita(id);
-    showToast('✅ Item excluído!');
-    if (!firebaseInitialized) { renderMarmitasAdmin(); renderCardapio(); }
-  }
-
-  // ============================================================
-  // ADMIN: COMBOS
-  // ============================================================
-  function renderCombosAdmin() {
+  function renderCombosAdmin() { 
     const el = document.getElementById('combos-admin-list');
     if (!combosCache.length) {
-      el.innerHTML = '<p class="text-gray-400 text-center py-8">Nenhum combo cadastrado.</p>';
+      el.innerHTML = '<p class="text-gray-400 py-8">Nenhum combo cadastrado.</p>';
       return;
     }
+
     el.innerHTML = combosCache.map(c => {
       const tipoBadge = c.tipo === 'fechado'
         ? '<span class="text-xs bg-terracotta/20 text-terracotta px-3 py-1 rounded-full font-bold">📦 Fechado</span>'
         : '<span class="text-xs bg-sage/20 text-sage px-3 py-1 rounded-full font-bold">🛒 Aberto</span>';
-      const vBadge    = c.visivel !== false
+      
+      const vBadge = c.visivel !== false
         ? '<span class="text-xs bg-green-100 text-green-700 px-2 py-1 rounded-full">👁️ Visível</span>'
         : '<span class="text-xs bg-gray-100 text-gray-500 px-2 py-1 rounded-full">👻 Oculto</span>';
-      const vegInfo   = c.vegetal_max > 0
+      
+      const vegInfo = c.vegetal_max > 0
         ? `<span class="text-xs bg-green-100 text-green-700 px-2 py-1 rounded-full">🥦 ${c.vegetal_min}-${c.vegetal_max} vegetais</span>`
         : '';
+      
       const info = c.tipo === 'fechado'
         ? `${Object.keys(c.itens||{}).length} tipos de itens`
         : `${c.qtd} itens • R$ ${(c.preco_base/c.qtd).toFixed(2)} cada`;
-      const btnToggle = c.visivel !== false
-        ? `<button onclick="toggleCombo(${c.id},false)"
-                   class="text-xs bg-yellow-50 text-yellow-700 px-3 py-2 rounded-lg font-bold hover:bg-yellow-100 transition-all">
-             👻 Ocultar</button>`
-        : `<button onclick="toggleCombo(${c.id},true)"
-                   class="text-xs bg-green-50 text-green-700 px-3 py-2 rounded-lg font-bold hover:bg-green-100 transition-all">
-             👁️ Exibir</button>`;
+      
       return `
-        <div class="bg-white p-6 rounded-2xl shadow-sm border border-sage/20 ${c.visivel===false?'opacity-60':''}">
-          <div class="flex justify-between items-start mb-3">
-            <div class="flex-1">
-              <div class="flex items-center gap-2 mb-2 flex-wrap">
-                <h3 class="font-bold text-xl text-forest">${c.nome}</h3>
-                ${tipoBadge} ${vBadge} ${vegInfo}
-              </div>
-              <p class="text-sm text-gray-500">${info}</p>
+        <div class="bg-white dark:bg-darkcard p-6 rounded-2xl shadow-sm border border-sage/20 dark:border-gray-700 mb-3 flex flex-col md:flex-row justify-between items-start md:items-center gap-4 ${c.visivel===false?'opacity-60':''}">
+          <div class="flex-1">
+            <div class="flex items-center gap-2 mb-2 flex-wrap">
+              <h3 class="font-bold text-xl text-forest dark:text-sage">${c.nome}</h3>
+              ${tipoBadge} ${vBadge} ${vegInfo}
             </div>
-            <span class="text-2xl font-bold text-terracotta ml-4">R$ ${c.preco_base.toFixed(2)}</span>
+            <p class="text-sm text-gray-500 dark:text-gray-400">${info}</p>
           </div>
-          <div class="flex gap-2 justify-end flex-wrap">
-            ${btnToggle}
-            <button onclick="editarCombo(${c.id})"
-                    class="text-xs bg-blue-50 text-blue-600 px-3 py-2 rounded-lg font-bold hover:bg-blue-100 transition-all">
-              ✏️ Editar</button>
-            <button onclick="excluirComboAdmin(${c.id})"
-                    class="text-xs bg-red-50 text-red-600 px-3 py-2 rounded-lg font-bold hover:bg-red-100 transition-all">
-              🗑️ Excluir</button>
+          <div class="flex flex-col items-end gap-3">
+            <span class="text-2xl font-bold text-terracotta">R$ ${c.preco_base.toFixed(2)}</span>
+            <div class="flex gap-2 flex-wrap">
+              <button onclick="editarCombo(${c.id})" class="text-xs bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 px-3 py-2 rounded-lg font-bold hover:bg-blue-100 transition-all">✏️ Editar</button>
+              <button onclick="excluirComboAdmin(${c.id})" class="text-xs bg-red-50 dark:bg-red-900/30 text-red-600 dark:text-red-400 px-3 py-2 rounded-lg font-bold hover:bg-red-100 transition-all">🗑️ Excluir</button>
+            </div>
           </div>
         </div>`;
-    }).join('');
-  }
-
-  async function toggleCombo(id, estado) {
-    const c = combosCache.find(x => x.id === id);
-    if (!c) return;
-    c.visivel = estado;
-    await saveCombo(c);
-    showToast(`✅ Combo ${estado ? 'visível' : 'oculto'}!`);
-    if (!firebaseInitialized) { renderCombosAdmin(); renderCardapio(); }
+    }).join(''); 
   }
 
   function carregarChecklistPratos(selecionados = null) {
@@ -2193,16 +1929,16 @@
     const pratos = marmitasCache.filter(m => m.dispCombo !== false && m.cat !== 'vegetal');
     
     if (!pratos.length) {
-      el.innerHTML = '<p class="text-xs text-gray-400 py-2">Nenhum prato disponível.</p>';
+      el.innerHTML = '<p class="text-xs text-gray-400 py-2">Nenhum prato disponível no cardápio.</p>';
       return;
     }
 
     el.innerHTML = pratos.map(p => {
       const isChecked = (selecionados === null || selecionados.includes(p.id)) ? 'checked' : '';
       return `
-        <label class="flex items-center gap-3 p-2 hover:bg-sage/5 rounded-lg cursor-pointer transition-all">
+        <label class="flex items-center gap-3 p-2 hover:bg-sage/5 dark:hover:bg-gray-800 rounded-lg cursor-pointer transition-all">
           <input type="checkbox" name="prato-aberto-${p.id}" value="${p.id}" ${isChecked} class="w-4 h-4 text-forest rounded">
-          <span class="text-sm font-medium text-charcoal">${p.nome} <span class="text-xs text-gray-400">(${p.kcal} kcal)</span></span>
+          <span class="text-sm font-medium">${p.nome} <span class="text-xs text-gray-400">(${p.kcal} kcal)</span></span>
         </label>
       `;
     }).join('');
@@ -2216,6 +1952,7 @@
     const tipo = document.querySelector('input[name="tipo-combo"]:checked').value;
     document.getElementById('config-aberto').classList.toggle('hidden', tipo === 'fechado');
     document.getElementById('config-fechado').classList.toggle('hidden', tipo === 'aberto');
+    
     if (tipo === 'fechado') {
       document.getElementById('combo-qtd').removeAttribute('required');
       document.getElementById('combo-preco').removeAttribute('required');
@@ -2232,19 +1969,21 @@
   }
 
   function carregarItensComboFechado() {
-    const el     = document.getElementById('itens-combo-container');
+    const el = document.getElementById('itens-combo-container');
     const porCat = {};
+    
     marmitasCache
       .filter(m => m.dispCombo !== false && m.cat !== 'vegetal')
       .forEach(m => {
         if (!porCat[m.cat]) porCat[m.cat] = [];
         porCat[m.cat].push(m);
       });
+      
     el.innerHTML = Object.keys(porCat).map(cat => `
       <div class="mb-4">
-        <p class="font-bold text-sm text-forest mb-2">${CAT_ICONS[cat]||'📦 Outros'}</p>
+        <p class="font-bold text-sm text-forest dark:text-sage mb-2">${CAT_ICONS[cat]||'📦 Outros'}</p>
         ${porCat[cat].map(item => `
-          <div class="flex items-center gap-3 py-2 px-3 hover:bg-sage/5 rounded-lg">
+          <div class="flex items-center gap-3 py-2 px-3 hover:bg-sage/5 dark:hover:bg-gray-800 rounded-lg text-charcoal dark:text-white">
             <div class="flex-1">
               <span class="text-sm">${item.nome}</span>
               <span class="text-xs text-gray-400 ml-2">${item.kcal} kcal</span>
@@ -2253,7 +1992,7 @@
               <label class="text-xs text-gray-500">Qtd:</label>
               <input type="number" name="item-combo-${item.id}" min="0" value="0"
                      onchange="atualizarPreviewCombo()"
-                     class="qty-input w-16 px-2 py-1 border border-sage/30 rounded text-center text-sm focus:outline-forest">
+                     class="qty-input w-16 px-2 py-1 border border-sage/30 dark:border-gray-700 dark:bg-darkbg rounded text-center text-sm focus:outline-forest">
             </div>
           </div>`).join('')}
       </div>`).join('');
@@ -2261,26 +2000,28 @@
 
   function atualizarPreviewCombo() {
     const tipo = document.querySelector('input[name="tipo-combo"]:checked').value;
-    const el   = document.getElementById('preco-unitario-preview');
+    const el = document.getElementById('preco-unitario-preview');
+    
     if (tipo === 'aberto') {
-      const qtd   = parseInt(document.getElementById('combo-qtd').value)    || 0;
+      const qtd   = parseInt(document.getElementById('combo-qtd').value) || 0;
       const preco = parseFloat(document.getElementById('combo-preco').value) || 0;
       el.textContent = (qtd > 0 && preco > 0)
         ? `Cada item sairá por R$ ${(preco/qtd).toFixed(2)}`
-        : 'Preencha quantidade e preço';
+        : 'Preencha quantidade e preço total';
     } else {
       let total = 0;
       document.querySelectorAll('input[name^="item-combo-"]').forEach(i => { total += parseInt(i.value)||0; });
       const preco = parseFloat(document.getElementById('combo-preco-fechado').value) || 0;
       el.textContent = total > 0
-        ? `${total} itens${preco > 0 ? ` • R$ ${(preco/total).toFixed(2)} por item` : ' • Defina o preço'}`
-        : 'Selecione os itens e defina o preço';
+        ? `${total} itens ${preco > 0 ? `• R$ ${(preco/total).toFixed(2)} por item` : '• Defina o preço final'}`
+        : 'Selecione as quantidades dos itens';
     }
   }
 
   function abrirModalCombo(id = null) {
     document.getElementById('modal-combo-title').textContent = id ? 'Editar Combo' : 'Novo Combo';
     document.getElementById('edit-combo-id').value = id || '';
+    
     if (id) {
       const c = combosCache.find(x => x.id === id);
       if (c) {
@@ -2288,6 +2029,7 @@
         document.getElementById('combo-visivel').checked   = c.visivel !== false;
         document.getElementById('combo-vegetal-min').value = c.vegetal_min || 0;
         document.getElementById('combo-vegetal-max').value = c.vegetal_max || 0;
+        
         if (c.tipo === 'fechado') {
           document.querySelector('input[name="tipo-combo"][value="fechado"]').checked = true;
           toggleTipoCombo();
@@ -2322,13 +2064,19 @@
       carregarChecklistPratos(null);
       toggleTipoCombo();
     }
+    
     document.getElementById('modal-combo').classList.remove('hidden');
-    document.getElementById('combo-qtd').addEventListener('input',   atualizarPreviewCombo);
+    document.getElementById('combo-qtd').addEventListener('input', atualizarPreviewCombo);
     document.getElementById('combo-preco').addEventListener('input', atualizarPreviewCombo);
   }
 
-  function closeModalCombo() { document.getElementById('modal-combo').classList.add('hidden'); }
-  function editarCombo(id)   { abrirModalCombo(id); }
+  function closeModalCombo() { 
+    document.getElementById('modal-combo').classList.add('hidden'); 
+  }
+  
+  function editarCombo(id) { 
+    abrirModalCombo(id); 
+  }
 
   async function salvarCombo(e) {
     e.preventDefault();
@@ -2338,6 +2086,7 @@
     const tipo    = document.querySelector('input[name="tipo-combo"]:checked').value;
     const vegMin  = parseInt(document.getElementById('combo-vegetal-min').value) || 0;
     const vegMax  = parseInt(document.getElementById('combo-vegetal-max').value) || 0;
+    
     let qtd, preco_base, itens = {}, lote_selecao = 1, itens_disponiveis = [];
 
     if (tipo === 'fechado') {
@@ -2345,78 +2094,337 @@
       document.querySelectorAll('input[name^="item-combo-"]').forEach(inp => {
         const itemId = inp.name.replace('item-combo-','');
         const q = parseInt(inp.value) || 0;
-        if (q > 0) { itens[itemId] = q; total += q; }
+        if (q > 0) { 
+          itens[itemId] = q; 
+          total += q; 
+        }
       });
-      if (!total) { showToast('⚠️ Selecione pelo menos um item!'); return; }
-      qtd        = total;
+      if (!total) return showToast('⚠️ Selecione pelo menos um item da lista!');
+      
+      qtd = total;
       preco_base = parseFloat(document.getElementById('combo-preco-fechado').value);
     } else {
-      qtd        = parseInt(document.getElementById('combo-qtd').value);
+      qtd = parseInt(document.getElementById('combo-qtd').value);
       preco_base = parseFloat(document.getElementById('combo-preco').value);
       lote_selecao = parseInt(document.getElementById('combo-lote').value) || 1;
       
       document.querySelectorAll('input[name^="prato-aberto-"]:checked').forEach(cb => {
         itens_disponiveis.push(parseInt(cb.value));
       });
+      
       if (itens_disponiveis.length === 0) {
-        showToast('⚠️ Selecione pelo menos um prato disponível para o combo!');
-        return;
+        return showToast('⚠️ Marque pelo menos um prato disponível para seleção!');
       }
     }
 
-    const combo = {
+    const comboObj = {
       id:          id ? parseInt(id) : (combosCache.length ? Math.max(...combosCache.map(c=>c.id))+1 : 1),
-      nome, qtd, preco_base, visivel, tipo, itens,
+      nome, 
+      qtd, 
+      preco_base, 
+      visivel, 
+      tipo, 
+      itens,
       vegetal_min: vegMin,
       vegetal_max: vegMax,
       lote_selecao,
       itens_disponiveis
     };
-    await saveCombo(combo);
+    
+    await saveCombo(comboObj);
     showToast(id ? '✅ Combo atualizado!' : '✅ Combo criado!');
     closeModalCombo();
-    if (!firebaseInitialized) { renderCombosAdmin(); renderCardapio(); }
+    if (!firebaseInitialized) { 
+      renderCombosAdmin(); 
+      renderCardapio(); 
+    }
   }
 
   async function excluirComboAdmin(id) {
-    if (!confirm('Excluir este combo?')) return;
+    if (!confirm('Tem certeza que deseja excluir este combo permanentemente?')) return;
     await deleteCombo(id);
     showToast('✅ Combo excluído!');
-    if (!firebaseInitialized) { renderCombosAdmin(); renderCardapio(); }
+    if (!firebaseInitialized) { 
+      renderCombosAdmin(); 
+      renderCardapio(); 
+    }
   }
 
   // ============================================================
-  // UTILITÁRIOS
+  // ADMIN: MARMITAS COMPLETAS
   // ============================================================
-  function showToast(msg) {
-    const t = document.getElementById('toast');
-    t.textContent = msg;
-    t.classList.remove('hidden', 'animate-slide-in');
-    void t.offsetWidth; // Força reflow
-    t.classList.add('animate-slide-in');
-    setTimeout(() => t.classList.add('hidden'), 3500);
+  function renderMarmitasAdmin() {
+    const el = document.getElementById('marmitas-admin-list');
+    if (!marmitasCache.length) {
+      el.innerHTML = '<p class="text-gray-400 text-center py-8 col-span-full">Nenhum item cadastrado.</p>';
+      return;
+    }
+    
+    el.innerHTML = marmitasCache.map(m => {
+      const vBadge = m.visivel
+        ? '<span class="text-xs bg-green-100 text-green-700 px-2 py-1 rounded-full">👁️ Visível</span>'
+        : '<span class="text-xs bg-gray-100 text-gray-500 px-2 py-1 rounded-full">👻 Oculto</span>';
+      
+      const cBadge = m.dispCombo !== false
+        ? '<span class="text-xs bg-blue-100 text-blue-600 px-2 py-1 rounded-full">📦 No combo</span>'
+        : '<span class="text-xs bg-orange-100 text-orange-500 px-2 py-1 rounded-full">🚫 Fora do combo</span>';
+      
+      return `
+        <div class="bg-white dark:bg-darkcard p-5 rounded-2xl shadow-sm border border-sage/20 dark:border-gray-700 ${!m.visivel?'opacity-60':''}">
+          <div class="flex justify-between items-start mb-3">
+            <div class="flex-1">
+              <h3 class="font-bold text-lg text-forest dark:text-sage">${CAT_EMOJI[m.cat]||''} ${m.nome}</h3>
+              <div class="flex gap-2 mt-2 flex-wrap">
+                <span class="text-xs text-gray-400 uppercase bg-gray-50 dark:bg-gray-800 px-2 py-1 rounded">${m.cat}</span>
+                ${vBadge} ${cBadge}
+              </div>
+            </div>
+            <span class="text-2xl font-bold text-terracotta ml-4">R$ ${m.preco.toFixed(2)}</span>
+          </div>
+          <p class="text-sm text-gray-600 dark:text-gray-400 mb-3">${m.desc}</p>
+          <div class="flex items-center justify-between flex-wrap gap-2">
+            <span class="text-xs bg-sage/10 dark:bg-sage/20 px-3 py-1 rounded-full font-bold text-sage">${m.kcal} kcal</span>
+            <div class="flex gap-2 flex-wrap">
+              <button onclick="editarMarmita(${m.id})" class="text-xs bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 px-3 py-2 rounded-lg font-bold hover:bg-blue-100 transition-all">✏️ Editar</button>
+              <button onclick="excluirMarmitaAdmin(${m.id})" class="text-xs bg-red-50 dark:bg-red-900/30 text-red-600 dark:text-red-400 px-3 py-2 rounded-lg font-bold hover:bg-red-100 transition-all">🗑️ Excluir</button>
+            </div>
+          </div>
+        </div>`;
+    }).join('');
   }
 
-  function showLoading(show, text = 'Carregando...') {
-    const loader = document.getElementById('loading');
-    document.getElementById('loading-text').textContent = text;
-    if(show) loader.classList.remove('hidden');
-    else loader.classList.add('hidden');
+  function abrirModalMarmita(id = null) {
+    document.getElementById('modal-marmita-title').textContent = id ? 'Editar Item' : 'Novo Item';
+    document.getElementById('edit-marmita-id').value = id || '';
+    
+    if (id) {
+      const m = marmitasCache.find(x => x.id === id);
+      if (m) {
+        document.getElementById('marmita-nome').value             = m.nome;
+        document.getElementById('marmita-preco').value            = m.preco;
+        document.getElementById('marmita-kcal').value             = m.kcal;
+        document.getElementById('marmita-desc').value             = m.desc;
+        document.getElementById('marmita-cat').value              = m.cat;
+        document.getElementById('marmita-visivel').checked        = m.visivel !== false;
+        document.getElementById('marmita-disponivel-combo').checked = m.dispCombo !== false;
+      }
+    } else {
+      ['marmita-nome','marmita-preco','marmita-kcal','marmita-desc'].forEach(f => {
+        document.getElementById(f).value = '';
+      });
+      document.getElementById('marmita-cat').value                = 'marmita';
+      document.getElementById('marmita-visivel').checked          = true;
+      document.getElementById('marmita-disponivel-combo').checked = true;
+    }
+    
+    document.getElementById('modal-marmita').classList.remove('hidden');
+  }
+
+  function closeModalMarmita() { 
+    document.getElementById('modal-marmita').classList.add('hidden'); 
+  }
+  
+  function editarMarmita(id) { 
+    abrirModalMarmita(id); 
+  }
+
+  async function salvarMarmita(e) {
+    e.preventDefault();
+    const id = document.getElementById('edit-marmita-id').value;
+    
+    const marmitaObj = {
+      id:        id ? parseInt(id) : (marmitasCache.length ? Math.max(...marmitasCache.map(m=>m.id))+1 : 1),
+      nome:      document.getElementById('marmita-nome').value.trim(),
+      preco:     parseFloat(document.getElementById('marmita-preco').value),
+      kcal:      parseInt(document.getElementById('marmita-kcal').value),
+      desc:      document.getElementById('marmita-desc').value.trim(),
+      cat:       document.getElementById('marmita-cat').value,
+      visivel:   document.getElementById('marmita-visivel').checked,
+      dispCombo: document.getElementById('marmita-disponivel-combo').checked
+    };
+    
+    await saveMarmita(marmitaObj);
+    showToast(id ? '✅ Item atualizado!' : '✅ Item criado!');
+    closeModalMarmita();
+    if (!firebaseInitialized) { 
+      renderMarmitasAdmin(); 
+      renderCardapio(); 
+    }
+  }
+
+  async function excluirMarmitaAdmin(id) {
+    if (!confirm('Excluir este item permanentemente do cardápio?')) return;
+    await deleteMarmita(id);
+    showToast('✅ Item excluído!');
+    if (!firebaseInitialized) { 
+      renderMarmitasAdmin(); 
+      renderCardapio(); 
+    }
   }
 
   // ============================================================
-  // START
+  // ADMIN: VISUALIZAR PEDIDO MODAL
   // ============================================================
-  function abrirCotacaoEspecial() {
-    const msg = encodeURIComponent(
-      `Olá! Vim pelo cardápio digital da Sabor e Saúde 🥗\n\n` +
-      `Tenho uma dieta diferenciada e gostaria de uma cotação personalizada.\n\n` +
-      `Poderia me ajudar?`
-    );
-    window.open(`https://wa.me/${WHATSAPP_RESTAURANTE}?text=${msg}`, '_blank');
+  function verPedido(id) { 
+    pedidoAtualModal = pedidosCache.find(p => p.id == id); 
+    if (!pedidoAtualModal) return; 
+    
+    const p = pedidoAtualModal; 
+    const dt = new Date(p.timestamp); 
+    
+    const itensHtml = Object.entries(p.itens_detalhes || {}).map(([nome, qtd]) =>
+      `<li class="flex justify-between text-sm py-1 border-b border-gray-50 dark:border-gray-700">
+         <span>${nome}</span>
+         <span class="font-bold text-forest dark:text-sage">${qtd}x</span>
+       </li>`
+    ).join('');
+
+    const vegetaisHtml = (p.vegetais && p.vegetais.length)
+      ? `<div class="bg-green-50 dark:bg-gray-800 border border-green-100 dark:border-gray-700 rounded-xl p-4">
+           <p class="text-xs text-gray-400 uppercase font-bold mb-2">🥦 Vegetais Selecionados</p>
+           <p class="text-sm font-medium text-green-700 dark:text-green-400">${p.vegetais.join(', ')}</p>
+         </div>` : '';
+
+    document.getElementById('modal-pedido-content').innerHTML = `
+      <div class="bg-cream dark:bg-darkbg rounded-xl p-4 space-y-2">
+        <div class="flex justify-between">
+          <span class="text-xs text-gray-400 uppercase font-bold">Data/Hora</span>
+          <span class="text-sm font-bold">${dt.toLocaleDateString('pt-BR')} ${dt.toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'})}</span>
+        </div>
+        <div class="flex justify-between">
+          <span class="text-xs text-gray-400 uppercase font-bold">Cliente</span>
+          <span class="text-sm font-bold">${p.cliente_nome}</span>
+        </div>
+        <div class="flex justify-between">
+          <span class="text-xs text-gray-400 uppercase font-bold">WhatsApp</span>
+          <span class="text-sm">${p.cliente_tel || '—'}</span>
+        </div>
+        <div class="flex justify-between">
+          <span class="text-xs text-gray-400 uppercase font-bold">Endereço</span>
+          <span class="text-sm text-right max-w-[60%]">${p.cliente_endereco || '—'}, ${p.cliente_cidade || ''}</span>
+        </div>
+      </div>
+      <div class="bg-cream dark:bg-darkbg rounded-xl p-4 space-y-2">
+        <div class="flex justify-between">
+          <span class="text-xs text-gray-400 uppercase font-bold">Resumo Kit</span>
+          <span class="text-sm font-bold text-forest dark:text-sage text-right">${p.combo_nome}</span>
+        </div>
+        <div class="flex justify-between">
+          <span class="text-xs text-gray-400 uppercase font-bold">Tempero Padrão</span>
+          <span class="text-sm">${p.tempero || '—'}</span>
+        </div>
+        ${p.observacoes ? `
+        <div class="flex justify-between">
+          <span class="text-xs text-gray-400 uppercase font-bold">Obs Geral</span>
+          <span class="text-sm text-right max-w-[60%] italic">${p.observacoes}</span>
+        </div>` : ''}
+      </div>
+      ${vegetaisHtml}
+      <div class="bg-white dark:bg-darkcard border border-sage/20 dark:border-gray-700 rounded-xl p-4">
+        <p class="text-xs text-gray-400 uppercase font-bold mb-3">Relação Completa de Pratos</p>
+        <ul class="space-y-1">${itensHtml || '<li class="text-sm text-gray-400">Verifique WhatsApp</li>'}</ul>
+      </div>
+      <div class="flex justify-between items-center bg-forest dark:bg-sage text-white dark:text-charcoal rounded-xl p-4">
+        <span class="font-bold uppercase text-sm">Valor Pago</span>
+        <span class="text-2xl font-display font-bold">R$ ${(p.total||0).toFixed(2)}</span>
+      </div>`;
+      
+    document.getElementById('modal-pedido').classList.remove('hidden'); 
+  }
+  
+  function closeModalPedido() { 
+    document.getElementById('modal-pedido').classList.add('hidden'); 
+  }
+  
+  function abrirWhatsAppCliente() { 
+    if (pedidoAtualModal && pedidoAtualModal.cliente_tel) {
+      window.open(`https://wa.me/55${pedidoAtualModal.cliente_tel.replace(/\D/g,'')}`, '_blank'); 
+    }
+  }
+  
+  // ============================================================
+  // UTILITÁRIOS GERAIS
+  // ============================================================
+  function dataHoje() { return new Date().toISOString().split('T')[0]; }
+  
+  function formatarData(str) { 
+    if(!str) return ''; 
+    const [y,m,d] = str.split('-'); 
+    return `${d}/${m}/${y}`; 
+  }
+  
+  async function exportarBancoDados() {
+    showToast('⏳ Preparando planilhas de exportação...');
+    const j = { marmitas: marmitasCache, combos: combosCache, pedidos: pedidosCache, cupons: cuponsCache };
+    
+    // JSON Geral Backup
+    const aJson = document.createElement('a'); 
+    aJson.href = URL.createObjectURL(new Blob([JSON.stringify(j,null,2)], {type:'application/json'}));
+    aJson.download = `SaborESaude_Backup_Sistema_${dataHoje()}.json`; 
+    aJson.click();
+    
+    // CSV Pedidos Formatação Bonita
+    if (pedidosCache.length > 0) {
+      const cab = ['ID_Pedido','Data','Hora','Status','Cliente','WhatsApp','Endereço','Cidade','Kit/Combos','Tempero_Resumo','Vegetais_Resumo','Total (R$)','Qtd Pratos Totais','Itens Consolidados','Observacoes_Cliente'];
+      const linhas = pedidosCache
+        .sort((a,b) => new Date(b.timestamp) - new Date(a.timestamp))
+        .map(p => {
+          const dt = new Date(p.timestamp);
+          const itens = Object.entries(p.itens_detalhes || {}).map(([n,q]) => `${q}x ${n}`).join(' | ');
+          return [
+            p.id,
+            dt.toLocaleDateString('pt-BR'),
+            dt.toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'}),
+            p.status || 'novo',
+            p.cliente_nome,
+            p.cliente_tel || '',
+            (p.cliente_endereco || '').replace(/\n/g,' '),
+            p.cliente_cidade || '',
+            p.combo_nome,
+            p.tempero || '',
+            (p.vegetais || []).join(' | '),
+            (p.total || 0).toFixed(2),
+            p.qtd_itens || 0,
+            itens,
+            (p.observacoes || '').replace(/\n/g,' ')
+          ].map(v => `"${v}"`).join(','); // Assegura escape do CSV
+        });
+        
+      const csvContent = '\uFEFF' + [cab.join(','), ...linhas].join('\n');
+      const blobCsv = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+      const linkCsv = document.createElement('a');
+      linkCsv.href = URL.createObjectURL(blobCsv);
+      linkCsv.download = `SaborESaude_Relatorio_Pedidos_${dataHoje()}.csv`;
+      setTimeout(() => linkCsv.click(), 500);
+    }
+    
+    setTimeout(() => showToast('✅ Arquivos Exportados com Sucesso!'), 1500);
   }
 
+  function showToast(msg) { 
+    const t = document.getElementById('toast'); 
+    t.textContent = msg; 
+    t.classList.remove('hidden','animate-slide-in'); 
+    void t.offsetWidth; // Force reflow
+    t.classList.add('animate-slide-in'); 
+    setTimeout(() => t.classList.add('hidden'), 3500); 
+  }
+  
+  function showLoading(show, t = 'Carregando...') { 
+    const l = document.getElementById('loading'); 
+    document.getElementById('loading-text').textContent = t; 
+    if (show) l.classList.remove('hidden'); else l.classList.add('hidden'); 
+  }
+  
+  function abrirCotacaoEspecial() { 
+    window.open(`https://wa.me/${WHATSAPP_RESTAURANTE}?text=${encodeURIComponent('Olá! Vim pelo App da Sabor e Saúde. Tenho uma dieta diferenciada e gostaria de uma cotação. 🥗')}`, '_blank'); 
+  }
+
+  // ============================================================
+  // BOOTSTRAP DO SISTEMA
+  // ============================================================
   window.onload = initData;
+
 </script>
 </body>
 </html>
