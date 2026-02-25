@@ -160,7 +160,7 @@
     <div class="flex gap-3 pt-6">
       <button id="btn-wpp-cliente" onclick="abrirWhatsAppCliente()"
               class="flex-1 bg-green-500 text-white py-3 rounded-xl font-bold hover:bg-green-600 transition-all">
-        📱 Abrir WhatsApp
+        📱 Chamar no WhatsApp
       </button>
       <button onclick="closeModalPedido()"
               class="flex-1 border border-gray-300 dark:border-gray-600 py-3 rounded-xl font-bold hover:bg-gray-50 dark:hover:bg-gray-800 transition-all text-charcoal dark:text-gray-300">
@@ -411,10 +411,13 @@
               title="Minimizar/expandir menu">
         ☰
       </button>
+      
+      <!-- Botão Admin - Agora sempre visível (antes tinha 'hidden md:block') -->
       <button id="btn-admin-view" onclick="openAdminModal()"
-              class="text-xs border border-sage/30 px-3 py-2 rounded-lg hover:bg-white/10 transition-all hidden md:block">
+              class="text-xs border border-sage/30 px-3 py-2 rounded-lg hover:bg-white/10 transition-all">
         Admin
       </button>
+
       <button id="btn-voltar-combo" onclick="resetarSelecaoAtual()"
               class="hidden text-xs bg-terracotta/30 px-3 py-2 rounded-lg hover:bg-terracotta/50 transition-all font-bold">
         ⬅ Voltar ao Menu
@@ -921,14 +924,25 @@
   }
 
   function initClientExtras() {
+    // Configura o dark mode caso já tenha sido selecionado
     if (lsGet('theme_dark') === true) {
       document.documentElement.classList.add('dark');
       document.getElementById('icon-theme').textContent = '☀️';
     }
     
+    // Mostra banner de recompra se houver histórico e o carrinho estiver vazio
     const ultimo = lsGet('ultimo_pedido');
     if (ultimo && carrinhoCompras.length === 0) {
       document.getElementById('banner-repetir-pedido').classList.remove('hidden');
+    }
+
+    // Preenche automaticamente os dados do cliente se ele já tiver comprado antes
+    const cliente = lsGet('cliente_dados');
+    if (cliente) {
+      document.getElementById('cliente-nome').value = cliente.nome || '';
+      document.getElementById('cliente-tel').value = cliente.tel || '';
+      document.getElementById('cliente-endereco').value = cliente.endereco || '';
+      document.getElementById('cliente-cidade').value = cliente.cidade || '';
     }
   }
 
@@ -1216,7 +1230,6 @@
     }
   }
 
-  // Função nova para expandir a descrição de UM ITEM dentro do combo fechado
   function toggleItemDesc(id) {
     const desc = document.getElementById(`desc-item-${id}`);
     const icon = document.getElementById(`icon-item-${id}`);
@@ -1361,7 +1374,6 @@
   function setCategoria(c) { activeCategory = c; renderFiltrosCategoria(); renderMarmitas(); }
   function filtrarMarmitas() { searchTerm = document.getElementById('busca-marmitas').value; renderMarmitas(); }
 
-  // Modificado: Agora inclui o sistema de acordeão para ver descrição dos pratos do combo fechado
   function mostrarComboFechado() {
     const el = document.getElementById('lista-itens-fechado');
     document.getElementById('combo-fechado-itens').classList.remove('hidden');
@@ -1749,8 +1761,9 @@
 
     showLoading(true, "Gerando pedido...");
     
-    // Salvar no Histórico Local
+    // Salvar no Histórico Local para preenchimento futuro e repetição de pedido
     lsSet('ultimo_pedido', carrinhoCompras);
+    lsSet('cliente_dados', { nome, tel, endereco, cidade });
 
     const totalFinal = calcularTotalCarrinho();
     
@@ -2363,7 +2376,10 @@
   
   function abrirWhatsAppCliente() { 
     if (pedidoAtualModal && pedidoAtualModal.cliente_tel) {
-      window.open(`https://wa.me/55${pedidoAtualModal.cliente_tel.replace(/\D/g,'')}`, '_blank'); 
+      const num = pedidoAtualModal.cliente_tel.replace(/\D/g,'');
+      const nome = pedidoAtualModal.cliente_nome ? pedidoAtualModal.cliente_nome.split(' ')[0] : '';
+      const msg = encodeURIComponent(`Olá ${nome}! Aqui é da Sabor e Saúde 💚\nReferente ao seu pedido recente...`);
+      window.open(`https://wa.me/55${num}?text=${msg}`, '_blank');
     }
   }
   
