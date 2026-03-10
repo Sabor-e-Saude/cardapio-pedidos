@@ -101,13 +101,12 @@
     ::-webkit-scrollbar-thumb:hover { background: #2D5A3D; }
 
     /* Estilo do Dropdown de Status no Admin */
-    .status-select { 
+    .status-select, .form-select { 
       appearance: none; 
-      background-image: url("data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%23007CB2%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22%2F%3E%3C%2Fsvg%3E"); 
+      background-image: url("data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%238FAE8B%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22%2F%3E%3C%2Fsvg%3E"); 
       background-repeat: no-repeat; 
-      background-position: right .7em top 50%; 
+      background-position: right 1rem top 50%; 
       background-size: .65em auto; 
-      padding-right: 1.5rem; 
     }
   </style>
 </head>
@@ -387,21 +386,21 @@
   <!-- HEADER -->
   <header class="bg-forest dark:bg-darkcard text-cream dark:text-white px-6 py-4 flex justify-between items-center sticky top-0 z-40 shadow-md border-b border-transparent dark:border-darkborder transition-colors">
     <div class="flex items-center gap-3">
+      <!-- Toque Secreto: 5 cliques rápidos abrem a tela admin discretamente -->
       <img id="logo-empresa"
            src="https://raw.githubusercontent.com/Sabor-e-Saude/cardapio-pedidos/refs/heads/main/logo.png"
            alt="Logo"
-           class="w-10 h-10 md:w-12 md:h-12 rounded-full object-cover border-2 border-sage/40">
+           onclick="handleSecretClick()"
+           class="w-10 h-10 md:w-12 md:h-12 rounded-full object-cover border-2 border-sage/40 transition-transform active:scale-95">
       <div>
         <h1 class="font-display text-lg md:text-2xl font-bold">Sabor e Saúde</h1>
       </div>
     </div>
     <div class="flex items-center gap-2">
-      <!-- Botão PWA Install (Oculto por padrão, ativado pelo JS) -->
       <button id="btn-install-app" onclick="installPwaApp()" class="hidden text-xs bg-white text-forest font-bold px-3 py-2 rounded-lg hover:bg-gray-100 transition-all shadow-sm">
         📱 Baixar App
       </button>
 
-      <!-- Botão Dark Mode Toggle -->
       <button onclick="toggleDarkMode()" class="text-lg md:text-xl p-2 rounded-full hover:bg-white/10 transition-all" aria-label="Alternar tema">
         <span id="icon-theme">🌙</span>
       </button>
@@ -412,12 +411,6 @@
         ☰
       </button>
       
-      <!-- Botão Admin - Agora sempre visível (antes tinha 'hidden md:block') -->
-      <button id="btn-admin-view" onclick="openAdminModal()"
-              class="text-xs border border-sage/30 px-3 py-2 rounded-lg hover:bg-white/10 transition-all">
-        Admin
-      </button>
-
       <button id="btn-voltar-combo" onclick="resetarSelecaoAtual()"
               class="hidden text-xs bg-terracotta/30 px-3 py-2 rounded-lg hover:bg-terracotta/50 transition-all font-bold">
         ⬅ Voltar ao Menu
@@ -441,6 +434,7 @@
         <button onclick="showPage('combos')" class="w-full text-left px-4 py-3 rounded-lg hover:bg-sage/10 dark:hover:bg-gray-800 transition-all">📦 Combos</button>
         <button onclick="showPage('marmitas')" class="w-full text-left px-4 py-3 rounded-lg hover:bg-sage/10 dark:hover:bg-gray-800 transition-all">🍱 Cardápio</button>
         <button onclick="showPage('cupons')" class="w-full text-left px-4 py-3 rounded-lg hover:bg-sage/10 dark:hover:bg-gray-800 transition-all">🎟️ Cupons</button>
+        <button onclick="showPage('config')" class="w-full text-left px-4 py-3 rounded-lg hover:bg-sage/10 dark:hover:bg-gray-800 transition-all">⚙️ Configurações</button>
         <hr class="my-4 dark:border-darkborder">
         <button onclick="entrarComoCliente()" class="w-full text-left px-4 py-3 rounded-lg text-terracotta hover:bg-terracotta/5 transition-all">⬅️ Ver como Cliente</button>
       </nav>
@@ -454,7 +448,7 @@
         
         <!-- Banner de Repetir Último Pedido -->
         <div id="banner-repetir-pedido" class="hidden mb-8 bg-forest text-white p-5 rounded-2xl shadow-lg border-2 border-sage/50 flex flex-col sm:flex-row justify-between items-center gap-4 animate-slide-in relative overflow-hidden">
-          <div class="absolute -right-4 -top-4 text-7xl opacity-10"></div>
+          <div class="absolute -right-4 -top-4 text-7xl opacity-10">🔄</div>
           <div class="relative z-10 text-center sm:text-left">
             <h3 class="font-display text-xl font-bold mb-1">Bem-vindo de volta! 💚</h3>
             <p class="text-sm text-cream/90">Deseja repetir exatamente o seu último pedido com agilidade?</p>
@@ -712,6 +706,27 @@
         </div>
       </section>
 
+      <!-- ===== ADMIN: CONFIGURAÇÕES ===== -->
+      <section id="page-config" class="hidden">
+        <div class="flex justify-between items-center mb-6">
+          <h2 class="text-2xl font-bold font-display text-forest dark:text-sage">⚙️ Configurações</h2>
+        </div>
+        
+        <div class="bg-white dark:bg-darkcard rounded-2xl shadow-sm border border-sage/20 dark:border-darkborder p-6 max-w-lg">
+          <div class="mb-6">
+            <h3 class="font-bold text-lg text-charcoal dark:text-white mb-2">WhatsApp de Atendimento</h3>
+            <p class="text-xs text-gray-500 dark:text-gray-400 mb-4">Insira o número que receberá os pedidos, com código do país (55) e DDD. Apenas números.</p>
+            
+            <label class="block text-xs font-bold uppercase text-gray-400 mb-1">Número do WhatsApp *</label>
+            <input id="config-whatsapp" type="text" placeholder="Ex: 5547999999999" class="w-full px-4 py-3 border border-sage/30 dark:border-gray-700 dark:bg-darkbg dark:text-white rounded-xl focus:outline-forest text-sm font-bold tracking-wider">
+          </div>
+          
+          <button onclick="salvarConfig()" class="w-full bg-forest text-white py-3 rounded-xl font-bold hover:bg-forest/90 transition-all shadow-md">
+            Salvar Configurações
+          </button>
+        </div>
+      </section>
+
     </main>
   </div>
 </div>
@@ -760,7 +775,15 @@
         <input id="cliente-nome" type="text" placeholder="Seu Nome Completo *" class="w-full px-4 py-3 border border-sage/30 dark:border-gray-700 rounded-xl focus:outline-forest text-sm bg-gray-50 dark:bg-darkbg dark:text-white">
         <input id="cliente-tel" type="tel" placeholder="WhatsApp * (Ex: 47999999999)" class="w-full px-4 py-3 border border-sage/30 dark:border-gray-700 rounded-xl focus:outline-forest text-sm bg-gray-50 dark:bg-darkbg dark:text-white">
         <input id="cliente-endereco" type="text" placeholder="Endereço (Rua, Nº, Bairro, Ref) *" class="w-full px-4 py-3 border border-sage/30 dark:border-gray-700 rounded-xl focus:outline-forest text-sm bg-gray-50 dark:bg-darkbg dark:text-white">
-        <input id="cliente-cidade" type="text" placeholder="Cidade *" class="w-full px-4 py-3 border border-sage/30 dark:border-gray-700 rounded-xl focus:outline-forest text-sm bg-gray-50 dark:bg-darkbg dark:text-white">
+        
+        <!-- Seleção Restrita de Cidades -->
+        <select id="cliente-cidade" class="form-select w-full px-4 py-3 border border-sage/30 dark:border-gray-700 rounded-xl focus:outline-forest text-sm bg-gray-50 dark:bg-darkbg dark:text-white">
+          <option value="" disabled selected>Selecione sua Cidade *</option>
+          <option value="Itajaí - SC">Itajaí - SC</option>
+          <option value="Navegantes - SC">Navegantes - SC</option>
+          <option value="Balneário Camboriú - SC">Balneário Camboriú - SC</option>
+          <option value="Foz do Iguaçu - PR">Foz do Iguaçu - PR</option>
+        </select>
       </div>
 
       <div class="flex justify-between items-end mb-4">
@@ -782,7 +805,7 @@
 
 <script>
   // ============================================================
-  // PWA (PROGRESSIVE WEB APP) - INJEÇÃO VIA BLOB
+  // PWA E INSTALAÇÃO
   // ============================================================
   const manifestData = {
     name: "Sabor e Saúde",
@@ -835,8 +858,6 @@
     appId: "1:283293618461:web:1db0ad8b6db9f145d791f4"
   };
 
-  const WHATSAPP_RESTAURANTE = "5547996988109";
-
   let database;
   let firebaseInitialized = false;
   try {
@@ -850,6 +871,8 @@
   // ============================================================
   // ESTADO GLOBAL
   // ============================================================
+  let estabelecimentoWhatsApp = "5547996988109"; // Padrão Inicial
+
   let isAdmin          = false;
   let sidebarVisible   = true;
   let currentCombo     = null;
@@ -867,7 +890,7 @@
   let activeCategory   = 'todas';
   let searchTerm       = '';
   let carrinhoCompras  = [];
-  let cupomAplicado    = null; // Obj: {codigo: 'X', desconto: 10}
+  let cupomAplicado    = null; 
 
   const STATUS_CORES = {
     'novo':      { label: '🔴 Novo',         bg: 'bg-red-100 text-red-700',      sel: '#fee2e2' },
@@ -905,17 +928,26 @@
     await database.ref(path).remove();
   }
   
-  function lsGet(key) {
-    return JSON.parse(localStorage.getItem(key) || 'null');
-  }
-  
-  function lsSet(key, data) {
-    localStorage.setItem(key, JSON.stringify(data));
-  }
+  function lsGet(key) { return JSON.parse(localStorage.getItem(key) || 'null'); }
+  function lsSet(key, data) { localStorage.setItem(key, JSON.stringify(data)); }
 
   // ============================================================
-  // DARK MODE & REPETIR PEDIDO LOGIC
+  // TOQUE SECRETO ADMIN E DARK MODE
   // ============================================================
+  let secretClickCount = 0;
+  let secretClickTimer;
+
+  function handleSecretClick() {
+    secretClickCount++;
+    clearTimeout(secretClickTimer);
+    secretClickTimer = setTimeout(() => secretClickCount = 0, 1500); // 1.5s pra dar 5 toques
+    
+    if (secretClickCount === 5) {
+      openAdminModal();
+      secretClickCount = 0;
+    }
+  }
+
   function toggleDarkMode() {
     document.documentElement.classList.toggle('dark');
     const isDark = document.documentElement.classList.contains('dark');
@@ -924,25 +956,27 @@
   }
 
   function initClientExtras() {
-    // Configura o dark mode caso já tenha sido selecionado
     if (lsGet('theme_dark') === true) {
       document.documentElement.classList.add('dark');
       document.getElementById('icon-theme').textContent = '☀️';
     }
     
-    // Mostra banner de recompra se houver histórico e o carrinho estiver vazio
     const ultimo = lsGet('ultimo_pedido');
     if (ultimo && carrinhoCompras.length === 0) {
       document.getElementById('banner-repetir-pedido').classList.remove('hidden');
     }
 
-    // Preenche automaticamente os dados do cliente se ele já tiver comprado antes
     const cliente = lsGet('cliente_dados');
     if (cliente) {
       document.getElementById('cliente-nome').value = cliente.nome || '';
       document.getElementById('cliente-tel').value = cliente.tel || '';
       document.getElementById('cliente-endereco').value = cliente.endereco || '';
-      document.getElementById('cliente-cidade').value = cliente.cidade || '';
+      if(cliente.cidade) document.getElementById('cliente-cidade').value = cliente.cidade;
+    }
+
+    // Atalho secreto pela URL
+    if (window.location.search.includes('admin=true')) {
+      openAdminModal();
     }
   }
 
@@ -957,9 +991,7 @@
     }
   }
 
-  function ignorarPedidoAnterior() {
-    document.getElementById('banner-repetir-pedido').classList.add('hidden');
-  }
+  function ignorarPedidoAnterior() { document.getElementById('banner-repetir-pedido').classList.add('hidden'); }
 
   // ============================================================
   // CRUD CORE
@@ -1028,10 +1060,14 @@
   }
 
   // ============================================================
-  // INICIALIZAÇÃO
+  // INICIALIZAÇÃO E CONFIGURAÇÕES DE SISTEMA
   // ============================================================
   async function initData() {
     showLoading(true, "Preparando cardápio...");
+
+    // Carregar configurações (WhatsApp)
+    let configSalva = firebaseInitialized ? await fbGet('configApp') : lsGet('config_app_v1');
+    if (configSalva && configSalva.whatsapp) estabelecimentoWhatsApp = configSalva.whatsapp;
 
     marmitasCache = await getMarmitas();
     combosCache   = await getCombos();
@@ -1072,6 +1108,9 @@
         atualizarBadgePedidos(); 
         if(isAdmin) aplicarFiltroData(); 
       });
+      database.ref('configApp').on('value', snap => {
+        if(snap.val() && snap.val().whatsapp) estabelecimentoWhatsApp = snap.val().whatsapp;
+      });
     }
 
     const hoje = new Date();
@@ -1089,6 +1128,21 @@
     showLoading(false);
   }
 
+  async function salvarConfig() {
+    const wpp = document.getElementById('config-whatsapp').value.replace(/\D/g, '');
+    if(!wpp) return showToast('❌ O número do WhatsApp não pode ser vazio.');
+    
+    estabelecimentoWhatsApp = wpp;
+    const configData = { whatsapp: wpp };
+
+    if (firebaseInitialized) {
+      await fbSet('configApp', configData);
+    } else {
+      lsSet('config_app_v1', configData);
+    }
+    showToast('✅ Configurações salvas com sucesso!');
+  }
+
   // ============================================================
   // ADMIN & NAVEGAÇÃO
   // ============================================================
@@ -1100,6 +1154,7 @@
     if(pageId === 'marmitas') renderMarmitasAdmin();
     if(pageId === 'pedidos') aplicarFiltroData();
     if(pageId === 'cupons') renderCuponsAdmin();
+    if(pageId === 'config') document.getElementById('config-whatsapp').value = estabelecimentoWhatsApp;
   }
   
   function toggleSidebar() { 
@@ -1119,7 +1174,6 @@
       closeAdminModal();
       document.getElementById('sidebar').classList.remove('hidden');
       document.getElementById('btn-toggle-sidebar').classList.remove('hidden');
-      document.getElementById('btn-admin-view').classList.add('hidden');
       showPage('dashboard'); 
       atualizarBadgePedidos(); 
       showToast('✅ Login realizado!');
@@ -1132,7 +1186,6 @@
     isAdmin = false; sidebarVisible = true;
     document.getElementById('sidebar').classList.add('hidden');
     document.getElementById('btn-toggle-sidebar').classList.add('hidden');
-    document.getElementById('btn-admin-view').classList.remove('hidden');
     showPage('cardapio');
   }
   
@@ -1840,7 +1893,7 @@
     showToast('✅ Redirecionando para o WhatsApp...');
     
     const msgEncoded = encodeURIComponent(msgWpp);
-    setTimeout(() => window.open(`https://wa.me/${WHATSAPP_RESTAURANTE}?text=${msgEncoded}`, '_blank'), 800);
+    setTimeout(() => window.open(`https://wa.me/${estabelecimentoWhatsApp}?text=${msgEncoded}`, '_blank'), 800);
   }
 
   // ============================================================
@@ -2396,7 +2449,7 @@
   
   async function exportarBancoDados() {
     showToast('⏳ Preparando planilhas de exportação...');
-    const j = { marmitas: marmitasCache, combos: combosCache, pedidos: pedidosCache, cupons: cuponsCache };
+    const j = { marmitas: marmitasCache, combos: combosCache, pedidos: pedidosCache, cupons: cuponsCache, config: { whatsapp: estabelecimentoWhatsApp } };
     
     // JSON Geral Backup
     const aJson = document.createElement('a'); 
@@ -2458,7 +2511,7 @@
   }
   
   function abrirCotacaoEspecial() { 
-    window.open(`https://wa.me/${WHATSAPP_RESTAURANTE}?text=${encodeURIComponent('Olá! Vim pelo App da Sabor e Saúde. Tenho uma dieta diferenciada e gostaria de uma cotação. 🥗')}`, '_blank'); 
+    window.open(`https://wa.me/${estabelecimentoWhatsApp}?text=${encodeURIComponent('Olá! Vim pelo App da Sabor e Saúde. Tenho uma dieta diferenciada e gostaria de uma cotação. 🥗')}`, '_blank'); 
   }
 
   // ============================================================
