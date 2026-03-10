@@ -391,7 +391,7 @@
            src="https://raw.githubusercontent.com/Sabor-e-Saude/cardapio-pedidos/refs/heads/main/logo.png"
            alt="Logo"
            onclick="handleSecretClick()"
-           class="w-10 h-10 md:w-12 md:h-12 rounded-full object-cover border-2 border-sage/40 transition-transform active:scale-95">
+           class="w-10 h-10 md:w-12 md:h-12 rounded-full object-cover border-2 border-sage/40 transition-transform active:scale-95 cursor-pointer">
       <div>
         <h1 class="font-display text-lg md:text-2xl font-bold">Sabor e Saúde</h1>
       </div>
@@ -620,7 +620,7 @@
             <button onclick="showPage('pedidos')" class="border-2 border-terracotta text-terracotta px-4 py-3 rounded-xl font-bold hover:bg-terracotta hover:text-white transition-all text-sm">📋 Ver Pedidos</button>
             <button onclick="showPage('combos')" class="border-2 border-forest dark:border-sage dark:text-sage text-forest px-4 py-3 rounded-xl font-bold hover:bg-forest hover:text-white transition-all text-sm">📦 Combos</button>
             <button onclick="showPage('marmitas')" class="border-2 border-forest dark:border-sage dark:text-sage text-forest px-4 py-3 rounded-xl font-bold hover:bg-forest hover:text-white transition-all text-sm">🍱 Cardápio</button>
-            <button onclick="showPage('cupons')" class="border-2 border-forest dark:border-sage dark:text-sage text-forest px-4 py-3 rounded-xl font-bold hover:bg-forest hover:text-white transition-all text-sm">🎟️ Cupons</button>
+            <button onclick="showPage('config')" class="border-2 border-forest dark:border-sage dark:text-sage text-forest px-4 py-3 rounded-xl font-bold hover:bg-forest hover:text-white transition-all text-sm">⚙️ Configurações</button>
           </div>
         </div>
       </section>
@@ -712,18 +712,50 @@
           <h2 class="text-2xl font-bold font-display text-forest dark:text-sage">⚙️ Configurações</h2>
         </div>
         
-        <div class="bg-white dark:bg-darkcard rounded-2xl shadow-sm border border-sage/20 dark:border-darkborder p-6 max-w-lg">
-          <div class="mb-6">
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          
+          <!-- Bloco 1: WhatsApp -->
+          <div class="bg-white dark:bg-darkcard rounded-2xl shadow-sm border border-sage/20 dark:border-darkborder p-6 h-fit">
             <h3 class="font-bold text-lg text-charcoal dark:text-white mb-2">WhatsApp de Atendimento</h3>
             <p class="text-xs text-gray-500 dark:text-gray-400 mb-4">Insira o número que receberá os pedidos, com código do país (55) e DDD. Apenas números.</p>
             
-            <label class="block text-xs font-bold uppercase text-gray-400 mb-1">Número do WhatsApp *</label>
-            <input id="config-whatsapp" type="text" placeholder="Ex: 5547999999999" class="w-full px-4 py-3 border border-sage/30 dark:border-gray-700 dark:bg-darkbg dark:text-white rounded-xl focus:outline-forest text-sm font-bold tracking-wider">
+            <div class="flex gap-2">
+              <input id="config-whatsapp" type="text" placeholder="Ex: 5547999999999" class="w-full px-4 py-3 border border-sage/30 dark:border-gray-700 dark:bg-darkbg dark:text-white rounded-xl focus:outline-forest text-sm font-bold tracking-wider">
+              <button onclick="salvarConfigWhatsApp()" class="bg-forest text-white px-4 py-3 rounded-xl font-bold hover:bg-forest/90 transition-all shadow-md">Salvar</button>
+            </div>
           </div>
-          
-          <button onclick="salvarConfig()" class="w-full bg-forest text-white py-3 rounded-xl font-bold hover:bg-forest/90 transition-all shadow-md">
-            Salvar Configurações
-          </button>
+
+          <!-- Bloco 2: Usuários -->
+          <div class="bg-white dark:bg-darkcard rounded-2xl shadow-sm border border-sage/20 dark:border-darkborder p-6 h-fit">
+            <h3 class="font-bold text-lg text-charcoal dark:text-white mb-2">Usuários Administrativos</h3>
+            <p class="text-xs text-gray-500 dark:text-gray-400 mb-4">Crie ou remova usuários com acesso a este painel.</p>
+            
+            <div class="flex gap-2 mb-4">
+              <input id="novo-user-nome" type="text" placeholder="Usuário" class="w-1/2 px-3 py-2 border border-sage/30 dark:border-gray-700 dark:bg-darkbg dark:text-white rounded-lg focus:outline-forest text-sm">
+              <input id="novo-user-senha" type="password" placeholder="Senha" class="w-1/2 px-3 py-2 border border-sage/30 dark:border-gray-700 dark:bg-darkbg dark:text-white rounded-lg focus:outline-forest text-sm">
+              <button onclick="adicionarUsuarioAdmin()" class="bg-forest text-white px-4 py-2 rounded-lg font-bold hover:bg-forest/90 transition-all">+</button>
+            </div>
+            
+            <div id="lista-usuarios-config" class="space-y-2 max-h-40 overflow-y-auto border-t border-sage/10 dark:border-darkborder pt-3">
+              <!-- Gerado via JS -->
+            </div>
+          </div>
+
+          <!-- Bloco 3: Cidades de Atendimento -->
+          <div class="bg-white dark:bg-darkcard rounded-2xl shadow-sm border border-sage/20 dark:border-darkborder p-6 h-fit lg:col-span-2">
+            <h3 class="font-bold text-lg text-charcoal dark:text-white mb-2">Cidades de Atendimento</h3>
+            <p class="text-xs text-gray-500 dark:text-gray-400 mb-4">As cidades adicionadas aqui aparecerão como opção no momento da finalização do pedido do cliente.</p>
+            
+            <div class="flex gap-2 mb-4 max-w-md">
+              <input id="nova-cidade-nome" type="text" placeholder="Ex: Camboriú - SC" class="w-full px-4 py-3 border border-sage/30 dark:border-gray-700 dark:bg-darkbg dark:text-white rounded-xl focus:outline-forest text-sm">
+              <button onclick="adicionarCidadeAtendimento()" class="bg-forest text-white px-6 py-3 rounded-xl font-bold hover:bg-forest/90 transition-all">Adicionar</button>
+            </div>
+            
+            <div class="flex flex-wrap gap-2" id="lista-cidades-config">
+              <!-- Gerado via JS -->
+            </div>
+          </div>
+
         </div>
       </section>
 
@@ -776,13 +808,9 @@
         <input id="cliente-tel" type="tel" placeholder="WhatsApp * (Ex: 47999999999)" class="w-full px-4 py-3 border border-sage/30 dark:border-gray-700 rounded-xl focus:outline-forest text-sm bg-gray-50 dark:bg-darkbg dark:text-white">
         <input id="cliente-endereco" type="text" placeholder="Endereço (Rua, Nº, Bairro, Ref) *" class="w-full px-4 py-3 border border-sage/30 dark:border-gray-700 rounded-xl focus:outline-forest text-sm bg-gray-50 dark:bg-darkbg dark:text-white">
         
-        <!-- Seleção Restrita de Cidades -->
+        <!-- Seleção Restrita de Cidades via Config -->
         <select id="cliente-cidade" class="form-select w-full px-4 py-3 border border-sage/30 dark:border-gray-700 rounded-xl focus:outline-forest text-sm bg-gray-50 dark:bg-darkbg dark:text-white">
-          <option value="" disabled selected>Selecione sua Cidade *</option>
-          <option value="Itajaí - SC">Itajaí - SC</option>
-          <option value="Navegantes - SC">Navegantes - SC</option>
-          <option value="Balneário Camboriú - SC">Balneário Camboriú - SC</option>
-          <option value="Foz do Iguaçu - PR">Foz do Iguaçu - PR</option>
+          <option value="" disabled selected>Carregando cidades...</option>
         </select>
       </div>
 
@@ -869,9 +897,15 @@
   }
 
   // ============================================================
-  // ESTADO GLOBAL
+  // ESTADO GLOBAL & CONFIGURAÇÕES DINÂMICAS
   // ============================================================
-  let estabelecimentoWhatsApp = "5547996988109"; // Padrão Inicial
+  
+  // Objeto de configurações que é sincronizado com o banco de dados
+  let appConfig = {
+    whatsapp: "5547996988109",
+    cidades: ['Itajaí - SC', 'Navegantes - SC', 'Balneário Camboriú - SC', 'Foz do Iguaçu - PR'],
+    usuarios: [{ usuario: 'admin', senha: '123' }]
+  };
 
   let isAdmin          = false;
   let sidebarVisible   = true;
@@ -971,7 +1005,10 @@
       document.getElementById('cliente-nome').value = cliente.nome || '';
       document.getElementById('cliente-tel').value = cliente.tel || '';
       document.getElementById('cliente-endereco').value = cliente.endereco || '';
-      if(cliente.cidade) document.getElementById('cliente-cidade').value = cliente.cidade;
+      // A cidade é setada após renderCidadesCheckout
+      setTimeout(() => {
+        if(cliente.cidade) document.getElementById('cliente-cidade').value = cliente.cidade;
+      }, 500);
     }
 
     // Atalho secreto pela URL
@@ -1065,9 +1102,14 @@
   async function initData() {
     showLoading(true, "Preparando cardápio...");
 
-    // Carregar configurações (WhatsApp)
+    // Carregar configurações gerais do sistema (WhatsApp, Cidades, Usuarios)
     let configSalva = firebaseInitialized ? await fbGet('configApp') : lsGet('config_app_v1');
-    if (configSalva && configSalva.whatsapp) estabelecimentoWhatsApp = configSalva.whatsapp;
+    if (configSalva) {
+      if (configSalva.whatsapp) appConfig.whatsapp = configSalva.whatsapp;
+      if (configSalva.cidades && configSalva.cidades.length > 0) appConfig.cidades = configSalva.cidades;
+      if (configSalva.usuarios && configSalva.usuarios.length > 0) appConfig.usuarios = configSalva.usuarios;
+    }
+    renderCidadesCheckout();
 
     marmitasCache = await getMarmitas();
     combosCache   = await getCombos();
@@ -1109,7 +1151,16 @@
         if(isAdmin) aplicarFiltroData(); 
       });
       database.ref('configApp').on('value', snap => {
-        if(snap.val() && snap.val().whatsapp) estabelecimentoWhatsApp = snap.val().whatsapp;
+        const data = snap.val();
+        if(data) {
+          if (data.whatsapp) appConfig.whatsapp = data.whatsapp;
+          if (data.cidades) appConfig.cidades = data.cidades;
+          if (data.usuarios) appConfig.usuarios = data.usuarios;
+        }
+        renderCidadesCheckout();
+        if(isAdmin && !document.getElementById('page-config').classList.contains('hidden')) {
+          renderConfigPage();
+        }
       });
     }
 
@@ -1128,19 +1179,96 @@
     showLoading(false);
   }
 
-  async function salvarConfig() {
+  // ==== GERENCIAMENTO DE CONFIGURAÇÕES (WPP, CIDADES, USUÁRIOS) ====
+
+  async function salvarConfigTotal(mensagem = '✅ Configurações salvas!') {
+    if (firebaseInitialized) {
+      await fbSet('configApp', appConfig);
+    } else {
+      lsSet('config_app_v1', appConfig);
+    }
+    showToast(mensagem);
+    renderConfigPage();
+    renderCidadesCheckout();
+  }
+
+  function salvarConfigWhatsApp() {
     const wpp = document.getElementById('config-whatsapp').value.replace(/\D/g, '');
     if(!wpp) return showToast('❌ O número do WhatsApp não pode ser vazio.');
-    
-    estabelecimentoWhatsApp = wpp;
-    const configData = { whatsapp: wpp };
+    appConfig.whatsapp = wpp;
+    salvarConfigTotal('📱 WhatsApp atualizado!');
+  }
 
-    if (firebaseInitialized) {
-      await fbSet('configApp', configData);
-    } else {
-      lsSet('config_app_v1', configData);
+  function adicionarCidadeAtendimento() {
+    const nova = document.getElementById('nova-cidade-nome').value.trim();
+    if(!nova) return;
+    if(appConfig.cidades.includes(nova)) return showToast('⚠️ Esta cidade já está na lista.');
+    
+    appConfig.cidades.push(nova);
+    document.getElementById('nova-cidade-nome').value = '';
+    salvarConfigTotal('📍 Cidade adicionada!');
+  }
+
+  function removerCidade(index) {
+    if(appConfig.cidades.length <= 1) return showToast('⚠️ É necessário ter pelo menos 1 cidade de atendimento.');
+    if(confirm(`Remover ${appConfig.cidades[index]}?`)) {
+      appConfig.cidades.splice(index, 1);
+      salvarConfigTotal('🗑️ Cidade removida!');
     }
-    showToast('✅ Configurações salvas com sucesso!');
+  }
+
+  function adicionarUsuarioAdmin() {
+    const user = document.getElementById('novo-user-nome').value.trim();
+    const pass = document.getElementById('novo-user-senha').value.trim();
+    if(!user || !pass) return showToast('⚠️ Preencha usuário e senha para adicionar.');
+    
+    const existe = appConfig.usuarios.find(u => u.usuario.toLowerCase() === user.toLowerCase());
+    if(existe) return showToast('⚠️ Esse nome de usuário já existe.');
+
+    appConfig.usuarios.push({ usuario: user, senha: pass });
+    document.getElementById('novo-user-nome').value = '';
+    document.getElementById('novo-user-senha').value = '';
+    salvarConfigTotal('👤 Usuário adicionado!');
+  }
+
+  function removerUsuario(index) {
+    if(appConfig.usuarios.length <= 1) return showToast('⚠️ O sistema precisa de pelo menos 1 usuário administrador.');
+    if(confirm(`Remover o usuário ${appConfig.usuarios[index].usuario}? Ele perderá o acesso imediatamente.`)) {
+      appConfig.usuarios.splice(index, 1);
+      salvarConfigTotal('🗑️ Usuário removido!');
+    }
+  }
+
+  function renderConfigPage() {
+    // Render Whatsapp
+    document.getElementById('config-whatsapp').value = appConfig.whatsapp;
+    
+    // Render Cidades
+    const listaCidades = document.getElementById('lista-cidades-config');
+    listaCidades.innerHTML = appConfig.cidades.map((c, idx) => `
+      <div class="bg-cream dark:bg-darkbg border border-sage/20 dark:border-gray-700 rounded-lg px-3 py-2 flex items-center justify-between gap-3 shadow-sm">
+        <span class="text-sm font-bold text-forest dark:text-sage">${c}</span>
+        <button onclick="removerCidade(${idx})" class="text-red-400 hover:text-red-600 font-bold hover:bg-red-50 dark:hover:bg-red-900/20 px-2 py-1 rounded transition-colors" title="Remover Cidade">✕</button>
+      </div>
+    `).join('');
+
+    // Render Usuarios
+    const listaUsuarios = document.getElementById('lista-usuarios-config');
+    listaUsuarios.innerHTML = appConfig.usuarios.map((u, idx) => `
+      <div class="flex items-center justify-between p-3 bg-gray-50 dark:bg-darkbg rounded-lg border border-gray-100 dark:border-gray-700">
+        <div>
+          <p class="font-bold text-sm text-charcoal dark:text-white">👤 ${u.usuario}</p>
+          <p class="text-xs text-gray-400">Senha: ••••••••</p>
+        </div>
+        <button onclick="removerUsuario(${idx})" class="text-red-400 hover:text-red-600 text-sm font-bold px-3 py-1 bg-white dark:bg-darkcard rounded shadow-sm border border-red-100 dark:border-red-900/30 transition-colors">Remover</button>
+      </div>
+    `).join('');
+  }
+
+  function renderCidadesCheckout() {
+    const select = document.getElementById('cliente-cidade');
+    const cidadesHtml = appConfig.cidades.map(c => `<option value="${c}">${c}</option>`).join('');
+    select.innerHTML = '<option value="" disabled selected>Selecione sua Cidade *</option>' + cidadesHtml;
   }
 
   // ============================================================
@@ -1154,29 +1282,38 @@
     if(pageId === 'marmitas') renderMarmitasAdmin();
     if(pageId === 'pedidos') aplicarFiltroData();
     if(pageId === 'cupons') renderCuponsAdmin();
-    if(pageId === 'config') document.getElementById('config-whatsapp').value = estabelecimentoWhatsApp;
+    if(pageId === 'config') renderConfigPage();
   }
   
   function toggleSidebar() { 
     sidebarVisible = !sidebarVisible; 
     document.getElementById('sidebar').classList.toggle('hidden', !sidebarVisible); 
   }
+  
   function openAdminModal() { document.getElementById('admin-modal').classList.remove('hidden'); }
   function closeAdminModal() { document.getElementById('admin-modal').classList.add('hidden'); document.getElementById('login-error').classList.add('hidden'); }
   
   function handleLogin(e) {
     e.preventDefault();
-    const u = document.getElementById('login-username').value;
-    const p = document.getElementById('login-password').value;
+    const u = document.getElementById('login-username').value.trim();
+    const p = document.getElementById('login-password').value.trim();
     
-    if (u === 'admin' && p === 'admin123') {
+    // Checa contra o array de usuários nas configurações
+    const usuarioValido = appConfig.usuarios.find(user => user.usuario.toLowerCase() === u.toLowerCase() && user.senha === p);
+    
+    if (usuarioValido) {
       isAdmin = true; 
       closeAdminModal();
       document.getElementById('sidebar').classList.remove('hidden');
       document.getElementById('btn-toggle-sidebar').classList.remove('hidden');
+      
+      // Limpa os campos por segurança
+      document.getElementById('login-username').value = '';
+      document.getElementById('login-password').value = '';
+      
       showPage('dashboard'); 
       atualizarBadgePedidos(); 
-      showToast('✅ Login realizado!');
+      showToast(`✅ Bem-vindo(a), ${usuarioValido.usuario}!`);
     } else {
       document.getElementById('login-error').classList.remove('hidden');
     }
@@ -1893,7 +2030,7 @@
     showToast('✅ Redirecionando para o WhatsApp...');
     
     const msgEncoded = encodeURIComponent(msgWpp);
-    setTimeout(() => window.open(`https://wa.me/${estabelecimentoWhatsApp}?text=${msgEncoded}`, '_blank'), 800);
+    setTimeout(() => window.open(`https://wa.me/${appConfig.whatsapp}?text=${msgEncoded}`, '_blank'), 800);
   }
 
   // ============================================================
@@ -2449,7 +2586,7 @@
   
   async function exportarBancoDados() {
     showToast('⏳ Preparando planilhas de exportação...');
-    const j = { marmitas: marmitasCache, combos: combosCache, pedidos: pedidosCache, cupons: cuponsCache, config: { whatsapp: estabelecimentoWhatsApp } };
+    const j = { marmitas: marmitasCache, combos: combosCache, pedidos: pedidosCache, cupons: cuponsCache, config: appConfig };
     
     // JSON Geral Backup
     const aJson = document.createElement('a'); 
@@ -2511,7 +2648,7 @@
   }
   
   function abrirCotacaoEspecial() { 
-    window.open(`https://wa.me/${estabelecimentoWhatsApp}?text=${encodeURIComponent('Olá! Vim pelo App da Sabor e Saúde. Tenho uma dieta diferenciada e gostaria de uma cotação. 🥗')}`, '_blank'); 
+    window.open(`https://wa.me/${appConfig.whatsapp}?text=${encodeURIComponent('Olá! Vim pelo App da Sabor e Saúde. Tenho uma dieta diferenciada e gostaria de uma cotação. 🥗')}`, '_blank'); 
   }
 
   // ============================================================
