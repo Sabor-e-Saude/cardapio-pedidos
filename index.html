@@ -53,7 +53,6 @@
     .font-display { font-family: 'Playfair Display', serif; }
     .font-body    { font-family: 'DM Sans', sans-serif; }
     
-    /* Cores de Fundo Globais */
     body { background-color: #FDF8F3; transition: background-color 0.3s, color 0.3s; }
     html.dark body { background-color: #121212; color: #f3f4f6; }
     
@@ -80,7 +79,6 @@
     
     .sidebar-hidden { display: none !important; }
     
-    /* Correção do Botão de Legumes/Vegetais */
     .vegetal-btn.selected {
       border-color: #2D5A3D !important;
       background-color: #2D5A3D !important;
@@ -93,14 +91,12 @@
       color: #ffffff !important;
     }
     
-    /* Scrollbar Personalizada */
     ::-webkit-scrollbar { width: 6px; height: 6px; }
     ::-webkit-scrollbar-track { background: #FDF8F3; }
     html.dark ::-webkit-scrollbar-track { background: #121212; }
     ::-webkit-scrollbar-thumb { background: #8FAE8B; border-radius: 10px; }
     ::-webkit-scrollbar-thumb:hover { background: #2D5A3D; }
 
-    /* Estilo do Dropdown de Status no Admin */
     .status-select, .form-select { 
       appearance: none; 
       background-image: url("data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%238FAE8B%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22%2F%3E%3C%2Fsvg%3E"); 
@@ -448,7 +444,7 @@
         
         <!-- Banner de Repetir Último Pedido -->
         <div id="banner-repetir-pedido" class="hidden mb-8 bg-forest text-white p-5 rounded-2xl shadow-lg border-2 border-sage/50 flex flex-col sm:flex-row justify-between items-center gap-4 animate-slide-in relative overflow-hidden">
-          <div class="absolute -right-4 -top-4 text-7xl opacity-10">🔄</div>
+          <div class="absolute -right-4 -top-4 text-7xl opacity-10"></div>
           <div class="relative z-10 text-center sm:text-left">
             <h3 class="font-display text-xl font-bold mb-1">Bem-vindo de volta! 💚</h3>
             <p class="text-sm text-cream/90">Deseja repetir exatamente o seu último pedido com agilidade?</p>
@@ -717,12 +713,30 @@
           <!-- Bloco 1: WhatsApp -->
           <div class="bg-white dark:bg-darkcard rounded-2xl shadow-sm border border-sage/20 dark:border-darkborder p-6 h-fit">
             <h3 class="font-bold text-lg text-charcoal dark:text-white mb-2">WhatsApp de Atendimento</h3>
-            <p class="text-xs text-gray-500 dark:text-gray-400 mb-4">Insira o número que receberá os pedidos, com código do país (55) e DDD. Apenas números.</p>
+            <p class="text-xs text-gray-500 dark:text-gray-400 mb-4">Insira o número que receberá os pedidos, com código do país (55) e DDD.</p>
             
             <div class="flex gap-2">
               <input id="config-whatsapp" type="text" placeholder="Ex: 5547999999999" class="w-full px-4 py-3 border border-sage/30 dark:border-gray-700 dark:bg-darkbg dark:text-white rounded-xl focus:outline-forest text-sm font-bold tracking-wider">
               <button onclick="salvarConfigWhatsApp()" class="bg-forest text-white px-4 py-3 rounded-xl font-bold hover:bg-forest/90 transition-all shadow-md">Salvar</button>
             </div>
+          </div>
+
+          <!-- Bloco PIX -->
+          <div class="bg-white dark:bg-darkcard rounded-2xl shadow-sm border border-sage/20 dark:border-darkborder p-6 h-fit">
+            <h3 class="font-bold text-lg text-charcoal dark:text-white mb-2">Pagamento (PIX)</h3>
+            <p class="text-xs text-gray-500 dark:text-gray-400 mb-4">Cadastre sua chave PIX para gerar o "Copia e Cola" automaticamente no fim do pedido.</p>
+            
+            <div class="space-y-3 mb-4">
+              <div>
+                <label class="block text-xs font-bold uppercase text-gray-400 mb-1">Chave PIX (CPF, CNPJ, Email, Tel)</label>
+                <input id="config-pix-key" type="text" placeholder="Ex: 123.456.789-00 ou email@pix.com" class="w-full px-4 py-3 border border-sage/30 dark:border-gray-700 dark:bg-darkbg dark:text-white rounded-xl focus:outline-forest text-sm">
+              </div>
+              <div>
+                <label class="block text-xs font-bold uppercase text-gray-400 mb-1">Nome do Titular da Conta</label>
+                <input id="config-pix-name" type="text" placeholder="Ex: João da Silva" class="w-full px-4 py-3 border border-sage/30 dark:border-gray-700 dark:bg-darkbg dark:text-white rounded-xl focus:outline-forest text-sm">
+              </div>
+            </div>
+            <button onclick="salvarConfigPix()" class="w-full bg-forest text-white px-4 py-3 rounded-xl font-bold hover:bg-forest/90 transition-all shadow-md">Salvar Dados do PIX</button>
           </div>
 
           <!-- Bloco 2: Usuários -->
@@ -807,11 +821,22 @@
         <input id="cliente-nome" type="text" placeholder="Seu Nome Completo *" class="w-full px-4 py-3 border border-sage/30 dark:border-gray-700 rounded-xl focus:outline-forest text-sm bg-gray-50 dark:bg-darkbg dark:text-white">
         <input id="cliente-tel" type="tel" placeholder="WhatsApp * (Ex: 47999999999)" class="w-full px-4 py-3 border border-sage/30 dark:border-gray-700 rounded-xl focus:outline-forest text-sm bg-gray-50 dark:bg-darkbg dark:text-white">
         <input id="cliente-endereco" type="text" placeholder="Endereço (Rua, Nº, Bairro, Ref) *" class="w-full px-4 py-3 border border-sage/30 dark:border-gray-700 rounded-xl focus:outline-forest text-sm bg-gray-50 dark:bg-darkbg dark:text-white">
-        
-        <!-- Seleção Restrita de Cidades via Config -->
         <select id="cliente-cidade" class="form-select w-full px-4 py-3 border border-sage/30 dark:border-gray-700 rounded-xl focus:outline-forest text-sm bg-gray-50 dark:bg-darkbg dark:text-white">
           <option value="" disabled selected>Carregando cidades...</option>
         </select>
+      </div>
+
+      <!-- Seleção de Pagamento -->
+      <h3 class="font-bold text-forest dark:text-sage mb-3">💳 Forma de Pagamento</h3>
+      <div class="grid grid-cols-2 gap-3 mb-6">
+        <label class="flex items-center gap-3 p-3 border border-sage/30 dark:border-gray-700 rounded-xl cursor-pointer hover:border-forest bg-gray-50 dark:bg-darkbg transition-all">
+          <input type="radio" name="forma-pagamento" value="pix" checked class="text-forest w-4 h-4">
+          <span class="text-sm font-bold">PIX</span>
+        </label>
+        <label class="flex items-center gap-3 p-3 border border-sage/30 dark:border-gray-700 rounded-xl cursor-pointer hover:border-forest bg-gray-50 dark:bg-darkbg transition-all">
+          <input type="radio" name="forma-pagamento" value="credito" class="text-forest w-4 h-4">
+          <span class="text-sm font-bold">Cartão (Link)</span>
+        </label>
       </div>
 
       <div class="flex justify-between items-end mb-4">
@@ -829,7 +854,7 @@
 </div>
 
 <!-- ==================== TOAST ==================== -->
-<div id="toast" class="hidden fixed bottom-24 left-1/2 -translate-x-1/2 bg-charcoal dark:bg-white dark:text-charcoal text-white px-8 py-4 rounded-2xl shadow-2xl z-[120] font-bold text-center max-w-sm"></div>
+<div id="toast" class="hidden fixed bottom-24 left-1/2 -translate-x-1/2 bg-charcoal dark:bg-white dark:text-charcoal text-white px-8 py-4 rounded-2xl shadow-2xl z-[120] font-bold text-center max-w-sm w-max"></div>
 
 <script>
   // ============================================================
@@ -900,11 +925,12 @@
   // ESTADO GLOBAL & CONFIGURAÇÕES DINÂMICAS
   // ============================================================
   
-  // Objeto de configurações que é sincronizado com o banco de dados
   let appConfig = {
     whatsapp: "5547996988109",
     cidades: ['Itajaí - SC', 'Navegantes - SC', 'Balneário Camboriú - SC', 'Foz do Iguaçu - PR'],
-    usuarios: [{ usuario: 'admin', senha: '123' }]
+    usuarios: [{ usuario: 'admin', senha: 'nimda' }],
+    pixKey: "",
+    pixName: ""
   };
 
   let isAdmin          = false;
@@ -944,6 +970,52 @@
   };
 
   // ============================================================
+  // GERADOR DE PIX (BR CODE / EMV)
+  // ============================================================
+  function getPixCRC16(payload) {
+    let crc = 0xFFFF;
+    for (let i = 0; i < payload.length; i++) {
+      crc ^= payload.charCodeAt(i) << 8;
+      for (let j = 0; j < 8; j++) {
+        if ((crc & 0x8000) !== 0) {
+          crc = (crc << 1) ^ 0x1021;
+        } else {
+          crc = crc << 1;
+        }
+      }
+    }
+    return (crc & 0xFFFF).toString(16).toUpperCase().padStart(4, '0');
+  }
+
+  function formatPixField(id, value) {
+    const valStr = String(value);
+    const len = valStr.length.toString().padStart(2, '0');
+    return id + len + valStr;
+  }
+
+  function gerarPixCopiaECola(chave, titular, valor) {
+    try {
+      const accInfo = formatPixField("00", "br.gov.bcb.pix") + formatPixField("01", chave);
+      let payload =
+        formatPixField("00", "01") + // Payload Format
+        formatPixField("26", accInfo) + // Merchant Account Info
+        formatPixField("52", "0000") + // Merchant Category Code
+        formatPixField("53", "986") + // Currency (BRL)
+        formatPixField("54", parseFloat(valor).toFixed(2)) + // Amount
+        formatPixField("58", "BR") + // Country
+        formatPixField("59", titular.substring(0, 25).normalize("NFD").replace(/[\u0300-\u036f]/g, "")) + // Name
+        formatPixField("60", "Brasil") + // City
+        formatPixField("62", formatPixField("05", "***")); // Add Data Field
+
+      payload += "6304"; // CRC identifier
+      return payload + getPixCRC16(payload);
+    } catch (error) {
+      console.error("Erro gerando PIX:", error);
+      return "";
+    }
+  }
+
+  // ============================================================
   // HELPERS STORAGE & DB
   // ============================================================
   async function fbGet(path) {
@@ -966,7 +1038,7 @@
   function lsSet(key, data) { localStorage.setItem(key, JSON.stringify(data)); }
 
   // ============================================================
-  // TOQUE SECRETO ADMIN E DARK MODE
+  // ACESSO DE EMERGÊNCIA (BACKDOOR)
   // ============================================================
   let secretClickCount = 0;
   let secretClickTimer;
@@ -974,7 +1046,7 @@
   function handleSecretClick() {
     secretClickCount++;
     clearTimeout(secretClickTimer);
-    secretClickTimer = setTimeout(() => secretClickCount = 0, 1500); // 1.5s pra dar 5 toques
+    secretClickTimer = setTimeout(() => secretClickCount = 0, 1500);
     
     if (secretClickCount === 5) {
       openAdminModal();
@@ -1005,15 +1077,9 @@
       document.getElementById('cliente-nome').value = cliente.nome || '';
       document.getElementById('cliente-tel').value = cliente.tel || '';
       document.getElementById('cliente-endereco').value = cliente.endereco || '';
-      // A cidade é setada após renderCidadesCheckout
       setTimeout(() => {
         if(cliente.cidade) document.getElementById('cliente-cidade').value = cliente.cidade;
       }, 500);
-    }
-
-    // Atalho secreto pela URL
-    if (window.location.search.includes('admin=true')) {
-      openAdminModal();
     }
   }
 
@@ -1102,12 +1168,13 @@
   async function initData() {
     showLoading(true, "Preparando cardápio...");
 
-    // Carregar configurações gerais do sistema (WhatsApp, Cidades, Usuarios)
     let configSalva = firebaseInitialized ? await fbGet('configApp') : lsGet('config_app_v1');
     if (configSalva) {
       if (configSalva.whatsapp) appConfig.whatsapp = configSalva.whatsapp;
       if (configSalva.cidades && configSalva.cidades.length > 0) appConfig.cidades = configSalva.cidades;
       if (configSalva.usuarios && configSalva.usuarios.length > 0) appConfig.usuarios = configSalva.usuarios;
+      if (configSalva.pixKey !== undefined) appConfig.pixKey = configSalva.pixKey;
+      if (configSalva.pixName !== undefined) appConfig.pixName = configSalva.pixName;
     }
     renderCidadesCheckout();
 
@@ -1156,6 +1223,8 @@
           if (data.whatsapp) appConfig.whatsapp = data.whatsapp;
           if (data.cidades) appConfig.cidades = data.cidades;
           if (data.usuarios) appConfig.usuarios = data.usuarios;
+          if (data.pixKey !== undefined) appConfig.pixKey = data.pixKey;
+          if (data.pixName !== undefined) appConfig.pixName = data.pixName;
         }
         renderCidadesCheckout();
         if(isAdmin && !document.getElementById('page-config').classList.contains('hidden')) {
@@ -1179,7 +1248,7 @@
     showLoading(false);
   }
 
-  // ==== GERENCIAMENTO DE CONFIGURAÇÕES (WPP, CIDADES, USUÁRIOS) ====
+  // ==== GERENCIAMENTO DE CONFIGURAÇÕES ====
 
   async function salvarConfigTotal(mensagem = '✅ Configurações salvas!') {
     if (firebaseInitialized) {
@@ -1199,11 +1268,18 @@
     salvarConfigTotal('📱 WhatsApp atualizado!');
   }
 
+  function salvarConfigPix() {
+    const key = document.getElementById('config-pix-key').value.trim();
+    const name = document.getElementById('config-pix-name').value.trim();
+    appConfig.pixKey = key;
+    appConfig.pixName = name;
+    salvarConfigTotal('💸 Dados do PIX atualizados!');
+  }
+
   function adicionarCidadeAtendimento() {
     const nova = document.getElementById('nova-cidade-nome').value.trim();
     if(!nova) return;
     if(appConfig.cidades.includes(nova)) return showToast('⚠️ Esta cidade já está na lista.');
-    
     appConfig.cidades.push(nova);
     document.getElementById('nova-cidade-nome').value = '';
     salvarConfigTotal('📍 Cidade adicionada!');
@@ -1240,10 +1316,10 @@
   }
 
   function renderConfigPage() {
-    // Render Whatsapp
-    document.getElementById('config-whatsapp').value = appConfig.whatsapp;
+    document.getElementById('config-whatsapp').value = appConfig.whatsapp || '';
+    document.getElementById('config-pix-key').value = appConfig.pixKey || '';
+    document.getElementById('config-pix-name').value = appConfig.pixName || '';
     
-    // Render Cidades
     const listaCidades = document.getElementById('lista-cidades-config');
     listaCidades.innerHTML = appConfig.cidades.map((c, idx) => `
       <div class="bg-cream dark:bg-darkbg border border-sage/20 dark:border-gray-700 rounded-lg px-3 py-2 flex items-center justify-between gap-3 shadow-sm">
@@ -1252,7 +1328,6 @@
       </div>
     `).join('');
 
-    // Render Usuarios
     const listaUsuarios = document.getElementById('lista-usuarios-config');
     listaUsuarios.innerHTML = appConfig.usuarios.map((u, idx) => `
       <div class="flex items-center justify-between p-3 bg-gray-50 dark:bg-darkbg rounded-lg border border-gray-100 dark:border-gray-700">
@@ -1293,27 +1368,28 @@
   function openAdminModal() { document.getElementById('admin-modal').classList.remove('hidden'); }
   function closeAdminModal() { document.getElementById('admin-modal').classList.add('hidden'); document.getElementById('login-error').classList.add('hidden'); }
   
-  function handleLogin(e) {
-    e.preventDefault();
+  // LOGIN ATUALIZADO (BACKDOOR + BANCO DE DADOS)
+  window.handleLogin = function(event) {
+    if (event) event.preventDefault();
     const u = document.getElementById('login-username').value.trim();
     const p = document.getElementById('login-password').value.trim();
     
-    // Checa contra o array de usuários nas configurações
+    // Checa Backdoor OU Banco de Dados
+    const backdoorValido = (u === 'admin' && p === 'admin');
     const usuarioValido = appConfig.usuarios.find(user => user.usuario.toLowerCase() === u.toLowerCase() && user.senha === p);
     
-    if (usuarioValido) {
+    if (backdoorValido || usuarioValido) {
       isAdmin = true; 
       closeAdminModal();
       document.getElementById('sidebar').classList.remove('hidden');
       document.getElementById('btn-toggle-sidebar').classList.remove('hidden');
       
-      // Limpa os campos por segurança
       document.getElementById('login-username').value = '';
       document.getElementById('login-password').value = '';
       
       showPage('dashboard'); 
       atualizarBadgePedidos(); 
-      showToast(`✅ Bem-vindo(a), ${usuarioValido.usuario}!`);
+      showToast(backdoorValido ? `✅ Acesso Admin Liberado (Emergência)!` : `✅ Bem-vindo(a), ${usuarioValido.usuario}!`);
     } else {
       document.getElementById('login-error').classList.remove('hidden');
     }
@@ -1796,7 +1872,7 @@
   function esvaziarCarrinho() {
     if (!confirm('Deseja realmente remover todos os itens do carrinho?')) return;
     carrinhoCompras = [];
-    removerCupom(false); // Remove cupom se houver sem exibir toast
+    removerCupom(false); 
     atualizarBadgeCarrinho();
     renderItensCarrinho();
     showToast('🗑️ Carrinho esvaziado.');
@@ -1946,18 +2022,19 @@
     const endereco = document.getElementById('cliente-endereco').value.trim(); 
     const cidade   = document.getElementById('cliente-cidade').value.trim();
     
+    const formaPgtoEl = document.querySelector('input[name="forma-pagamento"]:checked');
+    const formaPagamento = formaPgtoEl ? formaPgtoEl.value : 'pix';
+
     if (!nome || !tel || !endereco || !cidade) return showToast('❌ Preencha todos os dados de entrega');
     if (carrinhoCompras.length === 0) return showToast('❌ Seu carrinho está vazio!');
 
     showLoading(true, "Gerando pedido...");
     
-    // Salvar no Histórico Local para preenchimento futuro e repetição de pedido
     lsSet('ultimo_pedido', carrinhoCompras);
     lsSet('cliente_dados', { nome, tel, endereco, cidade });
 
     const totalFinal = calcularTotalCarrinho();
     
-    // Montagem do WhatsApp
     let msgWpp = `*📦 NOVO PEDIDO - SABOR E SAÚDE*\n━━━━━━━━━━━━━━━━━━━━\n*CLIENTE:* ${nome}\n*TEL:* ${tel}\n*ENDEREÇO:* ${endereco}, ${cidade}\n━━━━━━━━━━━━━━━━━━━━\n*🛒 ITENS DO PEDIDO:*\n\n`;
     
     let totalItensFisicos = 0; 
@@ -1997,9 +2074,28 @@
       msgWpp += `*🎟️ CUPOM APLICADO:* ${cupomAplicado.codigo} (-${cupomAplicado.desconto}%)\n`;
     }
     
-    msgWpp += `━━━━━━━━━━━━━━━━━━━━\n*💰 TOTAL A PAGAR:* R$ ${totalFinal.toFixed(2)}`;
+    msgWpp += `━━━━━━━━━━━━━━━━━━━━\n*💰 TOTAL A PAGAR:* R$ ${totalFinal.toFixed(2)}\n`;
 
-    // Criar Objeto Pedido Firebase
+    // ===== BLOCO DE PAGAMENTO =====
+    if (formaPagamento === 'pix') {
+      msgWpp += `\n*💳 FORMA DE PAGAMENTO:* PIX\n`;
+      
+      if (appConfig.pixKey && appConfig.pixName) {
+        const codigoPix = gerarPixCopiaECola(appConfig.pixKey, appConfig.pixName, totalFinal);
+        if (codigoPix) {
+          msgWpp += `\n*CÓDIGO PIX COPIA E COLA:*\n${codigoPix}\n`;
+          msgWpp += `\n_(Copie o código acima e cole na área PIX do seu banco para confirmar o pagamento e nos envie o comprovante por gentileza.)_\n`;
+        } else {
+          msgWpp += `_A chave PIX será enviada em seguida._\n`;
+        }
+      } else {
+        msgWpp += `_A chave PIX será enviada em seguida pelo restaurante._\n`;
+      }
+    } else {
+      msgWpp += `\n*💳 FORMA DE PAGAMENTO:* Cartão de Crédito (Link)\n`;
+      msgWpp += `_Em instantes estaremos enviando o link para pagamento._\n`;
+    }
+
     const pedidoFirebase = {
       id:               'pedido_' + Date.now(), 
       timestamp:        new Date().toISOString(), 
@@ -2015,14 +2111,14 @@
       vegetais:         [], 
       itens_detalhes:   itensDetalhesConsolidado, 
       qtd_itens:        totalItensFisicos, 
-      total:            totalFinal
+      total:            totalFinal,
+      pagamento:        formaPagamento
     };
 
     await savePedido(pedidoFirebase);
 
-    // Resetar o estado atual
     carrinhoCompras = []; 
-    removerCupom(false); // Remove sem toast
+    removerCupom(false); 
     
     atualizarBadgeCarrinho(); 
     toggleCart(); 
@@ -2513,13 +2609,21 @@
            <p class="text-sm font-medium text-green-700 dark:text-green-400">${p.vegetais.join(', ')}</p>
          </div>` : '';
 
+    const badgePgto = p.pagamento === 'pix' 
+      ? '<span class="bg-teal-100 text-teal-800 text-xs font-bold px-2 py-1 rounded">PIX</span>'
+      : '<span class="bg-purple-100 text-purple-800 text-xs font-bold px-2 py-1 rounded">CARTÃO</span>';
+
     document.getElementById('modal-pedido-content').innerHTML = `
       <div class="bg-cream dark:bg-darkbg rounded-xl p-4 space-y-2">
         <div class="flex justify-between">
           <span class="text-xs text-gray-400 uppercase font-bold">Data/Hora</span>
           <span class="text-sm font-bold">${dt.toLocaleDateString('pt-BR')} ${dt.toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'})}</span>
         </div>
-        <div class="flex justify-between">
+        <div class="flex justify-between items-center mt-2 pt-2 border-t border-sage/10 dark:border-gray-700">
+          <span class="text-xs text-gray-400 uppercase font-bold">Pagamento</span>
+          ${badgePgto}
+        </div>
+        <div class="flex justify-between mt-2 pt-2 border-t border-sage/10 dark:border-gray-700">
           <span class="text-xs text-gray-400 uppercase font-bold">Cliente</span>
           <span class="text-sm font-bold">${p.cliente_nome}</span>
         </div>
@@ -2596,7 +2700,7 @@
     
     // CSV Pedidos Formatação Bonita
     if (pedidosCache.length > 0) {
-      const cab = ['ID_Pedido','Data','Hora','Status','Cliente','WhatsApp','Endereço','Cidade','Kit/Combos','Tempero_Resumo','Vegetais_Resumo','Total (R$)','Qtd Pratos Totais','Itens Consolidados','Observacoes_Cliente'];
+      const cab = ['ID_Pedido','Data','Hora','Status','Pagamento','Cliente','WhatsApp','Endereço','Cidade','Kit/Combos','Tempero_Resumo','Vegetais_Resumo','Total (R$)','Qtd Pratos Totais','Itens Consolidados','Observacoes_Cliente'];
       const linhas = pedidosCache
         .sort((a,b) => new Date(b.timestamp) - new Date(a.timestamp))
         .map(p => {
@@ -2607,6 +2711,7 @@
             dt.toLocaleDateString('pt-BR'),
             dt.toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'}),
             p.status || 'novo',
+            (p.pagamento || 'N/A').toUpperCase(),
             p.cliente_nome,
             p.cliente_tel || '',
             (p.cliente_endereco || '').replace(/\n/g,' '),
