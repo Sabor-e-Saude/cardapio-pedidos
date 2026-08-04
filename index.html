@@ -458,7 +458,21 @@
         <div id="home-combos">
           <div class="mb-8">
             <h2 class="font-display text-3xl text-forest dark:text-sage">Monte seu Kit 🍱</h2>
-            <p class="text-sage dark:text-gray-400">Escolha um combo abaixo para começar sua seleção.</p>
+            <p class="text-sage dark:text-gray-400 mb-4">Escolha um combo abaixo para começar sua seleção.</p>
+            <div class="flex gap-2 flex-wrap" id="filtro-tipo-combo">
+              <button type="button" onclick="setFiltroTipoCombo('todos')" id="filtro-tipo-todos"
+                      class="px-5 py-2 rounded-full whitespace-nowrap text-sm font-bold transition-all border-2 active:scale-95 bg-forest text-white border-forest">
+                🍽️ Todos
+              </button>
+              <button type="button" onclick="setFiltroTipoCombo('aberto')" id="filtro-tipo-aberto"
+                      class="px-5 py-2 rounded-full whitespace-nowrap text-sm font-bold transition-all border-2 active:scale-95 bg-white dark:bg-darkbg text-gray-500 border-sage/30 hover:border-forest">
+                🛒 Aberto
+              </button>
+              <button type="button" onclick="setFiltroTipoCombo('fechado')" id="filtro-tipo-fechado"
+                      class="px-5 py-2 rounded-full whitespace-nowrap text-sm font-bold transition-all border-2 active:scale-95 bg-white dark:bg-darkbg text-gray-500 border-sage/30 hover:border-forest">
+                📦 Fechado
+              </button>
+            </div>
           </div>
 
           <div id="combos-container" class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-10">
@@ -949,6 +963,7 @@
   let pedidoAtualModal = null;
   let activeCategory   = 'todas';
   let searchTerm       = '';
+  let filtroTipoCombo  = 'todos';
   let carrinhoCompras  = [];
   let cupomAplicado    = null; 
 
@@ -1510,12 +1525,31 @@
     }
   }
 
+  function setFiltroTipoCombo(tipo) {
+    filtroTipoCombo = tipo;
+    ['todos','aberto','fechado'].forEach(t => {
+      const btn = document.getElementById(`filtro-tipo-${t}`);
+      const ativo = t === tipo;
+      btn.classList.toggle('bg-forest', ativo);
+      btn.classList.toggle('text-white', ativo);
+      btn.classList.toggle('border-forest', ativo);
+      btn.classList.toggle('bg-white', !ativo);
+      btn.classList.toggle('dark:bg-darkbg', !ativo);
+      btn.classList.toggle('text-gray-500', !ativo);
+      btn.classList.toggle('border-sage/30', !ativo);
+    });
+    renderCardapio();
+  }
+
   function renderCardapio() {
-    const visiveis = combosCache.filter(c => c.visivel !== false);
+    let visiveis = combosCache.filter(c => c.visivel !== false);
+    if (filtroTipoCombo !== 'todos') {
+      visiveis = visiveis.filter(c => c.tipo === filtroTipoCombo);
+    }
     const el = document.getElementById('combos-container');
     
     if (!visiveis.length) { 
-      el.innerHTML = '<p class="text-gray-400 py-8">Nenhum combo disponível no momento.</p>'; 
+      el.innerHTML = '<p class="text-gray-400 py-8">Nenhum combo disponível para este filtro.</p>'; 
       return; 
     }
     
