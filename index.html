@@ -14,6 +14,7 @@
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet">
   <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-database-compat.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
   
   <script>
     tailwind.config = {
@@ -842,15 +843,28 @@
 
       <!-- Seleção de Pagamento -->
       <h3 class="font-bold text-forest dark:text-sage mb-3">💳 Forma de Pagamento</h3>
-      <div class="grid grid-cols-2 gap-3 mb-6">
+      <div class="grid grid-cols-2 gap-3 mb-4">
         <label class="flex items-center gap-3 p-3 border border-sage/30 dark:border-gray-700 rounded-xl cursor-pointer hover:border-forest bg-gray-50 dark:bg-darkbg transition-all">
-          <input type="radio" name="forma-pagamento" value="pix" checked class="text-forest w-4 h-4">
+          <input type="radio" name="forma-pagamento" value="pix" checked onchange="onMudarFormaPagamento()" class="text-forest w-4 h-4">
           <span class="text-sm font-bold">PIX</span>
         </label>
         <label class="flex items-center gap-3 p-3 border border-sage/30 dark:border-gray-700 rounded-xl cursor-pointer hover:border-forest bg-gray-50 dark:bg-darkbg transition-all">
-          <input type="radio" name="forma-pagamento" value="credito" class="text-forest w-4 h-4">
+          <input type="radio" name="forma-pagamento" value="credito" onchange="onMudarFormaPagamento()" class="text-forest w-4 h-4">
           <span class="text-sm font-bold">Cartão (Link)</span>
         </label>
+      </div>
+
+      <!-- QR Code PIX -->
+      <div id="box-pix-qrcode" class="hidden mb-6 bg-cream dark:bg-darkbg border-2 border-sage/20 dark:border-gray-700 rounded-2xl p-5 text-center">
+        <p class="text-xs font-bold uppercase text-gray-400 mb-3">📱 Escaneie para pagar via PIX</p>
+        <div id="pix-qrcode-canvas" class="flex justify-center mb-3"></div>
+        <p class="text-lg font-display font-bold text-terracotta mb-3" id="pix-qr-valor">R$ 0,00</p>
+        <button type="button" onclick="copiarCodigoPix()" class="w-full bg-forest text-white py-2.5 rounded-xl font-bold text-sm hover:bg-forest/90 transition-all">
+          📋 Copiar Código Copia e Cola
+        </button>
+      </div>
+      <div id="box-pix-sem-config" class="hidden mb-6 bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded-xl p-4 text-xs text-yellow-700 dark:text-yellow-400">
+        ⚠️ Chave PIX não configurada. O código será enviado pelo restaurante via WhatsApp.
       </div>
 
       <div class="flex justify-between items-end mb-4">
@@ -966,6 +980,7 @@
   let filtroTipoCombo  = 'todos';
   let carrinhoCompras  = [];
   let cupomAplicado    = null; 
+  let pixQrObj         = null;
 
   const STATUS_CORES = {
     'novo':      { label: '🔴 Novo',         bg: 'bg-red-100 text-red-700',      sel: '#fee2e2' },
@@ -2001,7 +2016,66 @@
     }
     
     pNew.textContent = `R$ ${total.toFixed(2)}`;
+    renderPixQrCode(total);
     return total;
+  }
+
+  function onMudarFormaPagamento() {
+    calcularTotalCarrinho();
+  }
+
+  function renderPixQrCode(total) {
+    const formaPgtoEl = document.querySelector('input[name="forma-pagamento"]:checked');
+    const forma = formaPgtoEl ? formaPgtoEl.value : 'pix';
+    const boxQr = document.getElementById('box-pix-qrcode');
+    const boxSemConfig = document.getElementById('box-pix-sem-config');
+    
+    if (forma !== 'pix' || total <= 0) {
+      boxQr.classList.add('hidden');
+      boxSemConfig.classList.add('hidden');
+      return;
+    }
+    
+    if (!appConfig.pixKey || !appConfig.pixName) {
+      boxQr.classList.add('hidden');
+      boxSemConfig.classList.remove('hidden');
+      return;
+    }
+    
+    const codigoPix = gerarPixCopiaECola(appConfig.pixKey, appConfig.pixName, total);
+    if (!codigoPix) {
+      boxQr.classList.add('hidden');
+      boxSemConfig.classList.remove('hidden');
+      return;
+    }
+    
+    boxSemConfig.classList.add('hidden');
+    boxQr.classList.remove('hidden');
+    document.getElementById('pix-qr-valor').textContent = `R$ ${total.toFixed(2)}`;
+    
+    const canvasEl = document.getElementById('pix-qrcode-canvas');
+    canvasEl.innerHTML = '';
+    pixQrObj = new QRCode(canvasEl, {
+      text: codigoPix,
+      width: 200,
+      height: 200,
+      colorDark: '#2A2A2A',
+      colorLight: '#ffffff',
+      correctLevel: QRCode.CorrectLevel.M
+    });
+    canvasEl.dataset.codigo = codigoPix;
+  }
+
+  function copiarCodigoPix() {
+    const canvasEl = document.getElementById('pix-qrcode-canvas');
+    const codigo = canvasEl.dataset.codigo;
+    if (!codigo) return;
+    
+    navigator.clipboard.writeText(codigo).then(() => {
+      showToast('✅ Código PIX copiado!');
+    }).catch(() => {
+      showToast('❌ Não foi possível copiar. Copie manualmente.');
+    });
   }
 
   function renderItensCarrinho() {
